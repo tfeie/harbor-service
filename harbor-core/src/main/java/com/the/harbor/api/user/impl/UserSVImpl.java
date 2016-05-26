@@ -7,6 +7,7 @@ import com.the.harbor.api.user.IUserSV;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
+import com.the.harbor.base.util.ResponseBuilder;
 import com.the.harbor.base.vo.Response;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 
@@ -18,7 +19,8 @@ public class UserSVImpl implements IUserSV {
 
     @Override
     public Response userRegister(UserRegReq userRegReq) throws BusinessException, SystemException {
-        return null;
+        userManagerSV.userRegister(userRegReq);
+        return ResponseBuilder.buildSuccessResponse("用户注册成功");
     }
 
 }
