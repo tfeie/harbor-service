@@ -1,59 +1,59 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.the.harbor.dao.mapper.interfaces.HyUserMapper">
-  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyUser">
-    <id column="USER_ID" jdbcType="VARCHAR" property="userId" />
-    <result column="USER_TYPE" jdbcType="VARCHAR" property="userType" />
-    <result column="HY_ID" jdbcType="VARCHAR" property="hyId" />
-    <result column="EN_NAME" jdbcType="VARCHAR" property="enName" />
-    <result column="CH_NAME" jdbcType="VARCHAR" property="chName" />
-    <result column="SEX" jdbcType="VARCHAR" property="sex" />
-    <result column="WEIXIN" jdbcType="VARCHAR" property="weixin" />
-    <result column="HEAD_ICON" jdbcType="VARCHAR" property="headIcon" />
-    <result column="ABROAD_COUNTRY" jdbcType="VARCHAR" property="abroadCountry" />
-    <result column="ABROAD_UNIVERSITY" jdbcType="VARCHAR" property="abroadUniversity" />
-    <result column="AT_COUNTRY" jdbcType="VARCHAR" property="atCountry" />
-    <result column="AT_PROVINCE" jdbcType="VARCHAR" property="atProvince" />
-    <result column="AT_CITY" jdbcType="VARCHAR" property="atCity" />
-    <result column="SIGNATURE" jdbcType="VARCHAR" property="signature" />
-    <result column="MOBILE_PHONE" jdbcType="VARCHAR" property="mobilePhone" />
-    <result column="EMAIL" jdbcType="VARCHAR" property="email" />
-    <result column="MARITAL_STATUS" jdbcType="VARCHAR" property="maritalStatus" />
-    <result column="CONSTELLATION" jdbcType="VARCHAR" property="constellation" />
-    <result column="COMPANY" jdbcType="VARCHAR" property="company" />
-    <result column="INDUSTRY" jdbcType="VARCHAR" property="industry" />
-    <result column="TITLE" jdbcType="VARCHAR" property="title" />
-    <result column="REG_DATE" jdbcType="TIMESTAMP" property="regDate" />
-    <result column="USER_STATUS" jdbcType="VARCHAR" property="userStatus" />
-    <result column="IDCARD_PHOTO" jdbcType="VARCHAR" property="idcardPhoto" />
-    <result column="OVERSEAS_PHOTO" jdbcType="VARCHAR" property="overseasPhoto" />
-    <result column="SUBMIT_CERT_DATE" jdbcType="TIMESTAMP" property="submitCertDate" />
-    <result column="CERTIFICATION_DATE" jdbcType="TIMESTAMP" property="certificationDate" />
-    <result column="ACCESS_PERMISSION" jdbcType="VARCHAR" property="accessPermission" />
-    <result column="UPDATE_DATE" jdbcType="TIMESTAMP" property="updateDate" />
-    <result column="IS_MEMBER" jdbcType="VARCHAR" property="isMember" />
-    <result column="EFF_DATE" jdbcType="TIMESTAMP" property="effDate" />
-    <result column="EXP_DATE" jdbcType="TIMESTAMP" property="expDate" />
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.the.harbor.dao.mapper.interfaces.HyUserMapper" >
+  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyUser" >
+    <id column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="USER_TYPE" property="userType" jdbcType="VARCHAR" />
+    <result column="HY_ID" property="hyId" jdbcType="VARCHAR" />
+    <result column="EN_NAME" property="enName" jdbcType="VARCHAR" />
+    <result column="CH_NAME" property="chName" jdbcType="VARCHAR" />
+    <result column="SEX" property="sex" jdbcType="VARCHAR" />
+    <result column="WEIXIN" property="weixin" jdbcType="VARCHAR" />
+    <result column="HEAD_ICON" property="headIcon" jdbcType="VARCHAR" />
+    <result column="ABROAD_COUNTRY" property="abroadCountry" jdbcType="VARCHAR" />
+    <result column="ABROAD_UNIVERSITY" property="abroadUniversity" jdbcType="VARCHAR" />
+    <result column="AT_COUNTRY" property="atCountry" jdbcType="VARCHAR" />
+    <result column="AT_PROVINCE" property="atProvince" jdbcType="VARCHAR" />
+    <result column="AT_CITY" property="atCity" jdbcType="VARCHAR" />
+    <result column="SIGNATURE" property="signature" jdbcType="VARCHAR" />
+    <result column="MOBILE_PHONE" property="mobilePhone" jdbcType="VARCHAR" />
+    <result column="EMAIL" property="email" jdbcType="VARCHAR" />
+    <result column="MARITAL_STATUS" property="maritalStatus" jdbcType="VARCHAR" />
+    <result column="CONSTELLATION" property="constellation" jdbcType="VARCHAR" />
+    <result column="COMPANY" property="company" jdbcType="VARCHAR" />
+    <result column="INDUSTRY" property="industry" jdbcType="VARCHAR" />
+    <result column="TITLE" property="title" jdbcType="VARCHAR" />
+    <result column="REG_DATE" property="regDate" jdbcType="TIMESTAMP" />
+    <result column="USER_STATUS" property="userStatus" jdbcType="VARCHAR" />
+    <result column="IDCARD_PHOTO" property="idcardPhoto" jdbcType="VARCHAR" />
+    <result column="OVERSEAS_PHOTO" property="overseasPhoto" jdbcType="VARCHAR" />
+    <result column="SUBMIT_CERT_DATE" property="submitCertDate" jdbcType="TIMESTAMP" />
+    <result column="CERTIFICATION_DATE" property="certificationDate" jdbcType="TIMESTAMP" />
+    <result column="ACCESS_PERMISSION" property="accessPermission" jdbcType="VARCHAR" />
+    <result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="IS_MEMBER" property="isMember" jdbcType="VARCHAR" />
+    <result column="EFF_DATE" property="effDate" jdbcType="TIMESTAMP" />
+    <result column="EXP_DATE" property="expDate" jdbcType="TIMESTAMP" />
   </resultMap>
-  <sql id="Example_Where_Clause">
-    <where>
-      <foreach collection="oredCriteria" item="criteria" separator="or">
-        <if test="criteria.valid">
-          <trim prefix="(" prefixOverrides="and" suffix=")">
-            <foreach collection="criteria.criteria" item="criterion">
-              <choose>
-                <when test="criterion.noValue">
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
                   and ${criterion.condition}
                 </when>
-                <when test="criterion.singleValue">
+                <when test="criterion.singleValue" >
                   and ${criterion.condition} #{criterion.value}
                 </when>
-                <when test="criterion.betweenValue">
+                <when test="criterion.betweenValue" >
                   and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
                 </when>
-                <when test="criterion.listValue">
+                <when test="criterion.listValue" >
                   and ${criterion.condition}
-                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
                     #{listItem}
                   </foreach>
                 </when>
@@ -64,25 +64,25 @@
       </foreach>
     </where>
   </sql>
-  <sql id="Update_By_Example_Where_Clause">
-    <where>
-      <foreach collection="example.oredCriteria" item="criteria" separator="or">
-        <if test="criteria.valid">
-          <trim prefix="(" prefixOverrides="and" suffix=")">
-            <foreach collection="criteria.criteria" item="criterion">
-              <choose>
-                <when test="criterion.noValue">
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
                   and ${criterion.condition}
                 </when>
-                <when test="criterion.singleValue">
+                <when test="criterion.singleValue" >
                   and ${criterion.condition} #{criterion.value}
                 </when>
-                <when test="criterion.betweenValue">
+                <when test="criterion.betweenValue" >
                   and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
                 </when>
-                <when test="criterion.listValue">
+                <when test="criterion.listValue" >
                   and ${criterion.condition}
-                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
                     #{listItem}
                   </foreach>
                 </when>
@@ -93,48 +93,48 @@
       </foreach>
     </where>
   </sql>
-  <sql id="Base_Column_List">
+  <sql id="Base_Column_List" >
     USER_ID, USER_TYPE, HY_ID, EN_NAME, CH_NAME, SEX, WEIXIN, HEAD_ICON, ABROAD_COUNTRY, 
     ABROAD_UNIVERSITY, AT_COUNTRY, AT_PROVINCE, AT_CITY, SIGNATURE, MOBILE_PHONE, EMAIL, 
     MARITAL_STATUS, CONSTELLATION, COMPANY, INDUSTRY, TITLE, REG_DATE, USER_STATUS, IDCARD_PHOTO, 
     OVERSEAS_PHOTO, SUBMIT_CERT_DATE, CERTIFICATION_DATE, ACCESS_PERMISSION, UPDATE_DATE, 
     IS_MEMBER, EFF_DATE, EXP_DATE
   </sql>
-  <select id="selectByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUserCriteria" resultMap="BaseResultMap">
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyUserCriteria" >
     select
-    <if test="distinct">
+    <if test="distinct" >
       distinct
     </if>
     'false' as QUERYID,
     <include refid="Base_Column_List" />
     from hy_user
-    <if test="_parameter != null">
+    <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
-    <if test="orderByClause != null">
+    <if test="orderByClause != null" >
       order by ${orderByClause}
     </if>
-    <if test="limitStart != null and limitStart&gt;=0">
+    <if test="limitStart != null and limitStart>=0" >
       limit #{limitStart} , #{limitEnd}
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     <include refid="Base_Column_List" />
     from hy_user
     where USER_ID = #{userId,jdbcType=VARCHAR}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from hy_user
     where USER_ID = #{userId,jdbcType=VARCHAR}
   </delete>
-  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUserCriteria">
+  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUserCriteria" >
     delete from hy_user
-    <if test="_parameter != null">
+    <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyUser">
+  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyUser" >
     insert into hy_user (USER_ID, USER_TYPE, HY_ID, 
       EN_NAME, CH_NAME, SEX, 
       WEIXIN, HEAD_ICON, ABROAD_COUNTRY, 
@@ -158,316 +158,316 @@
       #{accessPermission,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, #{isMember,jdbcType=VARCHAR}, 
       #{effDate,jdbcType=TIMESTAMP}, #{expDate,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyUser">
+  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyUser" >
     insert into hy_user
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
         USER_ID,
       </if>
-      <if test="userType != null">
+      <if test="userType != null" >
         USER_TYPE,
       </if>
-      <if test="hyId != null">
+      <if test="hyId != null" >
         HY_ID,
       </if>
-      <if test="enName != null">
+      <if test="enName != null" >
         EN_NAME,
       </if>
-      <if test="chName != null">
+      <if test="chName != null" >
         CH_NAME,
       </if>
-      <if test="sex != null">
+      <if test="sex != null" >
         SEX,
       </if>
-      <if test="weixin != null">
+      <if test="weixin != null" >
         WEIXIN,
       </if>
-      <if test="headIcon != null">
+      <if test="headIcon != null" >
         HEAD_ICON,
       </if>
-      <if test="abroadCountry != null">
+      <if test="abroadCountry != null" >
         ABROAD_COUNTRY,
       </if>
-      <if test="abroadUniversity != null">
+      <if test="abroadUniversity != null" >
         ABROAD_UNIVERSITY,
       </if>
-      <if test="atCountry != null">
+      <if test="atCountry != null" >
         AT_COUNTRY,
       </if>
-      <if test="atProvince != null">
+      <if test="atProvince != null" >
         AT_PROVINCE,
       </if>
-      <if test="atCity != null">
+      <if test="atCity != null" >
         AT_CITY,
       </if>
-      <if test="signature != null">
+      <if test="signature != null" >
         SIGNATURE,
       </if>
-      <if test="mobilePhone != null">
+      <if test="mobilePhone != null" >
         MOBILE_PHONE,
       </if>
-      <if test="email != null">
+      <if test="email != null" >
         EMAIL,
       </if>
-      <if test="maritalStatus != null">
+      <if test="maritalStatus != null" >
         MARITAL_STATUS,
       </if>
-      <if test="constellation != null">
+      <if test="constellation != null" >
         CONSTELLATION,
       </if>
-      <if test="company != null">
+      <if test="company != null" >
         COMPANY,
       </if>
-      <if test="industry != null">
+      <if test="industry != null" >
         INDUSTRY,
       </if>
-      <if test="title != null">
+      <if test="title != null" >
         TITLE,
       </if>
-      <if test="regDate != null">
+      <if test="regDate != null" >
         REG_DATE,
       </if>
-      <if test="userStatus != null">
+      <if test="userStatus != null" >
         USER_STATUS,
       </if>
-      <if test="idcardPhoto != null">
+      <if test="idcardPhoto != null" >
         IDCARD_PHOTO,
       </if>
-      <if test="overseasPhoto != null">
+      <if test="overseasPhoto != null" >
         OVERSEAS_PHOTO,
       </if>
-      <if test="submitCertDate != null">
+      <if test="submitCertDate != null" >
         SUBMIT_CERT_DATE,
       </if>
-      <if test="certificationDate != null">
+      <if test="certificationDate != null" >
         CERTIFICATION_DATE,
       </if>
-      <if test="accessPermission != null">
+      <if test="accessPermission != null" >
         ACCESS_PERMISSION,
       </if>
-      <if test="updateDate != null">
+      <if test="updateDate != null" >
         UPDATE_DATE,
       </if>
-      <if test="isMember != null">
+      <if test="isMember != null" >
         IS_MEMBER,
       </if>
-      <if test="effDate != null">
+      <if test="effDate != null" >
         EFF_DATE,
       </if>
-      <if test="expDate != null">
+      <if test="expDate != null" >
         EXP_DATE,
       </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
         #{userId,jdbcType=VARCHAR},
       </if>
-      <if test="userType != null">
+      <if test="userType != null" >
         #{userType,jdbcType=VARCHAR},
       </if>
-      <if test="hyId != null">
+      <if test="hyId != null" >
         #{hyId,jdbcType=VARCHAR},
       </if>
-      <if test="enName != null">
+      <if test="enName != null" >
         #{enName,jdbcType=VARCHAR},
       </if>
-      <if test="chName != null">
+      <if test="chName != null" >
         #{chName,jdbcType=VARCHAR},
       </if>
-      <if test="sex != null">
+      <if test="sex != null" >
         #{sex,jdbcType=VARCHAR},
       </if>
-      <if test="weixin != null">
+      <if test="weixin != null" >
         #{weixin,jdbcType=VARCHAR},
       </if>
-      <if test="headIcon != null">
+      <if test="headIcon != null" >
         #{headIcon,jdbcType=VARCHAR},
       </if>
-      <if test="abroadCountry != null">
+      <if test="abroadCountry != null" >
         #{abroadCountry,jdbcType=VARCHAR},
       </if>
-      <if test="abroadUniversity != null">
+      <if test="abroadUniversity != null" >
         #{abroadUniversity,jdbcType=VARCHAR},
       </if>
-      <if test="atCountry != null">
+      <if test="atCountry != null" >
         #{atCountry,jdbcType=VARCHAR},
       </if>
-      <if test="atProvince != null">
+      <if test="atProvince != null" >
         #{atProvince,jdbcType=VARCHAR},
       </if>
-      <if test="atCity != null">
+      <if test="atCity != null" >
         #{atCity,jdbcType=VARCHAR},
       </if>
-      <if test="signature != null">
+      <if test="signature != null" >
         #{signature,jdbcType=VARCHAR},
       </if>
-      <if test="mobilePhone != null">
+      <if test="mobilePhone != null" >
         #{mobilePhone,jdbcType=VARCHAR},
       </if>
-      <if test="email != null">
+      <if test="email != null" >
         #{email,jdbcType=VARCHAR},
       </if>
-      <if test="maritalStatus != null">
+      <if test="maritalStatus != null" >
         #{maritalStatus,jdbcType=VARCHAR},
       </if>
-      <if test="constellation != null">
+      <if test="constellation != null" >
         #{constellation,jdbcType=VARCHAR},
       </if>
-      <if test="company != null">
+      <if test="company != null" >
         #{company,jdbcType=VARCHAR},
       </if>
-      <if test="industry != null">
+      <if test="industry != null" >
         #{industry,jdbcType=VARCHAR},
       </if>
-      <if test="title != null">
+      <if test="title != null" >
         #{title,jdbcType=VARCHAR},
       </if>
-      <if test="regDate != null">
+      <if test="regDate != null" >
         #{regDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="userStatus != null">
+      <if test="userStatus != null" >
         #{userStatus,jdbcType=VARCHAR},
       </if>
-      <if test="idcardPhoto != null">
+      <if test="idcardPhoto != null" >
         #{idcardPhoto,jdbcType=VARCHAR},
       </if>
-      <if test="overseasPhoto != null">
+      <if test="overseasPhoto != null" >
         #{overseasPhoto,jdbcType=VARCHAR},
       </if>
-      <if test="submitCertDate != null">
+      <if test="submitCertDate != null" >
         #{submitCertDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="certificationDate != null">
+      <if test="certificationDate != null" >
         #{certificationDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="accessPermission != null">
+      <if test="accessPermission != null" >
         #{accessPermission,jdbcType=VARCHAR},
       </if>
-      <if test="updateDate != null">
+      <if test="updateDate != null" >
         #{updateDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="isMember != null">
+      <if test="isMember != null" >
         #{isMember,jdbcType=VARCHAR},
       </if>
-      <if test="effDate != null">
+      <if test="effDate != null" >
         #{effDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="expDate != null">
+      <if test="expDate != null" >
         #{expDate,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUserCriteria" resultType="java.lang.Integer">
+  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUserCriteria" resultType="java.lang.Integer" >
     select count(*) from hy_user
-    <if test="_parameter != null">
+    <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
+  <update id="updateByExampleSelective" parameterType="map" >
     update hy_user
-    <set>
-      <if test="record.userId != null">
+    <set >
+      <if test="record.userId != null" >
         USER_ID = #{record.userId,jdbcType=VARCHAR},
       </if>
-      <if test="record.userType != null">
+      <if test="record.userType != null" >
         USER_TYPE = #{record.userType,jdbcType=VARCHAR},
       </if>
-      <if test="record.hyId != null">
+      <if test="record.hyId != null" >
         HY_ID = #{record.hyId,jdbcType=VARCHAR},
       </if>
-      <if test="record.enName != null">
+      <if test="record.enName != null" >
         EN_NAME = #{record.enName,jdbcType=VARCHAR},
       </if>
-      <if test="record.chName != null">
+      <if test="record.chName != null" >
         CH_NAME = #{record.chName,jdbcType=VARCHAR},
       </if>
-      <if test="record.sex != null">
+      <if test="record.sex != null" >
         SEX = #{record.sex,jdbcType=VARCHAR},
       </if>
-      <if test="record.weixin != null">
+      <if test="record.weixin != null" >
         WEIXIN = #{record.weixin,jdbcType=VARCHAR},
       </if>
-      <if test="record.headIcon != null">
+      <if test="record.headIcon != null" >
         HEAD_ICON = #{record.headIcon,jdbcType=VARCHAR},
       </if>
-      <if test="record.abroadCountry != null">
+      <if test="record.abroadCountry != null" >
         ABROAD_COUNTRY = #{record.abroadCountry,jdbcType=VARCHAR},
       </if>
-      <if test="record.abroadUniversity != null">
+      <if test="record.abroadUniversity != null" >
         ABROAD_UNIVERSITY = #{record.abroadUniversity,jdbcType=VARCHAR},
       </if>
-      <if test="record.atCountry != null">
+      <if test="record.atCountry != null" >
         AT_COUNTRY = #{record.atCountry,jdbcType=VARCHAR},
       </if>
-      <if test="record.atProvince != null">
+      <if test="record.atProvince != null" >
         AT_PROVINCE = #{record.atProvince,jdbcType=VARCHAR},
       </if>
-      <if test="record.atCity != null">
+      <if test="record.atCity != null" >
         AT_CITY = #{record.atCity,jdbcType=VARCHAR},
       </if>
-      <if test="record.signature != null">
+      <if test="record.signature != null" >
         SIGNATURE = #{record.signature,jdbcType=VARCHAR},
       </if>
-      <if test="record.mobilePhone != null">
+      <if test="record.mobilePhone != null" >
         MOBILE_PHONE = #{record.mobilePhone,jdbcType=VARCHAR},
       </if>
-      <if test="record.email != null">
+      <if test="record.email != null" >
         EMAIL = #{record.email,jdbcType=VARCHAR},
       </if>
-      <if test="record.maritalStatus != null">
+      <if test="record.maritalStatus != null" >
         MARITAL_STATUS = #{record.maritalStatus,jdbcType=VARCHAR},
       </if>
-      <if test="record.constellation != null">
+      <if test="record.constellation != null" >
         CONSTELLATION = #{record.constellation,jdbcType=VARCHAR},
       </if>
-      <if test="record.company != null">
+      <if test="record.company != null" >
         COMPANY = #{record.company,jdbcType=VARCHAR},
       </if>
-      <if test="record.industry != null">
+      <if test="record.industry != null" >
         INDUSTRY = #{record.industry,jdbcType=VARCHAR},
       </if>
-      <if test="record.title != null">
+      <if test="record.title != null" >
         TITLE = #{record.title,jdbcType=VARCHAR},
       </if>
-      <if test="record.regDate != null">
+      <if test="record.regDate != null" >
         REG_DATE = #{record.regDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.userStatus != null">
+      <if test="record.userStatus != null" >
         USER_STATUS = #{record.userStatus,jdbcType=VARCHAR},
       </if>
-      <if test="record.idcardPhoto != null">
+      <if test="record.idcardPhoto != null" >
         IDCARD_PHOTO = #{record.idcardPhoto,jdbcType=VARCHAR},
       </if>
-      <if test="record.overseasPhoto != null">
+      <if test="record.overseasPhoto != null" >
         OVERSEAS_PHOTO = #{record.overseasPhoto,jdbcType=VARCHAR},
       </if>
-      <if test="record.submitCertDate != null">
+      <if test="record.submitCertDate != null" >
         SUBMIT_CERT_DATE = #{record.submitCertDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.certificationDate != null">
+      <if test="record.certificationDate != null" >
         CERTIFICATION_DATE = #{record.certificationDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.accessPermission != null">
+      <if test="record.accessPermission != null" >
         ACCESS_PERMISSION = #{record.accessPermission,jdbcType=VARCHAR},
       </if>
-      <if test="record.updateDate != null">
+      <if test="record.updateDate != null" >
         UPDATE_DATE = #{record.updateDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.isMember != null">
+      <if test="record.isMember != null" >
         IS_MEMBER = #{record.isMember,jdbcType=VARCHAR},
       </if>
-      <if test="record.effDate != null">
+      <if test="record.effDate != null" >
         EFF_DATE = #{record.effDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.expDate != null">
+      <if test="record.expDate != null" >
         EXP_DATE = #{record.expDate,jdbcType=TIMESTAMP},
       </if>
     </set>
-    <if test="_parameter != null">
+    <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByExample" parameterType="map">
+  <update id="updateByExample" parameterType="map" >
     update hy_user
     set USER_ID = #{record.userId,jdbcType=VARCHAR},
       USER_TYPE = #{record.userType,jdbcType=VARCHAR},
@@ -501,748 +501,110 @@
       IS_MEMBER = #{record.isMember,jdbcType=VARCHAR},
       EFF_DATE = #{record.effDate,jdbcType=TIMESTAMP},
       EXP_DATE = #{record.expDate,jdbcType=TIMESTAMP}
-    <if test="_parameter != null">
+    <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HyUser">
+  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HyUser" >
     update hy_user
-    <set>
-      <if test="userType != null">
+    <set >
+      <if test="userType != null" >
         USER_TYPE = #{userType,jdbcType=VARCHAR},
       </if>
-      <if test="hyId != null">
+      <if test="hyId != null" >
         HY_ID = #{hyId,jdbcType=VARCHAR},
       </if>
-      <if test="enName != null">
+      <if test="enName != null" >
         EN_NAME = #{enName,jdbcType=VARCHAR},
       </if>
-      <if test="chName != null">
+      <if test="chName != null" >
         CH_NAME = #{chName,jdbcType=VARCHAR},
       </if>
-      <if test="sex != null">
+      <if test="sex != null" >
         SEX = #{sex,jdbcType=VARCHAR},
       </if>
-      <if test="weixin != null">
+      <if test="weixin != null" >
         WEIXIN = #{weixin,jdbcType=VARCHAR},
       </if>
-      <if test="headIcon != null">
+      <if test="headIcon != null" >
         HEAD_ICON = #{headIcon,jdbcType=VARCHAR},
       </if>
-      <if test="abroadCountry != null">
+      <if test="abroadCountry != null" >
         ABROAD_COUNTRY = #{abroadCountry,jdbcType=VARCHAR},
       </if>
-      <if test="abroadUniversity != null">
+      <if test="abroadUniversity != null" >
         ABROAD_UNIVERSITY = #{abroadUniversity,jdbcType=VARCHAR},
       </if>
-      <if test="atCountry != null">
+      <if test="atCountry != null" >
         AT_COUNTRY = #{atCountry,jdbcType=VARCHAR},
       </if>
-      <if test="atProvince != null">
+      <if test="atProvince != null" >
         AT_PROVINCE = #{atProvince,jdbcType=VARCHAR},
       </if>
-      <if test="atCity != null">
+      <if test="atCity != null" >
         AT_CITY = #{atCity,jdbcType=VARCHAR},
       </if>
-      <if test="signature != null">
+      <if test="signature != null" >
         SIGNATURE = #{signature,jdbcType=VARCHAR},
       </if>
-      <if test="mobilePhone != null">
+      <if test="mobilePhone != null" >
         MOBILE_PHONE = #{mobilePhone,jdbcType=VARCHAR},
       </if>
-      <if test="email != null">
+      <if test="email != null" >
         EMAIL = #{email,jdbcType=VARCHAR},
       </if>
-      <if test="maritalStatus != null">
+      <if test="maritalStatus != null" >
         MARITAL_STATUS = #{maritalStatus,jdbcType=VARCHAR},
       </if>
-      <if test="constellation != null">
+      <if test="constellation != null" >
         CONSTELLATION = #{constellation,jdbcType=VARCHAR},
       </if>
-      <if test="company != null">
+      <if test="company != null" >
         COMPANY = #{company,jdbcType=VARCHAR},
       </if>
-      <if test="industry != null">
+      <if test="industry != null" >
         INDUSTRY = #{industry,jdbcType=VARCHAR},
       </if>
-      <if test="title != null">
+      <if test="title != null" >
         TITLE = #{title,jdbcType=VARCHAR},
       </if>
-      <if test="regDate != null">
+      <if test="regDate != null" >
         REG_DATE = #{regDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="userStatus != null">
+      <if test="userStatus != null" >
         USER_STATUS = #{userStatus,jdbcType=VARCHAR},
       </if>
-      <if test="idcardPhoto != null">
+      <if test="idcardPhoto != null" >
         IDCARD_PHOTO = #{idcardPhoto,jdbcType=VARCHAR},
       </if>
-      <if test="overseasPhoto != null">
+      <if test="overseasPhoto != null" >
         OVERSEAS_PHOTO = #{overseasPhoto,jdbcType=VARCHAR},
       </if>
-      <if test="submitCertDate != null">
+      <if test="submitCertDate != null" >
         SUBMIT_CERT_DATE = #{submitCertDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="certificationDate != null">
+      <if test="certificationDate != null" >
         CERTIFICATION_DATE = #{certificationDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="accessPermission != null">
+      <if test="accessPermission != null" >
         ACCESS_PERMISSION = #{accessPermission,jdbcType=VARCHAR},
       </if>
-      <if test="updateDate != null">
+      <if test="updateDate != null" >
         UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="isMember != null">
+      <if test="isMember != null" >
         IS_MEMBER = #{isMember,jdbcType=VARCHAR},
       </if>
-      <if test="effDate != null">
+      <if test="effDate != null" >
         EFF_DATE = #{effDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="expDate != null">
+      <if test="expDate != null" >
         EXP_DATE = #{expDate,jdbcType=TIMESTAMP},
       </if>
     </set>
     where USER_ID = #{userId,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyUser">
-    update hy_user
-    set USER_TYPE = #{userType,jdbcType=VARCHAR},
-      HY_ID = #{hyId,jdbcType=VARCHAR},
-      EN_NAME = #{enName,jdbcType=VARCHAR},
-      CH_NAME = #{chName,jdbcType=VARCHAR},
-      SEX = #{sex,jdbcType=VARCHAR},
-      WEIXIN = #{weixin,jdbcType=VARCHAR},
-      HEAD_ICON = #{headIcon,jdbcType=VARCHAR},
-      ABROAD_COUNTRY = #{abroadCountry,jdbcType=VARCHAR},
-      ABROAD_UNIVERSITY = #{abroadUniversity,jdbcType=VARCHAR},
-      AT_COUNTRY = #{atCountry,jdbcType=VARCHAR},
-      AT_PROVINCE = #{atProvince,jdbcType=VARCHAR},
-      AT_CITY = #{atCity,jdbcType=VARCHAR},
-      SIGNATURE = #{signature,jdbcType=VARCHAR},
-      MOBILE_PHONE = #{mobilePhone,jdbcType=VARCHAR},
-      EMAIL = #{email,jdbcType=VARCHAR},
-      MARITAL_STATUS = #{maritalStatus,jdbcType=VARCHAR},
-      CONSTELLATION = #{constellation,jdbcType=VARCHAR},
-      COMPANY = #{company,jdbcType=VARCHAR},
-      INDUSTRY = #{industry,jdbcType=VARCHAR},
-      TITLE = #{title,jdbcType=VARCHAR},
-      REG_DATE = #{regDate,jdbcType=TIMESTAMP},
-      USER_STATUS = #{userStatus,jdbcType=VARCHAR},
-      IDCARD_PHOTO = #{idcardPhoto,jdbcType=VARCHAR},
-      OVERSEAS_PHOTO = #{overseasPhoto,jdbcType=VARCHAR},
-      SUBMIT_CERT_DATE = #{submitCertDate,jdbcType=TIMESTAMP},
-      CERTIFICATION_DATE = #{certificationDate,jdbcType=TIMESTAMP},
-      ACCESS_PERMISSION = #{accessPermission,jdbcType=VARCHAR},
-      UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
-      IS_MEMBER = #{isMember,jdbcType=VARCHAR},
-      EFF_DATE = #{effDate,jdbcType=TIMESTAMP},
-      EXP_DATE = #{expDate,jdbcType=TIMESTAMP}
-    where USER_ID = #{userId,jdbcType=VARCHAR}
-  </update>
-  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyUser">
-    <id column="USER_ID" jdbcType="VARCHAR" property="userId" />
-    <result column="USER_TYPE" jdbcType="VARCHAR" property="userType" />
-    <result column="HY_ID" jdbcType="VARCHAR" property="hyId" />
-    <result column="EN_NAME" jdbcType="VARCHAR" property="enName" />
-    <result column="CH_NAME" jdbcType="VARCHAR" property="chName" />
-    <result column="SEX" jdbcType="VARCHAR" property="sex" />
-    <result column="WEIXIN" jdbcType="VARCHAR" property="weixin" />
-    <result column="HEAD_ICON" jdbcType="VARCHAR" property="headIcon" />
-    <result column="ABROAD_COUNTRY" jdbcType="VARCHAR" property="abroadCountry" />
-    <result column="ABROAD_UNIVERSITY" jdbcType="VARCHAR" property="abroadUniversity" />
-    <result column="AT_COUNTRY" jdbcType="VARCHAR" property="atCountry" />
-    <result column="AT_PROVINCE" jdbcType="VARCHAR" property="atProvince" />
-    <result column="AT_CITY" jdbcType="VARCHAR" property="atCity" />
-    <result column="SIGNATURE" jdbcType="VARCHAR" property="signature" />
-    <result column="MOBILE_PHONE" jdbcType="VARCHAR" property="mobilePhone" />
-    <result column="EMAIL" jdbcType="VARCHAR" property="email" />
-    <result column="MARITAL_STATUS" jdbcType="VARCHAR" property="maritalStatus" />
-    <result column="CONSTELLATION" jdbcType="VARCHAR" property="constellation" />
-    <result column="COMPANY" jdbcType="VARCHAR" property="company" />
-    <result column="INDUSTRY" jdbcType="VARCHAR" property="industry" />
-    <result column="TITLE" jdbcType="VARCHAR" property="title" />
-    <result column="REG_DATE" jdbcType="TIMESTAMP" property="regDate" />
-    <result column="USER_STATUS" jdbcType="VARCHAR" property="userStatus" />
-    <result column="IDCARD_PHOTO" jdbcType="VARCHAR" property="idcardPhoto" />
-    <result column="OVERSEAS_PHOTO" jdbcType="VARCHAR" property="overseasPhoto" />
-    <result column="SUBMIT_CERT_DATE" jdbcType="TIMESTAMP" property="submitCertDate" />
-    <result column="CERTIFICATION_DATE" jdbcType="TIMESTAMP" property="certificationDate" />
-    <result column="ACCESS_PERMISSION" jdbcType="VARCHAR" property="accessPermission" />
-    <result column="UPDATE_DATE" jdbcType="TIMESTAMP" property="updateDate" />
-    <result column="IS_MEMBER" jdbcType="VARCHAR" property="isMember" />
-    <result column="EFF_DATE" jdbcType="TIMESTAMP" property="effDate" />
-    <result column="EXP_DATE" jdbcType="TIMESTAMP" property="expDate" />
-  </resultMap>
-  <sql id="Example_Where_Clause">
-    <where>
-      <foreach collection="oredCriteria" item="criteria" separator="or">
-        <if test="criteria.valid">
-          <trim prefix="(" prefixOverrides="and" suffix=")">
-            <foreach collection="criteria.criteria" item="criterion">
-              <choose>
-                <when test="criterion.noValue">
-                  and ${criterion.condition}
-                </when>
-                <when test="criterion.singleValue">
-                  and ${criterion.condition} #{criterion.value}
-                </when>
-                <when test="criterion.betweenValue">
-                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
-                </when>
-                <when test="criterion.listValue">
-                  and ${criterion.condition}
-                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
-                    #{listItem}
-                  </foreach>
-                </when>
-              </choose>
-            </foreach>
-          </trim>
-        </if>
-      </foreach>
-    </where>
-  </sql>
-  <sql id="Update_By_Example_Where_Clause">
-    <where>
-      <foreach collection="example.oredCriteria" item="criteria" separator="or">
-        <if test="criteria.valid">
-          <trim prefix="(" prefixOverrides="and" suffix=")">
-            <foreach collection="criteria.criteria" item="criterion">
-              <choose>
-                <when test="criterion.noValue">
-                  and ${criterion.condition}
-                </when>
-                <when test="criterion.singleValue">
-                  and ${criterion.condition} #{criterion.value}
-                </when>
-                <when test="criterion.betweenValue">
-                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
-                </when>
-                <when test="criterion.listValue">
-                  and ${criterion.condition}
-                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
-                    #{listItem}
-                  </foreach>
-                </when>
-              </choose>
-            </foreach>
-          </trim>
-        </if>
-      </foreach>
-    </where>
-  </sql>
-  <sql id="Base_Column_List">
-    USER_ID, USER_TYPE, HY_ID, EN_NAME, CH_NAME, SEX, WEIXIN, HEAD_ICON, ABROAD_COUNTRY, 
-    ABROAD_UNIVERSITY, AT_COUNTRY, AT_PROVINCE, AT_CITY, SIGNATURE, MOBILE_PHONE, EMAIL, 
-    MARITAL_STATUS, CONSTELLATION, COMPANY, INDUSTRY, TITLE, REG_DATE, USER_STATUS, IDCARD_PHOTO, 
-    OVERSEAS_PHOTO, SUBMIT_CERT_DATE, CERTIFICATION_DATE, ACCESS_PERMISSION, UPDATE_DATE, 
-    IS_MEMBER, EFF_DATE, EXP_DATE
-  </sql>
-  <select id="selectByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUserCriteria" resultMap="BaseResultMap">
-    select
-    <if test="distinct">
-      distinct
-    </if>
-    'false' as QUERYID,
-    <include refid="Base_Column_List" />
-    from hy_user
-    <if test="_parameter != null">
-      <include refid="Example_Where_Clause" />
-    </if>
-    <if test="orderByClause != null">
-      order by ${orderByClause}
-    </if>
-    <if test="limitStart != null and limitStart&gt;=0">
-      limit #{limitStart} , #{limitEnd}
-    </if>
-  </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from hy_user
-    where USER_ID = #{userId,jdbcType=VARCHAR}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-    delete from hy_user
-    where USER_ID = #{userId,jdbcType=VARCHAR}
-  </delete>
-  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUserCriteria">
-    delete from hy_user
-    <if test="_parameter != null">
-      <include refid="Example_Where_Clause" />
-    </if>
-  </delete>
-  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyUser">
-    insert into hy_user (USER_ID, USER_TYPE, HY_ID, 
-      EN_NAME, CH_NAME, SEX, 
-      WEIXIN, HEAD_ICON, ABROAD_COUNTRY, 
-      ABROAD_UNIVERSITY, AT_COUNTRY, AT_PROVINCE, 
-      AT_CITY, SIGNATURE, MOBILE_PHONE, 
-      EMAIL, MARITAL_STATUS, CONSTELLATION, 
-      COMPANY, INDUSTRY, TITLE, 
-      REG_DATE, USER_STATUS, IDCARD_PHOTO, 
-      OVERSEAS_PHOTO, SUBMIT_CERT_DATE, CERTIFICATION_DATE, 
-      ACCESS_PERMISSION, UPDATE_DATE, IS_MEMBER, 
-      EFF_DATE, EXP_DATE)
-    values (#{userId,jdbcType=VARCHAR}, #{userType,jdbcType=VARCHAR}, #{hyId,jdbcType=VARCHAR}, 
-      #{enName,jdbcType=VARCHAR}, #{chName,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR}, 
-      #{weixin,jdbcType=VARCHAR}, #{headIcon,jdbcType=VARCHAR}, #{abroadCountry,jdbcType=VARCHAR}, 
-      #{abroadUniversity,jdbcType=VARCHAR}, #{atCountry,jdbcType=VARCHAR}, #{atProvince,jdbcType=VARCHAR}, 
-      #{atCity,jdbcType=VARCHAR}, #{signature,jdbcType=VARCHAR}, #{mobilePhone,jdbcType=VARCHAR}, 
-      #{email,jdbcType=VARCHAR}, #{maritalStatus,jdbcType=VARCHAR}, #{constellation,jdbcType=VARCHAR}, 
-      #{company,jdbcType=VARCHAR}, #{industry,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
-      #{regDate,jdbcType=TIMESTAMP}, #{userStatus,jdbcType=VARCHAR}, #{idcardPhoto,jdbcType=VARCHAR}, 
-      #{overseasPhoto,jdbcType=VARCHAR}, #{submitCertDate,jdbcType=TIMESTAMP}, #{certificationDate,jdbcType=TIMESTAMP}, 
-      #{accessPermission,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, #{isMember,jdbcType=VARCHAR}, 
-      #{effDate,jdbcType=TIMESTAMP}, #{expDate,jdbcType=TIMESTAMP})
-  </insert>
-  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyUser">
-    insert into hy_user
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        USER_ID,
-      </if>
-      <if test="userType != null">
-        USER_TYPE,
-      </if>
-      <if test="hyId != null">
-        HY_ID,
-      </if>
-      <if test="enName != null">
-        EN_NAME,
-      </if>
-      <if test="chName != null">
-        CH_NAME,
-      </if>
-      <if test="sex != null">
-        SEX,
-      </if>
-      <if test="weixin != null">
-        WEIXIN,
-      </if>
-      <if test="headIcon != null">
-        HEAD_ICON,
-      </if>
-      <if test="abroadCountry != null">
-        ABROAD_COUNTRY,
-      </if>
-      <if test="abroadUniversity != null">
-        ABROAD_UNIVERSITY,
-      </if>
-      <if test="atCountry != null">
-        AT_COUNTRY,
-      </if>
-      <if test="atProvince != null">
-        AT_PROVINCE,
-      </if>
-      <if test="atCity != null">
-        AT_CITY,
-      </if>
-      <if test="signature != null">
-        SIGNATURE,
-      </if>
-      <if test="mobilePhone != null">
-        MOBILE_PHONE,
-      </if>
-      <if test="email != null">
-        EMAIL,
-      </if>
-      <if test="maritalStatus != null">
-        MARITAL_STATUS,
-      </if>
-      <if test="constellation != null">
-        CONSTELLATION,
-      </if>
-      <if test="company != null">
-        COMPANY,
-      </if>
-      <if test="industry != null">
-        INDUSTRY,
-      </if>
-      <if test="title != null">
-        TITLE,
-      </if>
-      <if test="regDate != null">
-        REG_DATE,
-      </if>
-      <if test="userStatus != null">
-        USER_STATUS,
-      </if>
-      <if test="idcardPhoto != null">
-        IDCARD_PHOTO,
-      </if>
-      <if test="overseasPhoto != null">
-        OVERSEAS_PHOTO,
-      </if>
-      <if test="submitCertDate != null">
-        SUBMIT_CERT_DATE,
-      </if>
-      <if test="certificationDate != null">
-        CERTIFICATION_DATE,
-      </if>
-      <if test="accessPermission != null">
-        ACCESS_PERMISSION,
-      </if>
-      <if test="updateDate != null">
-        UPDATE_DATE,
-      </if>
-      <if test="isMember != null">
-        IS_MEMBER,
-      </if>
-      <if test="effDate != null">
-        EFF_DATE,
-      </if>
-      <if test="expDate != null">
-        EXP_DATE,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        #{userId,jdbcType=VARCHAR},
-      </if>
-      <if test="userType != null">
-        #{userType,jdbcType=VARCHAR},
-      </if>
-      <if test="hyId != null">
-        #{hyId,jdbcType=VARCHAR},
-      </if>
-      <if test="enName != null">
-        #{enName,jdbcType=VARCHAR},
-      </if>
-      <if test="chName != null">
-        #{chName,jdbcType=VARCHAR},
-      </if>
-      <if test="sex != null">
-        #{sex,jdbcType=VARCHAR},
-      </if>
-      <if test="weixin != null">
-        #{weixin,jdbcType=VARCHAR},
-      </if>
-      <if test="headIcon != null">
-        #{headIcon,jdbcType=VARCHAR},
-      </if>
-      <if test="abroadCountry != null">
-        #{abroadCountry,jdbcType=VARCHAR},
-      </if>
-      <if test="abroadUniversity != null">
-        #{abroadUniversity,jdbcType=VARCHAR},
-      </if>
-      <if test="atCountry != null">
-        #{atCountry,jdbcType=VARCHAR},
-      </if>
-      <if test="atProvince != null">
-        #{atProvince,jdbcType=VARCHAR},
-      </if>
-      <if test="atCity != null">
-        #{atCity,jdbcType=VARCHAR},
-      </if>
-      <if test="signature != null">
-        #{signature,jdbcType=VARCHAR},
-      </if>
-      <if test="mobilePhone != null">
-        #{mobilePhone,jdbcType=VARCHAR},
-      </if>
-      <if test="email != null">
-        #{email,jdbcType=VARCHAR},
-      </if>
-      <if test="maritalStatus != null">
-        #{maritalStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="constellation != null">
-        #{constellation,jdbcType=VARCHAR},
-      </if>
-      <if test="company != null">
-        #{company,jdbcType=VARCHAR},
-      </if>
-      <if test="industry != null">
-        #{industry,jdbcType=VARCHAR},
-      </if>
-      <if test="title != null">
-        #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="regDate != null">
-        #{regDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="userStatus != null">
-        #{userStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="idcardPhoto != null">
-        #{idcardPhoto,jdbcType=VARCHAR},
-      </if>
-      <if test="overseasPhoto != null">
-        #{overseasPhoto,jdbcType=VARCHAR},
-      </if>
-      <if test="submitCertDate != null">
-        #{submitCertDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="certificationDate != null">
-        #{certificationDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="accessPermission != null">
-        #{accessPermission,jdbcType=VARCHAR},
-      </if>
-      <if test="updateDate != null">
-        #{updateDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="isMember != null">
-        #{isMember,jdbcType=VARCHAR},
-      </if>
-      <if test="effDate != null">
-        #{effDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="expDate != null">
-        #{expDate,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUserCriteria" resultType="java.lang.Integer">
-    select count(*) from hy_user
-    <if test="_parameter != null">
-      <include refid="Example_Where_Clause" />
-    </if>
-  </select>
-  <update id="updateByExampleSelective" parameterType="map">
-    update hy_user
-    <set>
-      <if test="record.userId != null">
-        USER_ID = #{record.userId,jdbcType=VARCHAR},
-      </if>
-      <if test="record.userType != null">
-        USER_TYPE = #{record.userType,jdbcType=VARCHAR},
-      </if>
-      <if test="record.hyId != null">
-        HY_ID = #{record.hyId,jdbcType=VARCHAR},
-      </if>
-      <if test="record.enName != null">
-        EN_NAME = #{record.enName,jdbcType=VARCHAR},
-      </if>
-      <if test="record.chName != null">
-        CH_NAME = #{record.chName,jdbcType=VARCHAR},
-      </if>
-      <if test="record.sex != null">
-        SEX = #{record.sex,jdbcType=VARCHAR},
-      </if>
-      <if test="record.weixin != null">
-        WEIXIN = #{record.weixin,jdbcType=VARCHAR},
-      </if>
-      <if test="record.headIcon != null">
-        HEAD_ICON = #{record.headIcon,jdbcType=VARCHAR},
-      </if>
-      <if test="record.abroadCountry != null">
-        ABROAD_COUNTRY = #{record.abroadCountry,jdbcType=VARCHAR},
-      </if>
-      <if test="record.abroadUniversity != null">
-        ABROAD_UNIVERSITY = #{record.abroadUniversity,jdbcType=VARCHAR},
-      </if>
-      <if test="record.atCountry != null">
-        AT_COUNTRY = #{record.atCountry,jdbcType=VARCHAR},
-      </if>
-      <if test="record.atProvince != null">
-        AT_PROVINCE = #{record.atProvince,jdbcType=VARCHAR},
-      </if>
-      <if test="record.atCity != null">
-        AT_CITY = #{record.atCity,jdbcType=VARCHAR},
-      </if>
-      <if test="record.signature != null">
-        SIGNATURE = #{record.signature,jdbcType=VARCHAR},
-      </if>
-      <if test="record.mobilePhone != null">
-        MOBILE_PHONE = #{record.mobilePhone,jdbcType=VARCHAR},
-      </if>
-      <if test="record.email != null">
-        EMAIL = #{record.email,jdbcType=VARCHAR},
-      </if>
-      <if test="record.maritalStatus != null">
-        MARITAL_STATUS = #{record.maritalStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="record.constellation != null">
-        CONSTELLATION = #{record.constellation,jdbcType=VARCHAR},
-      </if>
-      <if test="record.company != null">
-        COMPANY = #{record.company,jdbcType=VARCHAR},
-      </if>
-      <if test="record.industry != null">
-        INDUSTRY = #{record.industry,jdbcType=VARCHAR},
-      </if>
-      <if test="record.title != null">
-        TITLE = #{record.title,jdbcType=VARCHAR},
-      </if>
-      <if test="record.regDate != null">
-        REG_DATE = #{record.regDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="record.userStatus != null">
-        USER_STATUS = #{record.userStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="record.idcardPhoto != null">
-        IDCARD_PHOTO = #{record.idcardPhoto,jdbcType=VARCHAR},
-      </if>
-      <if test="record.overseasPhoto != null">
-        OVERSEAS_PHOTO = #{record.overseasPhoto,jdbcType=VARCHAR},
-      </if>
-      <if test="record.submitCertDate != null">
-        SUBMIT_CERT_DATE = #{record.submitCertDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="record.certificationDate != null">
-        CERTIFICATION_DATE = #{record.certificationDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="record.accessPermission != null">
-        ACCESS_PERMISSION = #{record.accessPermission,jdbcType=VARCHAR},
-      </if>
-      <if test="record.updateDate != null">
-        UPDATE_DATE = #{record.updateDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="record.isMember != null">
-        IS_MEMBER = #{record.isMember,jdbcType=VARCHAR},
-      </if>
-      <if test="record.effDate != null">
-        EFF_DATE = #{record.effDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="record.expDate != null">
-        EXP_DATE = #{record.expDate,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    <if test="_parameter != null">
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
-  </update>
-  <update id="updateByExample" parameterType="map">
-    update hy_user
-    set USER_ID = #{record.userId,jdbcType=VARCHAR},
-      USER_TYPE = #{record.userType,jdbcType=VARCHAR},
-      HY_ID = #{record.hyId,jdbcType=VARCHAR},
-      EN_NAME = #{record.enName,jdbcType=VARCHAR},
-      CH_NAME = #{record.chName,jdbcType=VARCHAR},
-      SEX = #{record.sex,jdbcType=VARCHAR},
-      WEIXIN = #{record.weixin,jdbcType=VARCHAR},
-      HEAD_ICON = #{record.headIcon,jdbcType=VARCHAR},
-      ABROAD_COUNTRY = #{record.abroadCountry,jdbcType=VARCHAR},
-      ABROAD_UNIVERSITY = #{record.abroadUniversity,jdbcType=VARCHAR},
-      AT_COUNTRY = #{record.atCountry,jdbcType=VARCHAR},
-      AT_PROVINCE = #{record.atProvince,jdbcType=VARCHAR},
-      AT_CITY = #{record.atCity,jdbcType=VARCHAR},
-      SIGNATURE = #{record.signature,jdbcType=VARCHAR},
-      MOBILE_PHONE = #{record.mobilePhone,jdbcType=VARCHAR},
-      EMAIL = #{record.email,jdbcType=VARCHAR},
-      MARITAL_STATUS = #{record.maritalStatus,jdbcType=VARCHAR},
-      CONSTELLATION = #{record.constellation,jdbcType=VARCHAR},
-      COMPANY = #{record.company,jdbcType=VARCHAR},
-      INDUSTRY = #{record.industry,jdbcType=VARCHAR},
-      TITLE = #{record.title,jdbcType=VARCHAR},
-      REG_DATE = #{record.regDate,jdbcType=TIMESTAMP},
-      USER_STATUS = #{record.userStatus,jdbcType=VARCHAR},
-      IDCARD_PHOTO = #{record.idcardPhoto,jdbcType=VARCHAR},
-      OVERSEAS_PHOTO = #{record.overseasPhoto,jdbcType=VARCHAR},
-      SUBMIT_CERT_DATE = #{record.submitCertDate,jdbcType=TIMESTAMP},
-      CERTIFICATION_DATE = #{record.certificationDate,jdbcType=TIMESTAMP},
-      ACCESS_PERMISSION = #{record.accessPermission,jdbcType=VARCHAR},
-      UPDATE_DATE = #{record.updateDate,jdbcType=TIMESTAMP},
-      IS_MEMBER = #{record.isMember,jdbcType=VARCHAR},
-      EFF_DATE = #{record.effDate,jdbcType=TIMESTAMP},
-      EXP_DATE = #{record.expDate,jdbcType=TIMESTAMP}
-    <if test="_parameter != null">
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
-  </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HyUser">
-    update hy_user
-    <set>
-      <if test="userType != null">
-        USER_TYPE = #{userType,jdbcType=VARCHAR},
-      </if>
-      <if test="hyId != null">
-        HY_ID = #{hyId,jdbcType=VARCHAR},
-      </if>
-      <if test="enName != null">
-        EN_NAME = #{enName,jdbcType=VARCHAR},
-      </if>
-      <if test="chName != null">
-        CH_NAME = #{chName,jdbcType=VARCHAR},
-      </if>
-      <if test="sex != null">
-        SEX = #{sex,jdbcType=VARCHAR},
-      </if>
-      <if test="weixin != null">
-        WEIXIN = #{weixin,jdbcType=VARCHAR},
-      </if>
-      <if test="headIcon != null">
-        HEAD_ICON = #{headIcon,jdbcType=VARCHAR},
-      </if>
-      <if test="abroadCountry != null">
-        ABROAD_COUNTRY = #{abroadCountry,jdbcType=VARCHAR},
-      </if>
-      <if test="abroadUniversity != null">
-        ABROAD_UNIVERSITY = #{abroadUniversity,jdbcType=VARCHAR},
-      </if>
-      <if test="atCountry != null">
-        AT_COUNTRY = #{atCountry,jdbcType=VARCHAR},
-      </if>
-      <if test="atProvince != null">
-        AT_PROVINCE = #{atProvince,jdbcType=VARCHAR},
-      </if>
-      <if test="atCity != null">
-        AT_CITY = #{atCity,jdbcType=VARCHAR},
-      </if>
-      <if test="signature != null">
-        SIGNATURE = #{signature,jdbcType=VARCHAR},
-      </if>
-      <if test="mobilePhone != null">
-        MOBILE_PHONE = #{mobilePhone,jdbcType=VARCHAR},
-      </if>
-      <if test="email != null">
-        EMAIL = #{email,jdbcType=VARCHAR},
-      </if>
-      <if test="maritalStatus != null">
-        MARITAL_STATUS = #{maritalStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="constellation != null">
-        CONSTELLATION = #{constellation,jdbcType=VARCHAR},
-      </if>
-      <if test="company != null">
-        COMPANY = #{company,jdbcType=VARCHAR},
-      </if>
-      <if test="industry != null">
-        INDUSTRY = #{industry,jdbcType=VARCHAR},
-      </if>
-      <if test="title != null">
-        TITLE = #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="regDate != null">
-        REG_DATE = #{regDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="userStatus != null">
-        USER_STATUS = #{userStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="idcardPhoto != null">
-        IDCARD_PHOTO = #{idcardPhoto,jdbcType=VARCHAR},
-      </if>
-      <if test="overseasPhoto != null">
-        OVERSEAS_PHOTO = #{overseasPhoto,jdbcType=VARCHAR},
-      </if>
-      <if test="submitCertDate != null">
-        SUBMIT_CERT_DATE = #{submitCertDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="certificationDate != null">
-        CERTIFICATION_DATE = #{certificationDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="accessPermission != null">
-        ACCESS_PERMISSION = #{accessPermission,jdbcType=VARCHAR},
-      </if>
-      <if test="updateDate != null">
-        UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="isMember != null">
-        IS_MEMBER = #{isMember,jdbcType=VARCHAR},
-      </if>
-      <if test="effDate != null">
-        EFF_DATE = #{effDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="expDate != null">
-        EXP_DATE = #{expDate,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where USER_ID = #{userId,jdbcType=VARCHAR}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyUser">
+  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyUser" >
     update hy_user
     set USER_TYPE = #{userType,jdbcType=VARCHAR},
       HY_ID = #{hyId,jdbcType=VARCHAR},
