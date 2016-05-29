@@ -26,12 +26,12 @@
     </bean>    
     
 	<!-- 配置数据源 -->
-	<bean id="dataSource" class="com.ai.opt.sdk.datasource.OptHikariDataSource">
-		 <constructor-arg name="dataSourceName" value="slp-mall-db"/>
+	<bean id="dataSource" class="com.the.harbor.commons.components.datasource.HarborHikariDataSource">
+		 <constructor-arg name="dataSourceName" value="harbor-db"/>
 	</bean>
 
 	<bean id="seqDataSourceLoader"
-		class="com.ai.opt.sdk.components.sequence.datasource.SeqDataSourceLoader"
+		class="com.the.harbor.commons.components.sequence.datasource.SeqDataSourceLoader"
 		init-method="init">
 		<property name="ds" ref="dataSource" />
 	</bean>
@@ -43,12 +43,13 @@
     </bean>
     
     <!-- 扫描Mapper,需要添加mybatis前缀绑定 -->
-	<mybatis:scan base-package="com.ai.slp.mall.dao.mapper" />    
+	<mybatis:scan base-package="com.the.harbor.dao.mapper" />    
     
     <!-- 配置SqlSessionTemplate -->
     <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
         <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
     </bean>
+    
 
 	<!-- 事务配置 -->
 	<bean id="transactionManager"
@@ -74,6 +75,6 @@
     <!-- 启动注解扫描 -->
     <context:annotation-config/>
     <!-- 设定注解扫描基础包 -->
-    <context:component-scan base-package="com.ai.slp.mall"/>
+    <context:component-scan base-package="com.the.harbor"/>
     
 </beans>
