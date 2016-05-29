@@ -21,11 +21,11 @@
 	</bean>
 
 	<dubbo:application name="harbor-service" />
-	<dubbo:registry protocol="zookeeper" address="${dubbo.registry.address}"
-		file="${dubbo.registry.file}" />
+	<dubbo:registry protocol="zookeeper" address="${harbor.registry.address}"
+		file="${harbor.registry.file}" />
 
 	<dubbo:protocol name="dubbo" port="${harbor.dubbo.port}" />
-	<dubbo:provider timeout="${dubbo.provider.timeout}"
+	<dubbo:provider timeout="${harbor.provider.timeout}"
 		retries="0" threads="300" />
 
 	<dubbo:monitor protocol="registry" />
