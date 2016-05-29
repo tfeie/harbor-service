@@ -48,9 +48,9 @@ publishing {
                     asNode().children().last() + {
                         delegate.dependencies {
                             delegate.dependency {
-                                delegate.groupId("com.ai.opt.validator")
-                                delegate.artifactId("opt-validator")
-                                delegate.version("1.0.1")
+                                delegate.groupId("com.the.harbor.base")
+                                delegate.artifactId("harbor-base")
+                                delegate.version("1.0-SNAPSHO")
                             }
                             delegate.dependency {
                                 delegate.groupId("org.jboss.resteasy")
