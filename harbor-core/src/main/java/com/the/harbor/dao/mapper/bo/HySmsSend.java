@@ -2,7 +2,7 @@ package com.the.harbor.dao.mapper.bo;
 
 import java.sql.Timestamp;
 
-public class HxSmsSend {
+public class HySmsSend {
     private String recordId;
 
     private String templateCode;

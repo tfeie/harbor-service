@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HxSmsSendCriteria {
+public class HySmsSendCriteria {
     protected String orderByClause;
 
     protected boolean distinct;
@@ -15,7 +15,7 @@ public class HxSmsSendCriteria {
 
     protected Integer limitEnd;
 
-    public HxSmsSendCriteria() {
+    public HySmsSendCriteria() {
         oredCriteria = new ArrayList<Criteria>();
     }
 

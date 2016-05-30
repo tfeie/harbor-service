@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.the.harbor.dao.mapper.interfaces.HxSmsSendMapper" >
-  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HxSmsSend" >
+<mapper namespace="com.the.harbor.dao.mapper.interfaces.HySmsSendMapper" >
+  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HySmsSend" >
     <id column="RECORD_ID" property="recordId" jdbcType="VARCHAR" />
     <result column="TEMPLATE_CODE" property="templateCode" jdbcType="VARCHAR" />
     <result column="SMS_CONTENT" property="smsContent" jdbcType="VARCHAR" />
@@ -74,14 +74,14 @@
     RECORD_ID, TEMPLATE_CODE, SMS_CONTENT, PHONE_NUMBERS, CREATE_DATE, REQ_BODY, STATUS, 
     REMARK, RESP_BODY
   </sql>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HxSmsSendCriteria" >
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HySmsSendCriteria" >
     select
     <if test="distinct" >
       distinct
     </if>
     'false' as QUERYID,
     <include refid="Base_Column_List" />
-    from hx_sms_send
+    from hy_sms_send
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
@@ -95,21 +95,21 @@
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     <include refid="Base_Column_List" />
-    from hx_sms_send
+    from hy_sms_send
     where RECORD_ID = #{recordId,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-    delete from hx_sms_send
+    delete from hy_sms_send
     where RECORD_ID = #{recordId,jdbcType=VARCHAR}
   </delete>
-  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HxSmsSendCriteria" >
-    delete from hx_sms_send
+  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HySmsSendCriteria" >
+    delete from hy_sms_send
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HxSmsSend" >
-    insert into hx_sms_send (RECORD_ID, TEMPLATE_CODE, SMS_CONTENT, 
+  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HySmsSend" >
+    insert into hy_sms_send (RECORD_ID, TEMPLATE_CODE, SMS_CONTENT, 
       PHONE_NUMBERS, CREATE_DATE, REQ_BODY, 
       STATUS, REMARK, RESP_BODY
       )
@@ -118,8 +118,8 @@
       #{status,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{respBody,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HxSmsSend" >
-    insert into hx_sms_send
+  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HySmsSend" >
+    insert into hy_sms_send
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="recordId != null" >
         RECORD_ID,
@@ -179,14 +179,14 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HxSmsSendCriteria" resultType="java.lang.Integer" >
-    select count(*) from hx_sms_send
+  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HySmsSendCriteria" resultType="java.lang.Integer" >
+    select count(*) from hy_sms_send
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map" >
-    update hx_sms_send
+    update hy_sms_send
     <set >
       <if test="record.recordId != null" >
         RECORD_ID = #{record.recordId,jdbcType=VARCHAR},
@@ -221,7 +221,7 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map" >
-    update hx_sms_send
+    update hy_sms_send
     set RECORD_ID = #{record.recordId,jdbcType=VARCHAR},
       TEMPLATE_CODE = #{record.templateCode,jdbcType=VARCHAR},
       SMS_CONTENT = #{record.smsContent,jdbcType=VARCHAR},
@@ -235,8 +235,8 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HxSmsSend" >
-    update hx_sms_send
+  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HySmsSend" >
+    update hy_sms_send
     <set >
       <if test="templateCode != null" >
         TEMPLATE_CODE = #{templateCode,jdbcType=VARCHAR},
@@ -265,8 +265,8 @@
     </set>
     where RECORD_ID = #{recordId,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HxSmsSend" >
-    update hx_sms_send
+  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HySmsSend" >
+    update hy_sms_send
     set TEMPLATE_CODE = #{templateCode,jdbcType=VARCHAR},
       SMS_CONTENT = #{smsContent,jdbcType=VARCHAR},
       PHONE_NUMBERS = #{phoneNumbers,jdbcType=VARCHAR},
