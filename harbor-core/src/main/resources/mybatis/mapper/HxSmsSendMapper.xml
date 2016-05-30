@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.the.harbor.dao.mapper.interfaces.HxSmsSendMapper" >
+  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HxSmsSend" >
+    <id column="RECORD_ID" property="recordId" jdbcType="VARCHAR" />
+    <result column="TEMPLATE_CODE" property="templateCode" jdbcType="VARCHAR" />
+    <result column="SMS_CONTENT" property="smsContent" jdbcType="VARCHAR" />
+    <result column="PHONE_NUMBERS" property="phoneNumbers" jdbcType="VARCHAR" />
+    <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="REQ_BODY" property="reqBody" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="RESP_BODY" property="respBody" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    RECORD_ID, TEMPLATE_CODE, SMS_CONTENT, PHONE_NUMBERS, CREATE_DATE, REQ_BODY, STATUS, 
+    REMARK, RESP_BODY
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HxSmsSendCriteria" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'false' as QUERYID,
+    <include refid="Base_Column_List" />
+    from hx_sms_send
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from hx_sms_send
+    where RECORD_ID = #{recordId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from hx_sms_send
+    where RECORD_ID = #{recordId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HxSmsSendCriteria" >
+    delete from hx_sms_send
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HxSmsSend" >
+    insert into hx_sms_send (RECORD_ID, TEMPLATE_CODE, SMS_CONTENT, 
+      PHONE_NUMBERS, CREATE_DATE, REQ_BODY, 
+      STATUS, REMARK, RESP_BODY
+      )
+    values (#{recordId,jdbcType=VARCHAR}, #{templateCode,jdbcType=VARCHAR}, #{smsContent,jdbcType=VARCHAR}, 
+      #{phoneNumbers,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{reqBody,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{respBody,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HxSmsSend" >
+    insert into hx_sms_send
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="recordId != null" >
+        RECORD_ID,
+      </if>
+      <if test="templateCode != null" >
+        TEMPLATE_CODE,
+      </if>
+      <if test="smsContent != null" >
+        SMS_CONTENT,
+      </if>
+      <if test="phoneNumbers != null" >
+        PHONE_NUMBERS,
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE,
+      </if>
+      <if test="reqBody != null" >
+        REQ_BODY,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="respBody != null" >
+        RESP_BODY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="recordId != null" >
+        #{recordId,jdbcType=VARCHAR},
+      </if>
+      <if test="templateCode != null" >
+        #{templateCode,jdbcType=VARCHAR},
+      </if>
+      <if test="smsContent != null" >
+        #{smsContent,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNumbers != null" >
+        #{phoneNumbers,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reqBody != null" >
+        #{reqBody,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="respBody != null" >
+        #{respBody,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HxSmsSendCriteria" resultType="java.lang.Integer" >
+    select count(*) from hx_sms_send
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hx_sms_send
+    <set >
+      <if test="record.recordId != null" >
+        RECORD_ID = #{record.recordId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.templateCode != null" >
+        TEMPLATE_CODE = #{record.templateCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.smsContent != null" >
+        SMS_CONTENT = #{record.smsContent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.phoneNumbers != null" >
+        PHONE_NUMBERS = #{record.phoneNumbers,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDate != null" >
+        CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.reqBody != null" >
+        REQ_BODY = #{record.reqBody,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        STATUS = #{record.status,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null" >
+        REMARK = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.respBody != null" >
+        RESP_BODY = #{record.respBody,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hx_sms_send
+    set RECORD_ID = #{record.recordId,jdbcType=VARCHAR},
+      TEMPLATE_CODE = #{record.templateCode,jdbcType=VARCHAR},
+      SMS_CONTENT = #{record.smsContent,jdbcType=VARCHAR},
+      PHONE_NUMBERS = #{record.phoneNumbers,jdbcType=VARCHAR},
+      CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
+      REQ_BODY = #{record.reqBody,jdbcType=VARCHAR},
+      STATUS = #{record.status,jdbcType=VARCHAR},
+      REMARK = #{record.remark,jdbcType=VARCHAR},
+      RESP_BODY = #{record.respBody,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HxSmsSend" >
+    update hx_sms_send
+    <set >
+      <if test="templateCode != null" >
+        TEMPLATE_CODE = #{templateCode,jdbcType=VARCHAR},
+      </if>
+      <if test="smsContent != null" >
+        SMS_CONTENT = #{smsContent,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNumbers != null" >
+        PHONE_NUMBERS = #{phoneNumbers,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reqBody != null" >
+        REQ_BODY = #{reqBody,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="respBody != null" >
+        RESP_BODY = #{respBody,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where RECORD_ID = #{recordId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HxSmsSend" >
+    update hx_sms_send
+    set TEMPLATE_CODE = #{templateCode,jdbcType=VARCHAR},
+      SMS_CONTENT = #{smsContent,jdbcType=VARCHAR},
+      PHONE_NUMBERS = #{phoneNumbers,jdbcType=VARCHAR},
+      CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      REQ_BODY = #{reqBody,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      RESP_BODY = #{respBody,jdbcType=VARCHAR}
+    where RECORD_ID = #{recordId,jdbcType=VARCHAR}
+  </update>
+</mapper>
