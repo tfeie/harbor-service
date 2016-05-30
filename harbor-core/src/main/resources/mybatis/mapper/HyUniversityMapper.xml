@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.the.harbor.dao.mapper.interfaces.HyUniversityMapper" >
+  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyUniversity" >
+    <id column="UNIVERSITY_ID" property="universityId" jdbcType="VARCHAR" />
+    <result column="COUNTRY_CODE" property="countryCode" jdbcType="VARCHAR" />
+    <result column="UNIVERSITY_NAME" property="universityName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    UNIVERSITY_ID, COUNTRY_CODE, UNIVERSITY_NAME
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyUniversityCriteria" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'false' as QUERYID,
+    <include refid="Base_Column_List" />
+    from hy_university
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from hy_university
+    where UNIVERSITY_ID = #{universityId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from hy_university
+    where UNIVERSITY_ID = #{universityId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUniversityCriteria" >
+    delete from hy_university
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyUniversity" >
+    insert into hy_university (UNIVERSITY_ID, COUNTRY_CODE, UNIVERSITY_NAME
+      )
+    values (#{universityId,jdbcType=VARCHAR}, #{countryCode,jdbcType=VARCHAR}, #{universityName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyUniversity" >
+    insert into hy_university
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="universityId != null" >
+        UNIVERSITY_ID,
+      </if>
+      <if test="countryCode != null" >
+        COUNTRY_CODE,
+      </if>
+      <if test="universityName != null" >
+        UNIVERSITY_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="universityId != null" >
+        #{universityId,jdbcType=VARCHAR},
+      </if>
+      <if test="countryCode != null" >
+        #{countryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="universityName != null" >
+        #{universityName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUniversityCriteria" resultType="java.lang.Integer" >
+    select count(*) from hy_university
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hy_university
+    <set >
+      <if test="record.universityId != null" >
+        UNIVERSITY_ID = #{record.universityId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.countryCode != null" >
+        COUNTRY_CODE = #{record.countryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.universityName != null" >
+        UNIVERSITY_NAME = #{record.universityName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hy_university
+    set UNIVERSITY_ID = #{record.universityId,jdbcType=VARCHAR},
+      COUNTRY_CODE = #{record.countryCode,jdbcType=VARCHAR},
+      UNIVERSITY_NAME = #{record.universityName,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HyUniversity" >
+    update hy_university
+    <set >
+      <if test="countryCode != null" >
+        COUNTRY_CODE = #{countryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="universityName != null" >
+        UNIVERSITY_NAME = #{universityName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where UNIVERSITY_ID = #{universityId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyUniversity" >
+    update hy_university
+    set COUNTRY_CODE = #{countryCode,jdbcType=VARCHAR},
+      UNIVERSITY_NAME = #{universityName,jdbcType=VARCHAR}
+    where UNIVERSITY_ID = #{universityId,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.the.harbor.dao.mapper.interfaces.HyCountryMapper" >
+  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyCountry" >
+    <id column="COUNTRY_CODE" property="countryCode" jdbcType="VARCHAR" />
+    <result column="COUNTRY_NAME" property="countryName" jdbcType="VARCHAR" />
+    <result column="COUNTRY_RGB" property="countryRgb" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    COUNTRY_CODE, COUNTRY_NAME, COUNTRY_RGB
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyCountryCriteria" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'false' as QUERYID,
+    <include refid="Base_Column_List" />
+    from hy_country
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from hy_country
+    where COUNTRY_CODE = #{countryCode,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from hy_country
+    where COUNTRY_CODE = #{countryCode,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HyCountryCriteria" >
+    delete from hy_country
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyCountry" >
+    insert into hy_country (COUNTRY_CODE, COUNTRY_NAME, COUNTRY_RGB
+      )
+    values (#{countryCode,jdbcType=VARCHAR}, #{countryName,jdbcType=VARCHAR}, #{countryRgb,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyCountry" >
+    insert into hy_country
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="countryCode != null" >
+        COUNTRY_CODE,
+      </if>
+      <if test="countryName != null" >
+        COUNTRY_NAME,
+      </if>
+      <if test="countryRgb != null" >
+        COUNTRY_RGB,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="countryCode != null" >
+        #{countryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="countryName != null" >
+        #{countryName,jdbcType=VARCHAR},
+      </if>
+      <if test="countryRgb != null" >
+        #{countryRgb,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyCountryCriteria" resultType="java.lang.Integer" >
+    select count(*) from hy_country
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hy_country
+    <set >
+      <if test="record.countryCode != null" >
+        COUNTRY_CODE = #{record.countryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.countryName != null" >
+        COUNTRY_NAME = #{record.countryName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.countryRgb != null" >
+        COUNTRY_RGB = #{record.countryRgb,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hy_country
+    set COUNTRY_CODE = #{record.countryCode,jdbcType=VARCHAR},
+      COUNTRY_NAME = #{record.countryName,jdbcType=VARCHAR},
+      COUNTRY_RGB = #{record.countryRgb,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HyCountry" >
+    update hy_country
+    <set >
+      <if test="countryName != null" >
+        COUNTRY_NAME = #{countryName,jdbcType=VARCHAR},
+      </if>
+      <if test="countryRgb != null" >
+        COUNTRY_RGB = #{countryRgb,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where COUNTRY_CODE = #{countryCode,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyCountry" >
+    update hy_country
+    set COUNTRY_NAME = #{countryName,jdbcType=VARCHAR},
+      COUNTRY_RGB = #{countryRgb,jdbcType=VARCHAR}
+    where COUNTRY_CODE = #{countryCode,jdbcType=VARCHAR}
+  </update>
+</mapper>
