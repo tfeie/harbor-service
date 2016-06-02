@@ -16,7 +16,6 @@ import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
 import com.the.harbor.commons.components.aliyuncs.sms.param.SMSSendResponse;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.util.BeanUtils;
-import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HySmsSend;
 import com.the.harbor.service.interfaces.ISmsSendRecordSV;
 
@@ -35,7 +34,7 @@ public class ReceiveSMSSendTest {
 			try {
 				CloudQueue queue = client.getQueueRef(GlobalSettings.getSMSRecordQueueName());
 				Message popMsg = queue.popMessage();
-				String message = popMsg.getMessageBody(); 
+				String message = popMsg.getMessageBody();
 				SMSSendResponse resp = JSONObject.parseObject(message, SMSSendResponse.class);
 				record = new HySmsSend();
 				BeanUtils.copyProperties(record, resp);
@@ -59,7 +58,8 @@ public class ReceiveSMSSendTest {
 
 			// client.close();
 			// 写表
-			builder.saveSmsSendRecord(record);
+			if (record != null)
+				builder.saveSmsSendRecord(record);
 		}
 
 	}
