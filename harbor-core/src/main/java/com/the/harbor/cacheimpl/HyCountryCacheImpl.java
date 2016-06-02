@@ -31,7 +31,7 @@ public class HyCountryCacheImpl extends AbstractCache {
 			return;
 		}
 		ICacheClient client = CacheFactory.getClient();
-		client.hdel(RedisDataKey.KEY_SINGLE_COUNTRY.getKey());
+		client.del(RedisDataKey.KEY_SINGLE_COUNTRY.getKey());
 		client.del(RedisDataKey.KEY_ALL_COUNTRIES.getKey());
 		List<HyCountryVo> l = new ArrayList<HyCountryVo>();
 		for (HyCountry o : countries) {
