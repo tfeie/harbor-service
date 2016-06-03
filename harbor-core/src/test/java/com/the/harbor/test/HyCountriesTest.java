@@ -21,7 +21,7 @@ public class HyCountriesTest {
 
 	@Test
 	public void build() throws Exception {
-		cache1.write();
+		cache.write();
 	}
 
 }

@@ -33,6 +33,7 @@ public class BasicDataSVImpl implements IBasicDataSV {
 	@Override
 	public List<HyCountry> getAllHyCountries() {
 		HyCountryCriteria sql = new HyCountryCriteria();
+		sql.setOrderByClause(" sort_id asc");
 		return hyCountryMapper.selectByExample(sql);
 	}
 

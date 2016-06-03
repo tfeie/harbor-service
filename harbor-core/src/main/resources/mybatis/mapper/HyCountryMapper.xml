@@ -5,6 +5,7 @@
     <id column="COUNTRY_CODE" property="countryCode" jdbcType="VARCHAR" />
     <result column="COUNTRY_NAME" property="countryName" jdbcType="VARCHAR" />
     <result column="COUNTRY_RGB" property="countryRgb" jdbcType="VARCHAR" />
+    <result column="SORT_ID" property="sortId" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -65,7 +66,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    COUNTRY_CODE, COUNTRY_NAME, COUNTRY_RGB
+    COUNTRY_CODE, COUNTRY_NAME, COUNTRY_RGB, SORT_ID
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyCountryCriteria" >
     select
@@ -102,10 +103,10 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyCountry" >
-    insert into hy_country (COUNTRY_CODE, COUNTRY_NAME, COUNTRY_RGB
-      )
-    values (#{countryCode,jdbcType=VARCHAR}, #{countryName,jdbcType=VARCHAR}, #{countryRgb,jdbcType=VARCHAR}
-      )
+    insert into hy_country (COUNTRY_CODE, COUNTRY_NAME, COUNTRY_RGB, 
+      SORT_ID)
+    values (#{countryCode,jdbcType=VARCHAR}, #{countryName,jdbcType=VARCHAR}, #{countryRgb,jdbcType=VARCHAR}, 
+      #{sortId,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyCountry" >
     insert into hy_country
@@ -119,6 +120,7 @@
       <if test="countryRgb != null" >
         COUNTRY_RGB,
       </if>
+      SORT_ID,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="countryCode != null" >
@@ -130,6 +132,7 @@
       <if test="countryRgb != null" >
         #{countryRgb,jdbcType=VARCHAR},
       </if>
+      #{sortId,jdbcType=INTEGER},
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyCountryCriteria" resultType="java.lang.Integer" >
@@ -150,6 +153,9 @@
       <if test="record.countryRgb != null" >
         COUNTRY_RGB = #{record.countryRgb,jdbcType=VARCHAR},
       </if>
+      <if test="record.sortId != null" >
+        SORT_ID = #{record.sortId,jdbcType=INTEGER},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -159,7 +165,8 @@
     update hy_country
     set COUNTRY_CODE = #{record.countryCode,jdbcType=VARCHAR},
       COUNTRY_NAME = #{record.countryName,jdbcType=VARCHAR},
-      COUNTRY_RGB = #{record.countryRgb,jdbcType=VARCHAR}
+      COUNTRY_RGB = #{record.countryRgb,jdbcType=VARCHAR},
+      SORT_ID = #{record.sortId,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -173,13 +180,17 @@
       <if test="countryRgb != null" >
         COUNTRY_RGB = #{countryRgb,jdbcType=VARCHAR},
       </if>
+      <if test="sortId != null" >
+        SORT_ID = #{sortId,jdbcType=INTEGER},
+      </if>
     </set>
     where COUNTRY_CODE = #{countryCode,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyCountry" >
     update hy_country
     set COUNTRY_NAME = #{countryName,jdbcType=VARCHAR},
-      COUNTRY_RGB = #{countryRgb,jdbcType=VARCHAR}
+      COUNTRY_RGB = #{countryRgb,jdbcType=VARCHAR},
+      SORT_ID = #{sortId,jdbcType=INTEGER}
     where COUNTRY_CODE = #{countryCode,jdbcType=VARCHAR}
   </update>
 </mapper>

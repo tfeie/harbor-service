@@ -7,6 +7,8 @@ public class HyCountry {
 
     private String countryRgb;
 
+    private int sortId;
+
     public String getCountryCode() {
         return countryCode;
     }
@@ -29,5 +31,13 @@ public class HyCountry {
 
     public void setCountryRgb(String countryRgb) {
         this.countryRgb = countryRgb == null ? null : countryRgb.trim();
+    }
+
+    public int getSortId() {
+        return sortId;
+    }
+
+    public void setSortId(int sortId) {
+        this.sortId = sortId;
     }
 }
