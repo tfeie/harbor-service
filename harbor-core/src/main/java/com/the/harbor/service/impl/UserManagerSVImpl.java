@@ -28,48 +28,48 @@ import com.the.harbor.util.HarborSeqUtil;
 @Transactional
 public class UserManagerSVImpl implements IUserManagerSV {
 
-    @Autowired
-    private transient HyUserMapper hyUserMapper;
+	@Autowired
+	private transient HyUserMapper hyUserMapper;
 
-    @Override
-    public String userRegister(UserRegReq userRegReq) {
-        /* 根据微信号判断用户是否已经注册 */
-        HyUser hyUser = this.getUserByWeixin(userRegReq.getWeixin());
-        if (hyUser != null) {
-            throw new BusinessException(HarborErrorCodeConstants.WEIXIN_BOUND, "您的微信账号已经注册");
-        }
-        HyUser user = new HyUser();
-        user.setUserId(HarborSeqUtil.createHyUserId());
-        user.setUserType(UserType.ORDINARY_USER.getValue());
-        user.setHyId(user.getHyId());
-        user.setEnName(userRegReq.getEnName());
-        user.setSex(userRegReq.getSex());
-        user.setHeadIcon(userRegReq.getHeadIcon());
-        user.setAbroadCountry(userRegReq.getAbroadCountry());
-        user.setAbroadUniversity(userRegReq.getAbroadUniversity());
-        user.setAtCity(userRegReq.getAtCity());
-        user.setMobilePhone(userRegReq.getMobilePhone());
-        user.setEmail(userRegReq.getEmail());
-        user.setRegDate(DateUtil.getSysDate());
-        user.setUserStatus(UserStatus.UNAUTHORIZED.getValue());
-        user.setAccessPermission(AccessPermission.ALL_ALLOWED.getValue());
-        user.setIsMember(IsMember.NO.getValue());
-        int success = hyUserMapper.insertSelective(user);
-        if (success == 0) {
-            throw new SystemException("注册失败,请稍候重试");
-        }
-        return user.getUserId();
-    }
+	@Override
+	public String userRegister(UserRegReq userRegReq) {
+		/* 根据微信号判断用户是否已经注册 */
+		HyUser hyUser = this.getUserByWeixin(userRegReq.getWeixin());
+		if (hyUser != null) {
+			throw new BusinessException(HarborErrorCodeConstants.WEIXIN_BOUND, "您的微信账号已经注册");
+		}
+		HyUser user = new HyUser();
+		user.setUserId(HarborSeqUtil.createHyUserId());
+		user.setUserType(UserType.ORDINARY_USER.getValue());
+		user.setHyId(user.getHyId());
+		user.setEnName(userRegReq.getEnName());
+		user.setSex(userRegReq.getSex());
+		user.setHeadIcon(userRegReq.getHeadIcon());
+		user.setAbroadCountry(userRegReq.getAbroadCountry());
+		user.setIndustry(userRegReq.getIndustry());
+		user.setAtCity(userRegReq.getAtCity());
+		user.setMobilePhone(userRegReq.getMobilePhone());
+		user.setEmail(userRegReq.getEmail());
+		user.setRegDate(DateUtil.getSysDate());
+		user.setUserStatus(UserStatus.UNAUTHORIZED.getValue());
+		user.setAccessPermission(AccessPermission.ALL_ALLOWED.getValue());
+		user.setIsMember(IsMember.NO.getValue());
+		int success = hyUserMapper.insertSelective(user);
+		if (success == 0) {
+			throw new SystemException("注册失败,请稍候重试");
+		}
+		return user.getUserId();
+	}
 
-    @Override
-    public HyUser getUserByWeixin(String weixin) {
-        if (StringUtil.isBlank(weixin)) {
-            throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "微信号不能为空");
-        }
-        HyUserCriteria sql = new HyUserCriteria();
-        sql.or().andWeixinEqualTo(weixin);
-        List<HyUser> users = hyUserMapper.selectByExample(sql);
-        return CollectionUtil.isEmpty(users) ? null : users.get(0);
-    }
+	@Override
+	public HyUser getUserByWeixin(String weixin) {
+		if (StringUtil.isBlank(weixin)) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "微信号不能为空");
+		}
+		HyUserCriteria sql = new HyUserCriteria();
+		sql.or().andWeixinEqualTo(weixin);
+		List<HyUser> users = hyUserMapper.selectByExample(sql);
+		return CollectionUtil.isEmpty(users) ? null : users.get(0);
+	}
 
 }
