@@ -11,7 +11,7 @@ import com.the.harbor.base.util.ResponseBuilder;
 import com.the.harbor.base.vo.Response;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 
-@Service(validation = "true")
+@Service(validation="true")
 public class UserSVImpl implements IUserSV {
 
     @Autowired

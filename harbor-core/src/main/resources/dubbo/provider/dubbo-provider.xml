@@ -26,11 +26,11 @@
 
 	<dubbo:protocol name="dubbo" port="${harbor.dubbo.port}" />
 	<dubbo:provider timeout="${harbor.provider.timeout}"
-		retries="0" threads="300" />
+		retries="0" threads="300"/>
 
 	<dubbo:monitor protocol="registry" />
 
-	<dubbo:annotation package="com.the.harbor.api" />
+	<dubbo:annotation package="com.the.harbor" />
 
 	<import resource="../../context/core-context.xml" />
 </beans>

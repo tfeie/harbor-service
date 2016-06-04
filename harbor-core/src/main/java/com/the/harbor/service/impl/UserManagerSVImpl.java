@@ -39,11 +39,13 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			throw new BusinessException(HarborErrorCodeConstants.WEIXIN_BOUND, "您的微信账号已经注册");
 		}
 		HyUser user = new HyUser();
+		String hyId = HarborSeqUtil.createHyUserHyId(userRegReq.getAbroadCountry());
 		user.setUserId(HarborSeqUtil.createHyUserId());
 		user.setUserType(UserType.ORDINARY_USER.getValue());
-		user.setHyId(user.getHyId());
+		user.setHyId(hyId);
 		user.setEnName(userRegReq.getEnName());
 		user.setSex(userRegReq.getSex());
+		user.setWeixin(userRegReq.getWeixin());
 		user.setHeadIcon(userRegReq.getHeadIcon());
 		user.setAbroadCountry(userRegReq.getAbroadCountry());
 		user.setIndustry(userRegReq.getIndustry());

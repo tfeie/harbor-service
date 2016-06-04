@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
            http://www.springframework.org/schema/context
 		   http://www.springframework.org/schema/context/spring-context-3.0.xsd
@@ -16,18 +14,22 @@
 		   http://mybatis.org/schema/mybatis-spring 
 		   http://mybatis.org/schema/mybatis-spring.xsd">
 	<!-- 加载配置文件 -->
-    <bean id="propertyConfigurer"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations">
-            <list>
-                <value>classpath*:**/*.properties</value>
-            </list>
-        </property>
-    </bean>    
-    
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath*:**/*.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 启动注解扫描 -->
+	<context:annotation-config />
+
 	<!-- 配置数据源 -->
-	<bean id="dataSource" class="com.the.harbor.commons.components.datasource.HarborHikariDataSource">
-		 <constructor-arg name="dataSourceName" value="harbor-db"/>
+	<bean id="dataSource"
+		class="com.the.harbor.commons.components.datasource.HarborHikariDataSource">
+		<constructor-arg name="dataSourceName" value="harbor-db" />
 	</bean>
 
 	<bean id="seqDataSourceLoader"
@@ -35,46 +37,45 @@
 		init-method="init">
 		<property name="ds" ref="dataSource" />
 	</bean>
-    
+
 	<!-- 配置myBatis的sqlSessionFactory -->
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
-        <property name="mapperLocations" value="classpath*:mybatis/mapper/*.xml"/>
-    </bean>
-    
-    <!-- 扫描Mapper,需要添加mybatis前缀绑定 -->
-	<mybatis:scan base-package="com.the.harbor.dao.mapper" />    
-    
-    <!-- 配置SqlSessionTemplate -->
-    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
-        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
-    </bean>
-    
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath*:mybatis/mapper/*.xml" />
+	</bean>
+
+	<!-- 扫描Mapper,需要添加mybatis前缀绑定 -->
+	<mybatis:scan base-package="com.the.harbor.dao.mapper" />
+
+	<!-- 配置SqlSessionTemplate -->
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+
 
 	<!-- 事务配置 -->
 	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
-	
-    <!--AOP 事务配置 -->
-    <tx:advice id="txAdvice" transaction-manager="transactionManager">
-        <tx:attributes>
-            <tx:method name="save*" propagation="REQUIRED"/>
-            <tx:method name="add*" propagation="REQUIRED"/>
-            <tx:method name="insert*" propagation="REQUIRED"/>
-            <tx:method name="update*" propagation="REQUIRED"/>
-            <tx:method name="del*" propagation="REQUIRED"/>
-            <tx:method name="*"/>
-        </tx:attributes>
-    </tx:advice>
-	
-     <!-- 使用annotation注解方式配置事务 -->
-    <tx:annotation-driven transaction-manager="transactionManager"/>
-    
-    <!-- 启动注解扫描 -->
-    <context:annotation-config/>
-    <!-- 设定注解扫描基础包 -->
-    <context:component-scan base-package="com.the.harbor"/>
-    
+
+	<!--AOP 事务配置 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="save*" propagation="REQUIRED" />
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="insert*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="del*" propagation="REQUIRED" />
+			<tx:method name="*" />
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- 使用annotation注解方式配置事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+
+	<!-- 设定注解扫描基础包 -->
+	<context:component-scan base-package="com.the.harbor" />
+
 </beans>

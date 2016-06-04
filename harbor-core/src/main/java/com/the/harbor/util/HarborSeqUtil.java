@@ -1,6 +1,9 @@
 package com.the.harbor.util;
 
+import com.the.harbor.base.constants.ExceptCodeConstants;
+import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.commons.components.sequence.util.SeqUtil;
+import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.commons.util.UUIDUtil;
 import com.the.harbor.constants.HarborConstants;
 import com.the.harbor.constants.HarborSeqConstants;
@@ -19,6 +22,19 @@ public final class HarborSeqUtil {
 	public static String createHyUserId() {
 		StringBuffer sb = new StringBuffer(HarborConstants.USER_ID_PREFIX);
 		sb.append(SeqUtil.getNewId(HarborSeqConstants.HY_USER$USER_ID$SEQ, 8));
+		return sb.toString();
+	}
+
+	/**
+	 * 创建海湾身份证号码 国家+8位编号
+	 * @return
+	 */
+	public static String createHyUserHyId(String countryCode){
+		if(StringUtil.isBlank(countryCode)){
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL,"生成海湾证件号错误:留学国家不能为空");
+		}
+		StringBuffer sb = new StringBuffer(countryCode);
+		sb.append(SeqUtil.getNewId(HarborSeqConstants.HY_USER$HY_ID$SEQ, 8));
 		return sb.toString();
 	}
 
