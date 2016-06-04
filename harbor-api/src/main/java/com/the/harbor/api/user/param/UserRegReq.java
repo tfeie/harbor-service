@@ -30,7 +30,7 @@ public class UserRegReq implements Serializable {
 	/**
 	 * 微信号
 	 */
-	@NotBlank(message = "微信OPEN_ID为空，请认证", groups = { IUserSV.UserRegister.class })
+	@NotBlank(message = "未经过微信认证", groups = { IUserSV.UserRegister.class })
 	private String wxOpenid;
 
 	/**
