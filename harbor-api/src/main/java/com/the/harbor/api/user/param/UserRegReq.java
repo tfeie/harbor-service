@@ -30,8 +30,18 @@ public class UserRegReq implements Serializable {
 	/**
 	 * 微信号
 	 */
-	@NotBlank(message = "微信号为空，请重新认证", groups = { IUserSV.UserRegister.class })
-	private String weixin;
+	@NotBlank(message = "微信OPEN_ID为空，请认证", groups = { IUserSV.UserRegister.class })
+	private String wxOpenid;
+
+	/**
+	 * 微信头像
+	 */
+	private String wxHeadimg;
+
+	/**
+	 * 微信昵称
+	 */
+	private String wxNickname;
 
 	/**
 	 * 头像
@@ -83,12 +93,28 @@ public class UserRegReq implements Serializable {
 		this.sex = sex;
 	}
 
-	public String getWeixin() {
-		return weixin;
+	public String getWxOpenid() {
+		return wxOpenid;
 	}
 
-	public void setWeixin(String weixin) {
-		this.weixin = weixin;
+	public void setWxOpenid(String wxOpenid) {
+		this.wxOpenid = wxOpenid;
+	}
+
+	public String getWxHeadimg() {
+		return wxHeadimg;
+	}
+
+	public void setWxHeadimg(String wxHeadimg) {
+		this.wxHeadimg = wxHeadimg;
+	}
+
+	public String getWxNickname() {
+		return wxNickname;
+	}
+
+	public void setWxNickname(String wxNickname) {
+		this.wxNickname = wxNickname;
 	}
 
 	public String getHeadIcon() {
