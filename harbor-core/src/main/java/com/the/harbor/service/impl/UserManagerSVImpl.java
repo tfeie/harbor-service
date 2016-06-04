@@ -34,7 +34,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	@Override
 	public String userRegister(UserRegReq userRegReq) {
 		/* 根据微信号判断用户是否已经注册 */
-		HyUser hyUser = this.getUserByWeixin(userRegReq.getWeixin());
+		HyUser hyUser = this.getUserByWeixin(userRegReq.getWxOpenid());
 		if (hyUser != null) {
 			throw new BusinessException(HarborErrorCodeConstants.WEIXIN_BOUND, "您的微信账号已经注册");
 		}
@@ -45,8 +45,9 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		user.setHyId(hyId);
 		user.setEnName(userRegReq.getEnName());
 		user.setSex(userRegReq.getSex());
-		user.setWeixin(userRegReq.getWeixin());
-		user.setHeadIcon(userRegReq.getHeadIcon());
+		user.setWxHeadimg(userRegReq.getWxHeadimg());
+		user.setWxNickname(userRegReq.getWxNickname());
+		user.setWxOpenid(userRegReq.getWxOpenid());
 		user.setAbroadCountry(userRegReq.getAbroadCountry());
 		user.setIndustry(userRegReq.getIndustry());
 		user.setAtCity(userRegReq.getAtCity());
@@ -64,12 +65,12 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	}
 
 	@Override
-	public HyUser getUserByWeixin(String weixin) {
-		if (StringUtil.isBlank(weixin)) {
-			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "微信号不能为空");
+	public HyUser getUserByWeixin(String wxOpenId) {
+		if (StringUtil.isBlank(wxOpenId)) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "微信OPEN_ID不能为空");
 		}
 		HyUserCriteria sql = new HyUserCriteria();
-		sql.or().andWeixinEqualTo(weixin);
+		sql.or().andWxOpenidEqualTo(wxOpenId);
 		List<HyUser> users = hyUserMapper.selectByExample(sql);
 		return CollectionUtil.isEmpty(users) ? null : users.get(0);
 	}

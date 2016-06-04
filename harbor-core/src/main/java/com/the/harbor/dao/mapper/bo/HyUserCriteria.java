@@ -545,143 +545,143 @@ public class HyUserCriteria {
             return (Criteria) this;
         }
 
-        public Criteria andWeixinIsNull() {
-            addCriterion("WEIXIN is null");
+        public Criteria andWxOpenidIsNull() {
+            addCriterion("WX_OPENID is null");
             return (Criteria) this;
         }
 
-        public Criteria andWeixinIsNotNull() {
-            addCriterion("WEIXIN is not null");
+        public Criteria andWxOpenidIsNotNull() {
+            addCriterion("WX_OPENID is not null");
             return (Criteria) this;
         }
 
-        public Criteria andWeixinEqualTo(String value) {
-            addCriterion("WEIXIN =", value, "weixin");
+        public Criteria andWxOpenidEqualTo(String value) {
+            addCriterion("WX_OPENID =", value, "wxOpenid");
             return (Criteria) this;
         }
 
-        public Criteria andWeixinNotEqualTo(String value) {
-            addCriterion("WEIXIN <>", value, "weixin");
+        public Criteria andWxOpenidNotEqualTo(String value) {
+            addCriterion("WX_OPENID <>", value, "wxOpenid");
             return (Criteria) this;
         }
 
-        public Criteria andWeixinGreaterThan(String value) {
-            addCriterion("WEIXIN >", value, "weixin");
+        public Criteria andWxOpenidGreaterThan(String value) {
+            addCriterion("WX_OPENID >", value, "wxOpenid");
             return (Criteria) this;
         }
 
-        public Criteria andWeixinGreaterThanOrEqualTo(String value) {
-            addCriterion("WEIXIN >=", value, "weixin");
+        public Criteria andWxOpenidGreaterThanOrEqualTo(String value) {
+            addCriterion("WX_OPENID >=", value, "wxOpenid");
             return (Criteria) this;
         }
 
-        public Criteria andWeixinLessThan(String value) {
-            addCriterion("WEIXIN <", value, "weixin");
+        public Criteria andWxOpenidLessThan(String value) {
+            addCriterion("WX_OPENID <", value, "wxOpenid");
             return (Criteria) this;
         }
 
-        public Criteria andWeixinLessThanOrEqualTo(String value) {
-            addCriterion("WEIXIN <=", value, "weixin");
+        public Criteria andWxOpenidLessThanOrEqualTo(String value) {
+            addCriterion("WX_OPENID <=", value, "wxOpenid");
             return (Criteria) this;
         }
 
-        public Criteria andWeixinLike(String value) {
-            addCriterion("WEIXIN like", value, "weixin");
+        public Criteria andWxOpenidLike(String value) {
+            addCriterion("WX_OPENID like", value, "wxOpenid");
             return (Criteria) this;
         }
 
-        public Criteria andWeixinNotLike(String value) {
-            addCriterion("WEIXIN not like", value, "weixin");
+        public Criteria andWxOpenidNotLike(String value) {
+            addCriterion("WX_OPENID not like", value, "wxOpenid");
             return (Criteria) this;
         }
 
-        public Criteria andWeixinIn(List<String> values) {
-            addCriterion("WEIXIN in", values, "weixin");
+        public Criteria andWxOpenidIn(List<String> values) {
+            addCriterion("WX_OPENID in", values, "wxOpenid");
             return (Criteria) this;
         }
 
-        public Criteria andWeixinNotIn(List<String> values) {
-            addCriterion("WEIXIN not in", values, "weixin");
+        public Criteria andWxOpenidNotIn(List<String> values) {
+            addCriterion("WX_OPENID not in", values, "wxOpenid");
             return (Criteria) this;
         }
 
-        public Criteria andWeixinBetween(String value1, String value2) {
-            addCriterion("WEIXIN between", value1, value2, "weixin");
+        public Criteria andWxOpenidBetween(String value1, String value2) {
+            addCriterion("WX_OPENID between", value1, value2, "wxOpenid");
             return (Criteria) this;
         }
 
-        public Criteria andWeixinNotBetween(String value1, String value2) {
-            addCriterion("WEIXIN not between", value1, value2, "weixin");
+        public Criteria andWxOpenidNotBetween(String value1, String value2) {
+            addCriterion("WX_OPENID not between", value1, value2, "wxOpenid");
             return (Criteria) this;
         }
 
-        public Criteria andHeadIconIsNull() {
-            addCriterion("HEAD_ICON is null");
+        public Criteria andWxHeadimgIsNull() {
+            addCriterion("WX_HEADIMG is null");
             return (Criteria) this;
         }
 
-        public Criteria andHeadIconIsNotNull() {
-            addCriterion("HEAD_ICON is not null");
+        public Criteria andWxHeadimgIsNotNull() {
+            addCriterion("WX_HEADIMG is not null");
             return (Criteria) this;
         }
 
-        public Criteria andHeadIconEqualTo(String value) {
-            addCriterion("HEAD_ICON =", value, "headIcon");
+        public Criteria andWxHeadimgEqualTo(String value) {
+            addCriterion("WX_HEADIMG =", value, "wxHeadimg");
             return (Criteria) this;
         }
 
-        public Criteria andHeadIconNotEqualTo(String value) {
-            addCriterion("HEAD_ICON <>", value, "headIcon");
+        public Criteria andWxHeadimgNotEqualTo(String value) {
+            addCriterion("WX_HEADIMG <>", value, "wxHeadimg");
             return (Criteria) this;
         }
 
-        public Criteria andHeadIconGreaterThan(String value) {
-            addCriterion("HEAD_ICON >", value, "headIcon");
+        public Criteria andWxHeadimgGreaterThan(String value) {
+            addCriterion("WX_HEADIMG >", value, "wxHeadimg");
             return (Criteria) this;
         }
 
-        public Criteria andHeadIconGreaterThanOrEqualTo(String value) {
-            addCriterion("HEAD_ICON >=", value, "headIcon");
+        public Criteria andWxHeadimgGreaterThanOrEqualTo(String value) {
+            addCriterion("WX_HEADIMG >=", value, "wxHeadimg");
             return (Criteria) this;
         }
 
-        public Criteria andHeadIconLessThan(String value) {
-            addCriterion("HEAD_ICON <", value, "headIcon");
+        public Criteria andWxHeadimgLessThan(String value) {
+            addCriterion("WX_HEADIMG <", value, "wxHeadimg");
             return (Criteria) this;
         }
 
-        public Criteria andHeadIconLessThanOrEqualTo(String value) {
-            addCriterion("HEAD_ICON <=", value, "headIcon");
+        public Criteria andWxHeadimgLessThanOrEqualTo(String value) {
+            addCriterion("WX_HEADIMG <=", value, "wxHeadimg");
             return (Criteria) this;
         }
 
-        public Criteria andHeadIconLike(String value) {
-            addCriterion("HEAD_ICON like", value, "headIcon");
+        public Criteria andWxHeadimgLike(String value) {
+            addCriterion("WX_HEADIMG like", value, "wxHeadimg");
             return (Criteria) this;
         }
 
-        public Criteria andHeadIconNotLike(String value) {
-            addCriterion("HEAD_ICON not like", value, "headIcon");
+        public Criteria andWxHeadimgNotLike(String value) {
+            addCriterion("WX_HEADIMG not like", value, "wxHeadimg");
             return (Criteria) this;
         }
 
-        public Criteria andHeadIconIn(List<String> values) {
-            addCriterion("HEAD_ICON in", values, "headIcon");
+        public Criteria andWxHeadimgIn(List<String> values) {
+            addCriterion("WX_HEADIMG in", values, "wxHeadimg");
             return (Criteria) this;
         }
 
-        public Criteria andHeadIconNotIn(List<String> values) {
-            addCriterion("HEAD_ICON not in", values, "headIcon");
+        public Criteria andWxHeadimgNotIn(List<String> values) {
+            addCriterion("WX_HEADIMG not in", values, "wxHeadimg");
             return (Criteria) this;
         }
 
-        public Criteria andHeadIconBetween(String value1, String value2) {
-            addCriterion("HEAD_ICON between", value1, value2, "headIcon");
+        public Criteria andWxHeadimgBetween(String value1, String value2) {
+            addCriterion("WX_HEADIMG between", value1, value2, "wxHeadimg");
             return (Criteria) this;
         }
 
-        public Criteria andHeadIconNotBetween(String value1, String value2) {
-            addCriterion("HEAD_ICON not between", value1, value2, "headIcon");
+        public Criteria andWxHeadimgNotBetween(String value1, String value2) {
+            addCriterion("WX_HEADIMG not between", value1, value2, "wxHeadimg");
             return (Criteria) this;
         }
 
@@ -2302,6 +2302,76 @@ public class HyUserCriteria {
 
         public Criteria andExpDateNotBetween(Timestamp value1, Timestamp value2) {
             addCriterion("EXP_DATE not between", value1, value2, "expDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxNicknameIsNull() {
+            addCriterion("WX_NICKNAME is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxNicknameIsNotNull() {
+            addCriterion("WX_NICKNAME is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxNicknameEqualTo(String value) {
+            addCriterion("WX_NICKNAME =", value, "wxNickname");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxNicknameNotEqualTo(String value) {
+            addCriterion("WX_NICKNAME <>", value, "wxNickname");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxNicknameGreaterThan(String value) {
+            addCriterion("WX_NICKNAME >", value, "wxNickname");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxNicknameGreaterThanOrEqualTo(String value) {
+            addCriterion("WX_NICKNAME >=", value, "wxNickname");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxNicknameLessThan(String value) {
+            addCriterion("WX_NICKNAME <", value, "wxNickname");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxNicknameLessThanOrEqualTo(String value) {
+            addCriterion("WX_NICKNAME <=", value, "wxNickname");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxNicknameLike(String value) {
+            addCriterion("WX_NICKNAME like", value, "wxNickname");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxNicknameNotLike(String value) {
+            addCriterion("WX_NICKNAME not like", value, "wxNickname");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxNicknameIn(List<String> values) {
+            addCriterion("WX_NICKNAME in", values, "wxNickname");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxNicknameNotIn(List<String> values) {
+            addCriterion("WX_NICKNAME not in", values, "wxNickname");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxNicknameBetween(String value1, String value2) {
+            addCriterion("WX_NICKNAME between", value1, value2, "wxNickname");
+            return (Criteria) this;
+        }
+
+        public Criteria andWxNicknameNotBetween(String value1, String value2) {
+            addCriterion("WX_NICKNAME not between", value1, value2, "wxNickname");
             return (Criteria) this;
         }
     }

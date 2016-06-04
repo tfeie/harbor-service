@@ -8,8 +8,8 @@
     <result column="EN_NAME" property="enName" jdbcType="VARCHAR" />
     <result column="CH_NAME" property="chName" jdbcType="VARCHAR" />
     <result column="SEX" property="sex" jdbcType="VARCHAR" />
-    <result column="WEIXIN" property="weixin" jdbcType="VARCHAR" />
-    <result column="HEAD_ICON" property="headIcon" jdbcType="VARCHAR" />
+    <result column="WX_OPENID" property="wxOpenid" jdbcType="VARCHAR" />
+    <result column="WX_HEADIMG" property="wxHeadimg" jdbcType="VARCHAR" />
     <result column="ABROAD_COUNTRY" property="abroadCountry" jdbcType="VARCHAR" />
     <result column="ABROAD_UNIVERSITY" property="abroadUniversity" jdbcType="VARCHAR" />
     <result column="AT_COUNTRY" property="atCountry" jdbcType="VARCHAR" />
@@ -34,6 +34,7 @@
     <result column="IS_MEMBER" property="isMember" jdbcType="VARCHAR" />
     <result column="EFF_DATE" property="effDate" jdbcType="TIMESTAMP" />
     <result column="EXP_DATE" property="expDate" jdbcType="TIMESTAMP" />
+    <result column="WX_NICKNAME" property="wxNickname" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -94,11 +95,11 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    USER_ID, USER_TYPE, HY_ID, EN_NAME, CH_NAME, SEX, WEIXIN, HEAD_ICON, ABROAD_COUNTRY, 
+    USER_ID, USER_TYPE, HY_ID, EN_NAME, CH_NAME, SEX, WX_OPENID, WX_HEADIMG, ABROAD_COUNTRY, 
     ABROAD_UNIVERSITY, AT_COUNTRY, AT_PROVINCE, AT_CITY, SIGNATURE, MOBILE_PHONE, EMAIL, 
     MARITAL_STATUS, CONSTELLATION, COMPANY, INDUSTRY, TITLE, REG_DATE, USER_STATUS, IDCARD_PHOTO, 
     OVERSEAS_PHOTO, SUBMIT_CERT_DATE, CERTIFICATION_DATE, ACCESS_PERMISSION, UPDATE_DATE, 
-    IS_MEMBER, EFF_DATE, EXP_DATE
+    IS_MEMBER, EFF_DATE, EXP_DATE, WX_NICKNAME
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyUserCriteria" >
     select
@@ -137,7 +138,7 @@
   <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyUser" >
     insert into hy_user (USER_ID, USER_TYPE, HY_ID, 
       EN_NAME, CH_NAME, SEX, 
-      WEIXIN, HEAD_ICON, ABROAD_COUNTRY, 
+      WX_OPENID, WX_HEADIMG, ABROAD_COUNTRY, 
       ABROAD_UNIVERSITY, AT_COUNTRY, AT_PROVINCE, 
       AT_CITY, SIGNATURE, MOBILE_PHONE, 
       EMAIL, MARITAL_STATUS, CONSTELLATION, 
@@ -145,10 +146,11 @@
       REG_DATE, USER_STATUS, IDCARD_PHOTO, 
       OVERSEAS_PHOTO, SUBMIT_CERT_DATE, CERTIFICATION_DATE, 
       ACCESS_PERMISSION, UPDATE_DATE, IS_MEMBER, 
-      EFF_DATE, EXP_DATE)
+      EFF_DATE, EXP_DATE, WX_NICKNAME
+      )
     values (#{userId,jdbcType=VARCHAR}, #{userType,jdbcType=VARCHAR}, #{hyId,jdbcType=VARCHAR}, 
       #{enName,jdbcType=VARCHAR}, #{chName,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR}, 
-      #{weixin,jdbcType=VARCHAR}, #{headIcon,jdbcType=VARCHAR}, #{abroadCountry,jdbcType=VARCHAR}, 
+      #{wxOpenid,jdbcType=VARCHAR}, #{wxHeadimg,jdbcType=VARCHAR}, #{abroadCountry,jdbcType=VARCHAR}, 
       #{abroadUniversity,jdbcType=VARCHAR}, #{atCountry,jdbcType=VARCHAR}, #{atProvince,jdbcType=VARCHAR}, 
       #{atCity,jdbcType=VARCHAR}, #{signature,jdbcType=VARCHAR}, #{mobilePhone,jdbcType=VARCHAR}, 
       #{email,jdbcType=VARCHAR}, #{maritalStatus,jdbcType=VARCHAR}, #{constellation,jdbcType=VARCHAR}, 
@@ -156,7 +158,8 @@
       #{regDate,jdbcType=TIMESTAMP}, #{userStatus,jdbcType=VARCHAR}, #{idcardPhoto,jdbcType=VARCHAR}, 
       #{overseasPhoto,jdbcType=VARCHAR}, #{submitCertDate,jdbcType=TIMESTAMP}, #{certificationDate,jdbcType=TIMESTAMP}, 
       #{accessPermission,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, #{isMember,jdbcType=VARCHAR}, 
-      #{effDate,jdbcType=TIMESTAMP}, #{expDate,jdbcType=TIMESTAMP})
+      #{effDate,jdbcType=TIMESTAMP}, #{expDate,jdbcType=TIMESTAMP}, #{wxNickname,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyUser" >
     insert into hy_user
@@ -179,11 +182,11 @@
       <if test="sex != null" >
         SEX,
       </if>
-      <if test="weixin != null" >
-        WEIXIN,
+      <if test="wxOpenid != null" >
+        WX_OPENID,
       </if>
-      <if test="headIcon != null" >
-        HEAD_ICON,
+      <if test="wxHeadimg != null" >
+        WX_HEADIMG,
       </if>
       <if test="abroadCountry != null" >
         ABROAD_COUNTRY,
@@ -257,6 +260,9 @@
       <if test="expDate != null" >
         EXP_DATE,
       </if>
+      <if test="wxNickname != null" >
+        WX_NICKNAME,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="userId != null" >
@@ -277,11 +283,11 @@
       <if test="sex != null" >
         #{sex,jdbcType=VARCHAR},
       </if>
-      <if test="weixin != null" >
-        #{weixin,jdbcType=VARCHAR},
+      <if test="wxOpenid != null" >
+        #{wxOpenid,jdbcType=VARCHAR},
       </if>
-      <if test="headIcon != null" >
-        #{headIcon,jdbcType=VARCHAR},
+      <if test="wxHeadimg != null" >
+        #{wxHeadimg,jdbcType=VARCHAR},
       </if>
       <if test="abroadCountry != null" >
         #{abroadCountry,jdbcType=VARCHAR},
@@ -355,6 +361,9 @@
       <if test="expDate != null" >
         #{expDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="wxNickname != null" >
+        #{wxNickname,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUserCriteria" resultType="java.lang.Integer" >
@@ -384,11 +393,11 @@
       <if test="record.sex != null" >
         SEX = #{record.sex,jdbcType=VARCHAR},
       </if>
-      <if test="record.weixin != null" >
-        WEIXIN = #{record.weixin,jdbcType=VARCHAR},
+      <if test="record.wxOpenid != null" >
+        WX_OPENID = #{record.wxOpenid,jdbcType=VARCHAR},
       </if>
-      <if test="record.headIcon != null" >
-        HEAD_ICON = #{record.headIcon,jdbcType=VARCHAR},
+      <if test="record.wxHeadimg != null" >
+        WX_HEADIMG = #{record.wxHeadimg,jdbcType=VARCHAR},
       </if>
       <if test="record.abroadCountry != null" >
         ABROAD_COUNTRY = #{record.abroadCountry,jdbcType=VARCHAR},
@@ -462,6 +471,9 @@
       <if test="record.expDate != null" >
         EXP_DATE = #{record.expDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.wxNickname != null" >
+        WX_NICKNAME = #{record.wxNickname,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -475,8 +487,8 @@
       EN_NAME = #{record.enName,jdbcType=VARCHAR},
       CH_NAME = #{record.chName,jdbcType=VARCHAR},
       SEX = #{record.sex,jdbcType=VARCHAR},
-      WEIXIN = #{record.weixin,jdbcType=VARCHAR},
-      HEAD_ICON = #{record.headIcon,jdbcType=VARCHAR},
+      WX_OPENID = #{record.wxOpenid,jdbcType=VARCHAR},
+      WX_HEADIMG = #{record.wxHeadimg,jdbcType=VARCHAR},
       ABROAD_COUNTRY = #{record.abroadCountry,jdbcType=VARCHAR},
       ABROAD_UNIVERSITY = #{record.abroadUniversity,jdbcType=VARCHAR},
       AT_COUNTRY = #{record.atCountry,jdbcType=VARCHAR},
@@ -500,7 +512,8 @@
       UPDATE_DATE = #{record.updateDate,jdbcType=TIMESTAMP},
       IS_MEMBER = #{record.isMember,jdbcType=VARCHAR},
       EFF_DATE = #{record.effDate,jdbcType=TIMESTAMP},
-      EXP_DATE = #{record.expDate,jdbcType=TIMESTAMP}
+      EXP_DATE = #{record.expDate,jdbcType=TIMESTAMP},
+      WX_NICKNAME = #{record.wxNickname,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -523,11 +536,11 @@
       <if test="sex != null" >
         SEX = #{sex,jdbcType=VARCHAR},
       </if>
-      <if test="weixin != null" >
-        WEIXIN = #{weixin,jdbcType=VARCHAR},
+      <if test="wxOpenid != null" >
+        WX_OPENID = #{wxOpenid,jdbcType=VARCHAR},
       </if>
-      <if test="headIcon != null" >
-        HEAD_ICON = #{headIcon,jdbcType=VARCHAR},
+      <if test="wxHeadimg != null" >
+        WX_HEADIMG = #{wxHeadimg,jdbcType=VARCHAR},
       </if>
       <if test="abroadCountry != null" >
         ABROAD_COUNTRY = #{abroadCountry,jdbcType=VARCHAR},
@@ -601,6 +614,9 @@
       <if test="expDate != null" >
         EXP_DATE = #{expDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="wxNickname != null" >
+        WX_NICKNAME = #{wxNickname,jdbcType=VARCHAR},
+      </if>
     </set>
     where USER_ID = #{userId,jdbcType=VARCHAR}
   </update>
@@ -611,8 +627,8 @@
       EN_NAME = #{enName,jdbcType=VARCHAR},
       CH_NAME = #{chName,jdbcType=VARCHAR},
       SEX = #{sex,jdbcType=VARCHAR},
-      WEIXIN = #{weixin,jdbcType=VARCHAR},
-      HEAD_ICON = #{headIcon,jdbcType=VARCHAR},
+      WX_OPENID = #{wxOpenid,jdbcType=VARCHAR},
+      WX_HEADIMG = #{wxHeadimg,jdbcType=VARCHAR},
       ABROAD_COUNTRY = #{abroadCountry,jdbcType=VARCHAR},
       ABROAD_UNIVERSITY = #{abroadUniversity,jdbcType=VARCHAR},
       AT_COUNTRY = #{atCountry,jdbcType=VARCHAR},
@@ -636,7 +652,8 @@
       UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
       IS_MEMBER = #{isMember,jdbcType=VARCHAR},
       EFF_DATE = #{effDate,jdbcType=TIMESTAMP},
-      EXP_DATE = #{expDate,jdbcType=TIMESTAMP}
+      EXP_DATE = #{expDate,jdbcType=TIMESTAMP},
+      WX_NICKNAME = #{wxNickname,jdbcType=VARCHAR}
     where USER_ID = #{userId,jdbcType=VARCHAR}
   </update>
 </mapper>

@@ -15,9 +15,9 @@ public class HyUser {
 
     private String sex;
 
-    private String weixin;
+    private String wxOpenid;
 
-    private String headIcon;
+    private String wxHeadimg;
 
     private String abroadCountry;
 
@@ -67,6 +67,8 @@ public class HyUser {
 
     private Timestamp expDate;
 
+    private String wxNickname;
+
     public String getUserId() {
         return userId;
     }
@@ -115,20 +117,20 @@ public class HyUser {
         this.sex = sex == null ? null : sex.trim();
     }
 
-    public String getWeixin() {
-        return weixin;
+    public String getWxOpenid() {
+        return wxOpenid;
     }
 
-    public void setWeixin(String weixin) {
-        this.weixin = weixin == null ? null : weixin.trim();
+    public void setWxOpenid(String wxOpenid) {
+        this.wxOpenid = wxOpenid == null ? null : wxOpenid.trim();
     }
 
-    public String getHeadIcon() {
-        return headIcon;
+    public String getWxHeadimg() {
+        return wxHeadimg;
     }
 
-    public void setHeadIcon(String headIcon) {
-        this.headIcon = headIcon == null ? null : headIcon.trim();
+    public void setWxHeadimg(String wxHeadimg) {
+        this.wxHeadimg = wxHeadimg == null ? null : wxHeadimg.trim();
     }
 
     public String getAbroadCountry() {
@@ -321,5 +323,13 @@ public class HyUser {
 
     public void setExpDate(Timestamp expDate) {
         this.expDate = expDate;
+    }
+
+    public String getWxNickname() {
+        return wxNickname;
+    }
+
+    public void setWxNickname(String wxNickname) {
+        this.wxNickname = wxNickname == null ? null : wxNickname.trim();
     }
 }
