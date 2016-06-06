@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.the.harbor.dao.mapper.bo.HyCountry;
 import com.the.harbor.dao.mapper.bo.HyIndustry;
+import com.the.harbor.dao.mapper.bo.HyTags;
 import com.the.harbor.dao.mapper.bo.HyUniversity;
 
 public interface IBasicDataSV {
@@ -13,5 +14,7 @@ public interface IBasicDataSV {
 	List<HyUniversity> getAllHyUniversities();
 
 	List<HyIndustry> getAllHyIndustries();
+
+	List<HyTags> getAllHyTags();
 
 }

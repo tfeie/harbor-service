@@ -333,6 +333,136 @@ public class HyTagsCriteria {
             addCriterion("TAG_NAME not between", value1, value2, "tagName");
             return (Criteria) this;
         }
+
+        public Criteria andSortIdIsNull() {
+            addCriterion("SORT_ID is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIdIsNotNull() {
+            addCriterion("SORT_ID is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIdEqualTo(int value) {
+            addCriterion("SORT_ID =", value, "sortId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIdNotEqualTo(int value) {
+            addCriterion("SORT_ID <>", value, "sortId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIdGreaterThan(int value) {
+            addCriterion("SORT_ID >", value, "sortId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIdGreaterThanOrEqualTo(int value) {
+            addCriterion("SORT_ID >=", value, "sortId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIdLessThan(int value) {
+            addCriterion("SORT_ID <", value, "sortId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIdLessThanOrEqualTo(int value) {
+            addCriterion("SORT_ID <=", value, "sortId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIdIn(List<Integer> values) {
+            addCriterion("SORT_ID in", values, "sortId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIdNotIn(List<Integer> values) {
+            addCriterion("SORT_ID not in", values, "sortId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIdBetween(int value1, int value2) {
+            addCriterion("SORT_ID between", value1, value2, "sortId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIdNotBetween(int value1, int value2) {
+            addCriterion("SORT_ID not between", value1, value2, "sortId");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusIsNull() {
+            addCriterion("STATUS is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusIsNotNull() {
+            addCriterion("STATUS is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusEqualTo(String value) {
+            addCriterion("STATUS =", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotEqualTo(String value) {
+            addCriterion("STATUS <>", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusGreaterThan(String value) {
+            addCriterion("STATUS >", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusGreaterThanOrEqualTo(String value) {
+            addCriterion("STATUS >=", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusLessThan(String value) {
+            addCriterion("STATUS <", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusLessThanOrEqualTo(String value) {
+            addCriterion("STATUS <=", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusLike(String value) {
+            addCriterion("STATUS like", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotLike(String value) {
+            addCriterion("STATUS not like", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusIn(List<String> values) {
+            addCriterion("STATUS in", values, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotIn(List<String> values) {
+            addCriterion("STATUS not in", values, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusBetween(String value1, String value2) {
+            addCriterion("STATUS between", value1, value2, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotBetween(String value1, String value2) {
+            addCriterion("STATUS not between", value1, value2, "status");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

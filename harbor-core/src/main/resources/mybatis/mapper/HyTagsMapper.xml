@@ -5,6 +5,8 @@
     <id column="TAG_ID" property="tagId" jdbcType="VARCHAR" />
     <result column="TAG_TYPE" property="tagType" jdbcType="VARCHAR" />
     <result column="TAG_NAME" property="tagName" jdbcType="VARCHAR" />
+    <result column="SORT_ID" property="sortId" jdbcType="INTEGER" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -65,7 +67,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    TAG_ID, TAG_TYPE, TAG_NAME
+    TAG_ID, TAG_TYPE, TAG_NAME, SORT_ID, STATUS
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyTagsCriteria" >
     select
@@ -102,10 +104,10 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyTags" >
-    insert into hy_tags (TAG_ID, TAG_TYPE, TAG_NAME
-      )
-    values (#{tagId,jdbcType=VARCHAR}, #{tagType,jdbcType=VARCHAR}, #{tagName,jdbcType=VARCHAR}
-      )
+    insert into hy_tags (TAG_ID, TAG_TYPE, TAG_NAME, 
+      SORT_ID, STATUS)
+    values (#{tagId,jdbcType=VARCHAR}, #{tagType,jdbcType=VARCHAR}, #{tagName,jdbcType=VARCHAR}, 
+      #{sortId,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyTags" >
     insert into hy_tags
@@ -119,6 +121,10 @@
       <if test="tagName != null" >
         TAG_NAME,
       </if>
+      SORT_ID,
+      <if test="status != null" >
+        STATUS,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="tagId != null" >
@@ -129,6 +135,10 @@
       </if>
       <if test="tagName != null" >
         #{tagName,jdbcType=VARCHAR},
+      </if>
+      #{sortId,jdbcType=INTEGER},
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -150,6 +160,12 @@
       <if test="record.tagName != null" >
         TAG_NAME = #{record.tagName,jdbcType=VARCHAR},
       </if>
+      <if test="record.sortId != null" >
+        SORT_ID = #{record.sortId,jdbcType=INTEGER},
+      </if>
+      <if test="record.status != null" >
+        STATUS = #{record.status,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -159,7 +175,9 @@
     update hy_tags
     set TAG_ID = #{record.tagId,jdbcType=VARCHAR},
       TAG_TYPE = #{record.tagType,jdbcType=VARCHAR},
-      TAG_NAME = #{record.tagName,jdbcType=VARCHAR}
+      TAG_NAME = #{record.tagName,jdbcType=VARCHAR},
+      SORT_ID = #{record.sortId,jdbcType=INTEGER},
+      STATUS = #{record.status,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -173,13 +191,21 @@
       <if test="tagName != null" >
         TAG_NAME = #{tagName,jdbcType=VARCHAR},
       </if>
+      <if test="sortId != null" >
+        SORT_ID = #{sortId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=VARCHAR},
+      </if>
     </set>
     where TAG_ID = #{tagId,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyTags" >
     update hy_tags
     set TAG_TYPE = #{tagType,jdbcType=VARCHAR},
-      TAG_NAME = #{tagName,jdbcType=VARCHAR}
+      TAG_NAME = #{tagName,jdbcType=VARCHAR},
+      SORT_ID = #{sortId,jdbcType=INTEGER},
+      STATUS = #{status,jdbcType=VARCHAR}
     where TAG_ID = #{tagId,jdbcType=VARCHAR}
   </update>
 </mapper>
