@@ -2374,6 +2374,76 @@ public class HyUserCriteria {
             addCriterion("WX_NICKNAME not between", value1, value2, "wxNickname");
             return (Criteria) this;
         }
+
+        public Criteria andCertRemarkIsNull() {
+            addCriterion("CERT_REMARK is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCertRemarkIsNotNull() {
+            addCriterion("CERT_REMARK is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCertRemarkEqualTo(String value) {
+            addCriterion("CERT_REMARK =", value, "certRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andCertRemarkNotEqualTo(String value) {
+            addCriterion("CERT_REMARK <>", value, "certRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andCertRemarkGreaterThan(String value) {
+            addCriterion("CERT_REMARK >", value, "certRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andCertRemarkGreaterThanOrEqualTo(String value) {
+            addCriterion("CERT_REMARK >=", value, "certRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andCertRemarkLessThan(String value) {
+            addCriterion("CERT_REMARK <", value, "certRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andCertRemarkLessThanOrEqualTo(String value) {
+            addCriterion("CERT_REMARK <=", value, "certRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andCertRemarkLike(String value) {
+            addCriterion("CERT_REMARK like", value, "certRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andCertRemarkNotLike(String value) {
+            addCriterion("CERT_REMARK not like", value, "certRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andCertRemarkIn(List<String> values) {
+            addCriterion("CERT_REMARK in", values, "certRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andCertRemarkNotIn(List<String> values) {
+            addCriterion("CERT_REMARK not in", values, "certRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andCertRemarkBetween(String value1, String value2) {
+            addCriterion("CERT_REMARK between", value1, value2, "certRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andCertRemarkNotBetween(String value1, String value2) {
+            addCriterion("CERT_REMARK not between", value1, value2, "certRemark");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

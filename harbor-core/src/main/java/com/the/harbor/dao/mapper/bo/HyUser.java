@@ -69,6 +69,8 @@ public class HyUser {
 
     private String wxNickname;
 
+    private String certRemark;
+
     public String getUserId() {
         return userId;
     }
@@ -331,5 +333,13 @@ public class HyUser {
 
     public void setWxNickname(String wxNickname) {
         this.wxNickname = wxNickname == null ? null : wxNickname.trim();
+    }
+
+    public String getCertRemark() {
+        return certRemark;
+    }
+
+    public void setCertRemark(String certRemark) {
+        this.certRemark = certRemark == null ? null : certRemark.trim();
     }
 }

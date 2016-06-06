@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.base.constants.ExceptCodeConstants;
 import com.the.harbor.base.enumeration.hyuser.AccessPermission;
@@ -73,6 +74,32 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		sql.or().andWxOpenidEqualTo(wxOpenId);
 		List<HyUser> users = hyUserMapper.selectByExample(sql);
 		return CollectionUtil.isEmpty(users) ? null : users.get(0);
+	}
+
+	private HyUser getUserInfo(String userId) {
+		HyUser user = hyUserMapper.selectByPrimaryKey(userId);
+		return user;
+	}
+
+	public void submitUserCertification(UserCertificationReq userCertificationReq) {
+		HyUser user = this.getUserInfo(userCertificationReq.getUserId());
+		if (user == null) {
+			throw new BusinessException("USER_00001", "请先注册后再提交认证");
+		}
+		if (UserStatus.AUTHORIZED_SUCCESS.getValue().equals(user.getUserStatus())) {
+			throw new BusinessException("USER_00002", "您的资料已经认证通过");
+		}
+		HyUser u = new HyUser();
+		u.setUserId(user.getUserId());
+		u.setIdcardPhoto(userCertificationReq.getIdcardPhoto());
+		u.setOverseasPhoto(userCertificationReq.getOverseasPhoto());
+		u.setCertificationDate(null);
+		u.setSubmitCertDate(DateUtil.getSysDate());
+		u.setUserStatus(UserStatus.UNAUTHORIZED.getValue());
+		int n = hyUserMapper.updateByPrimaryKeySelective(u);
+		if (n == 0) {
+			throw new SystemException("认证材料提交失败,请稍候重试");
+		}
 	}
 
 }
