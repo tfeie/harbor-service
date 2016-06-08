@@ -52,11 +52,6 @@ publishing {
                                 delegate.artifactId("harbor-base")
                                 delegate.version("1.0-SNAPSHO")
                             }
-                            delegate.dependency {
-                                delegate.groupId("org.jboss.resteasy")
-                                delegate.artifactId("resteasy-jaxrs")
-                                delegate.version("3.0.11.Final")
-                            }
                         }
                     }
                 }
