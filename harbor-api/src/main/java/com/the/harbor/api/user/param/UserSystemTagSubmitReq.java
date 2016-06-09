@@ -15,7 +15,9 @@ public class UserSystemTagSubmitReq implements Serializable {
 	/**
 	 * 用户最终选择的系统标签集合
 	 */
-	private List<UserTag> systemTags;
+	private List<UserTag> interestSelectedTags;
+
+	private List<UserTag> skillSelectedTags;
 
 	public String getUserId() {
 		return userId;
@@ -25,14 +27,20 @@ public class UserSystemTagSubmitReq implements Serializable {
 		this.userId = userId;
 	}
 
-	public List<UserTag> getSystemTags() {
-		return systemTags;
+	public List<UserTag> getInterestSelectedTags() {
+		return interestSelectedTags;
 	}
 
-	public void setSystemTags(List<UserTag> systemTags) {
-		this.systemTags = systemTags;
+	public void setInterestSelectedTags(List<UserTag> interestSelectedTags) {
+		this.interestSelectedTags = interestSelectedTags;
 	}
-	
-	
+
+	public List<UserTag> getSkillSelectedTags() {
+		return skillSelectedTags;
+	}
+
+	public void setSkillSelectedTags(List<UserTag> skillSelectedTags) {
+		this.skillSelectedTags = skillSelectedTags;
+	}
 
 }
