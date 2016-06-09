@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.the.harbor.dao.mapper.interfaces.HyTagsMapper" >
-  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyTags" >
-    <id column="TAG_ID" property="tagId" jdbcType="VARCHAR" />
+<mapper namespace="com.the.harbor.dao.mapper.interfaces.HyUserTagsMapper" >
+  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyUserTags" >
+    <id column="RECORD_ID" property="recordId" jdbcType="BIGINT" />
+    <result column="TAG_ID" property="tagId" jdbcType="VARCHAR" />
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
     <result column="TAG_TYPE" property="tagType" jdbcType="VARCHAR" />
     <result column="TAG_NAME" property="tagName" jdbcType="VARCHAR" />
+    <result column="TAG_CAT" property="tagCat" jdbcType="VARCHAR" />
     <result column="SORT_ID" property="sortId" jdbcType="INTEGER" />
     <result column="STATUS" property="status" jdbcType="VARCHAR" />
-    <result column="SCOPE_TYPE" property="scopeType" jdbcType="VARCHAR" />
-    <result column="TAG_CAT" property="tagCat" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -69,16 +70,16 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    TAG_ID, TAG_TYPE, TAG_NAME, SORT_ID, STATUS, SCOPE_TYPE, TAG_CAT
+    RECORD_ID, TAG_ID, USER_ID, TAG_TYPE, TAG_NAME, TAG_CAT, SORT_ID, STATUS
   </sql>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyTagsCriteria" >
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyUserTagsCriteria" >
     select
     <if test="distinct" >
       distinct
     </if>
     'false' as QUERYID,
     <include refid="Base_Column_List" />
-    from hy_tags
+    from hy_user_tags
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
@@ -89,35 +90,39 @@
       limit #{limitStart} , #{limitEnd}
     </if>
   </select>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long" >
     select 
     <include refid="Base_Column_List" />
-    from hy_tags
-    where TAG_ID = #{tagId,jdbcType=VARCHAR}
+    from hy_user_tags
+    where RECORD_ID = #{recordId,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-    delete from hy_tags
-    where TAG_ID = #{tagId,jdbcType=VARCHAR}
+  <delete id="deleteByPrimaryKey" parameterType="long" >
+    delete from hy_user_tags
+    where RECORD_ID = #{recordId,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HyTagsCriteria" >
-    delete from hy_tags
+  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUserTagsCriteria" >
+    delete from hy_user_tags
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyTags" >
-    insert into hy_tags (TAG_ID, TAG_TYPE, TAG_NAME, 
-      SORT_ID, STATUS, SCOPE_TYPE, 
-      TAG_CAT)
-    values (#{tagId,jdbcType=VARCHAR}, #{tagType,jdbcType=VARCHAR}, #{tagName,jdbcType=VARCHAR}, 
-      #{sortId,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}, #{scopeType,jdbcType=VARCHAR}, 
-      #{tagCat,jdbcType=VARCHAR})
+  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyUserTags" >
+    insert into hy_user_tags (RECORD_ID, TAG_ID, USER_ID, 
+      TAG_TYPE, TAG_NAME, TAG_CAT, 
+      SORT_ID, STATUS)
+    values (#{recordId,jdbcType=BIGINT}, #{tagId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, 
+      #{tagType,jdbcType=VARCHAR}, #{tagName,jdbcType=VARCHAR}, #{tagCat,jdbcType=VARCHAR}, 
+      #{sortId,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyTags" >
-    insert into hy_tags
+  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyUserTags" >
+    insert into hy_user_tags
     <trim prefix="(" suffix=")" suffixOverrides="," >
+      RECORD_ID,
       <if test="tagId != null" >
         TAG_ID,
+      </if>
+      <if test="userId != null" >
+        USER_ID,
       </if>
       <if test="tagType != null" >
         TAG_TYPE,
@@ -125,20 +130,21 @@
       <if test="tagName != null" >
         TAG_NAME,
       </if>
+      <if test="tagCat != null" >
+        TAG_CAT,
+      </if>
       SORT_ID,
       <if test="status != null" >
         STATUS,
       </if>
-      <if test="scopeType != null" >
-        SCOPE_TYPE,
-      </if>
-      <if test="tagCat != null" >
-        TAG_CAT,
-      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{recordId,jdbcType=BIGINT},
       <if test="tagId != null" >
         #{tagId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
       </if>
       <if test="tagType != null" >
         #{tagType,jdbcType=VARCHAR},
@@ -146,29 +152,32 @@
       <if test="tagName != null" >
         #{tagName,jdbcType=VARCHAR},
       </if>
+      <if test="tagCat != null" >
+        #{tagCat,jdbcType=VARCHAR},
+      </if>
       #{sortId,jdbcType=INTEGER},
       <if test="status != null" >
         #{status,jdbcType=VARCHAR},
       </if>
-      <if test="scopeType != null" >
-        #{scopeType,jdbcType=VARCHAR},
-      </if>
-      <if test="tagCat != null" >
-        #{tagCat,jdbcType=VARCHAR},
-      </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyTagsCriteria" resultType="java.lang.Integer" >
-    select count(*) from hy_tags
+  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUserTagsCriteria" resultType="java.lang.Integer" >
+    select count(*) from hy_user_tags
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map" >
-    update hy_tags
+    update hy_user_tags
     <set >
+      <if test="record.recordId != null" >
+        RECORD_ID = #{record.recordId,jdbcType=BIGINT},
+      </if>
       <if test="record.tagId != null" >
         TAG_ID = #{record.tagId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null" >
+        USER_ID = #{record.userId,jdbcType=VARCHAR},
       </if>
       <if test="record.tagType != null" >
         TAG_TYPE = #{record.tagType,jdbcType=VARCHAR},
@@ -176,17 +185,14 @@
       <if test="record.tagName != null" >
         TAG_NAME = #{record.tagName,jdbcType=VARCHAR},
       </if>
+      <if test="record.tagCat != null" >
+        TAG_CAT = #{record.tagCat,jdbcType=VARCHAR},
+      </if>
       <if test="record.sortId != null" >
         SORT_ID = #{record.sortId,jdbcType=INTEGER},
       </if>
       <if test="record.status != null" >
         STATUS = #{record.status,jdbcType=VARCHAR},
-      </if>
-      <if test="record.scopeType != null" >
-        SCOPE_TYPE = #{record.scopeType,jdbcType=VARCHAR},
-      </if>
-      <if test="record.tagCat != null" >
-        TAG_CAT = #{record.tagCat,jdbcType=VARCHAR},
       </if>
     </set>
     <if test="_parameter != null" >
@@ -194,26 +200,36 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map" >
-    update hy_tags
-    set TAG_ID = #{record.tagId,jdbcType=VARCHAR},
+    update hy_user_tags
+    set RECORD_ID = #{record.recordId,jdbcType=BIGINT},
+      TAG_ID = #{record.tagId,jdbcType=VARCHAR},
+      USER_ID = #{record.userId,jdbcType=VARCHAR},
       TAG_TYPE = #{record.tagType,jdbcType=VARCHAR},
       TAG_NAME = #{record.tagName,jdbcType=VARCHAR},
+      TAG_CAT = #{record.tagCat,jdbcType=VARCHAR},
       SORT_ID = #{record.sortId,jdbcType=INTEGER},
-      STATUS = #{record.status,jdbcType=VARCHAR},
-      SCOPE_TYPE = #{record.scopeType,jdbcType=VARCHAR},
-      TAG_CAT = #{record.tagCat,jdbcType=VARCHAR}
+      STATUS = #{record.status,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HyTags" >
-    update hy_tags
+  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HyUserTags" >
+    update hy_user_tags
     <set >
+      <if test="tagId != null" >
+        TAG_ID = #{tagId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        USER_ID = #{userId,jdbcType=VARCHAR},
+      </if>
       <if test="tagType != null" >
         TAG_TYPE = #{tagType,jdbcType=VARCHAR},
       </if>
       <if test="tagName != null" >
         TAG_NAME = #{tagName,jdbcType=VARCHAR},
+      </if>
+      <if test="tagCat != null" >
+        TAG_CAT = #{tagCat,jdbcType=VARCHAR},
       </if>
       <if test="sortId != null" >
         SORT_ID = #{sortId,jdbcType=INTEGER},
@@ -221,23 +237,18 @@
       <if test="status != null" >
         STATUS = #{status,jdbcType=VARCHAR},
       </if>
-      <if test="scopeType != null" >
-        SCOPE_TYPE = #{scopeType,jdbcType=VARCHAR},
-      </if>
-      <if test="tagCat != null" >
-        TAG_CAT = #{tagCat,jdbcType=VARCHAR},
-      </if>
     </set>
-    where TAG_ID = #{tagId,jdbcType=VARCHAR}
+    where RECORD_ID = #{recordId,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyTags" >
-    update hy_tags
-    set TAG_TYPE = #{tagType,jdbcType=VARCHAR},
+  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyUserTags" >
+    update hy_user_tags
+    set TAG_ID = #{tagId,jdbcType=VARCHAR},
+      USER_ID = #{userId,jdbcType=VARCHAR},
+      TAG_TYPE = #{tagType,jdbcType=VARCHAR},
       TAG_NAME = #{tagName,jdbcType=VARCHAR},
+      TAG_CAT = #{tagCat,jdbcType=VARCHAR},
       SORT_ID = #{sortId,jdbcType=INTEGER},
-      STATUS = #{status,jdbcType=VARCHAR},
-      SCOPE_TYPE = #{scopeType,jdbcType=VARCHAR},
-      TAG_CAT = #{tagCat,jdbcType=VARCHAR}
-    where TAG_ID = #{tagId,jdbcType=VARCHAR}
+      STATUS = #{status,jdbcType=VARCHAR}
+    where RECORD_ID = #{recordId,jdbcType=BIGINT}
   </update>
 </mapper>

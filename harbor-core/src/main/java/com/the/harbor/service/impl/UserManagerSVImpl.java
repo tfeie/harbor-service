@@ -1,14 +1,23 @@
 package com.the.harbor.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserRegReq;
+import com.the.harbor.api.user.param.UserSystemTagQueryReq;
+import com.the.harbor.api.user.param.UserSystemTagQueryResp;
+import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
+import com.the.harbor.api.user.param.UserTag;
 import com.the.harbor.base.constants.ExceptCodeConstants;
+import com.the.harbor.base.enumeration.hytags.Status;
+import com.the.harbor.base.enumeration.hytags.TagCat;
+import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.enumeration.hyuser.AccessPermission;
 import com.the.harbor.base.enumeration.hyuser.IsMember;
 import com.the.harbor.base.enumeration.hyuser.UserStatus;
@@ -21,7 +30,10 @@ import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.constants.HarborErrorCodeConstants;
 import com.the.harbor.dao.mapper.bo.HyUser;
 import com.the.harbor.dao.mapper.bo.HyUserCriteria;
+import com.the.harbor.dao.mapper.bo.HyUserTags;
+import com.the.harbor.dao.mapper.bo.HyUserTagsCriteria;
 import com.the.harbor.dao.mapper.interfaces.HyUserMapper;
+import com.the.harbor.dao.mapper.interfaces.HyUserTagsMapper;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.HarborSeqUtil;
 
@@ -31,6 +43,9 @@ public class UserManagerSVImpl implements IUserManagerSV {
 
 	@Autowired
 	private transient HyUserMapper hyUserMapper;
+
+	@Autowired
+	private transient HyUserTagsMapper hyUserTagsMapper;
 
 	@Override
 	public String userRegister(UserRegReq userRegReq) {
@@ -100,6 +115,97 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		if (n == 0) {
 			throw new SystemException("认证材料提交失败,请稍候重试");
 		}
+	}
+
+	@Override
+	public void submitUserSelectedSystemTags(UserSystemTagSubmitReq userSystemTagReq) {
+		String userId = userSystemTagReq.getUserId();
+		if (StringUtil.isBlank(userId)) {
+			throw new BusinessException("USER_00001", "用户信息不存在");
+		}
+		HyUser user = this.getUserInfo(userId);
+		if (user == null) {
+			throw new BusinessException("USER_00001", "请先注册后再提交");
+		}
+		// 失效所有的系统级别的标签
+		this.invalidAllSystemTags(userId);
+		// 获取新提交上来的标签
+		List<UserTag> systemTags = userSystemTagReq.getSystemTags();
+		if (CollectionUtil.isEmpty(systemTags)) {
+			return;
+		}
+		for (UserTag userTag : systemTags) {
+			// 判断标签ID是否存在
+			HyUserTags hyUserTag = this.getHyUserTag(userTag.getTagId(), userId);
+			if (hyUserTag != null) {
+				hyUserTag.setStatus(Status.VALID.getValue());
+				hyUserTagsMapper.updateByPrimaryKey(hyUserTag);
+			} else {
+				hyUserTag = new HyUserTags();
+				hyUserTag.setRecordId(HarborSeqUtil.createHyUserTagsRecordId());
+				hyUserTag.setSortId(99);
+				hyUserTag.setStatus(Status.VALID.getValue());
+				hyUserTag.setTagCat(userTag.getTagCat());
+				hyUserTag.setTagName(userTag.getTagName());
+				hyUserTag.setTagType(userTag.getTagType());
+				hyUserTag.setUserId(userId);
+				hyUserTagsMapper.insert(hyUserTag);
+			}
+		}
+	}
+
+	private HyUserTags getHyUserTag(String tagId, String userId) {
+		HyUserTagsCriteria sql = new HyUserTagsCriteria();
+		sql.or().andUserIdEqualTo(userId).andTagIdEqualTo(tagId);
+		List<HyUserTags> list = hyUserTagsMapper.selectByExample(sql);
+		return CollectionUtil.isEmpty(list) ? null : list.get(0);
+	}
+
+	private void invalidAllSystemTags(String userId) {
+		HyUserTags record = new HyUserTags();
+		record.setStatus(Status.INVALID.getValue());
+		HyUserTagsCriteria sql = new HyUserTagsCriteria();
+		sql.or().andUserIdEqualTo(userId).andTagCatEqualTo(TagCat.SYSTEM.getValue());
+		int n = hyUserTagsMapper.updateByExampleSelective(record, sql);
+		if (n == 0) {
+			throw new SystemException("提交失败,请稍候重试");
+		}
+	}
+
+	/**
+	 * 获取有效的系统标签
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	private List<HyUserTags> getHyUserSystemTag(String userId) {
+		HyUserTagsCriteria sql = new HyUserTagsCriteria();
+		sql.or().andUserIdEqualTo(userId).andStatusEqualTo(Status.VALID.getValue());
+		List<HyUserTags> list = hyUserTagsMapper.selectByExample(sql);
+		return list;
+	}
+
+	@Override
+	public UserSystemTagQueryResp queryUserSystemTags(UserSystemTagQueryReq userSystemTagQueryReq) {
+		List<HyUserTags> list = this.getHyUserSystemTag(userSystemTagQueryReq.getUserId());
+		List<UserTag> systemInterestTags = new ArrayList<UserTag>();
+		List<UserTag> systemSkillTags = new ArrayList<UserTag>();
+		if (!CollectionUtil.isEmpty(list)) {
+			for (HyUserTags t : list) {
+				UserTag o = new UserTag();
+				BeanUtils.copyProperties(t, o);
+				if (TagType.INTEREST.getValue().equals(t.getTagType())) {
+					systemInterestTags.add(o);
+				} else if (TagType.SKILL.getValue().equals(t.getTagType())) {
+					systemSkillTags.add(o);
+				}
+			}
+		}
+		UserSystemTagQueryResp resp = new UserSystemTagQueryResp();
+		resp.setUserId(userSystemTagQueryReq.getUserId());
+		resp.setSystemInterestTags(systemInterestTags);
+		resp.setSystemSkillTags(systemSkillTags);
+		return resp;
 	}
 
 }

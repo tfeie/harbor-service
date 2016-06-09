@@ -27,11 +27,12 @@ public final class HarborSeqUtil {
 
 	/**
 	 * 创建海湾身份证号码 国家+8位编号
+	 * 
 	 * @return
 	 */
-	public static String createHyUserHyId(String countryCode){
-		if(StringUtil.isBlank(countryCode)){
-			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL,"生成海湾证件号错误:留学国家不能为空");
+	public static String createHyUserHyId(String countryCode) {
+		if (StringUtil.isBlank(countryCode)) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "生成海湾证件号错误:留学国家不能为空");
 		}
 		StringBuffer sb = new StringBuffer(countryCode);
 		sb.append(SeqUtil.getNewId(HarborSeqConstants.HY_USER$HY_ID$SEQ, 8));
@@ -40,6 +41,10 @@ public final class HarborSeqUtil {
 
 	public static String createHySmsSendRecordId() {
 		return UUIDUtil.genId32();
+	}
+
+	public static long createHyUserTagsRecordId() {
+		return SeqUtil.getNewId(HarborSeqConstants.HY_USER_TAGS$RECORD_ID$SEQ);
 	}
 
 }

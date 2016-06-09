@@ -1,19 +1,29 @@
 package com.the.harbor.dao.mapper.bo;
 
-public class HyTags {
+public class HyUserTags {
+    private long recordId;
+
     private String tagId;
+
+    private String userId;
 
     private String tagType;
 
     private String tagName;
 
+    private String tagCat;
+
     private int sortId;
 
     private String status;
 
-    private String scopeType;
+    public long getRecordId() {
+        return recordId;
+    }
 
-    private String tagCat;
+    public void setRecordId(long recordId) {
+        this.recordId = recordId;
+    }
 
     public String getTagId() {
         return tagId;
@@ -21,6 +31,14 @@ public class HyTags {
 
     public void setTagId(String tagId) {
         this.tagId = tagId == null ? null : tagId.trim();
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId == null ? null : userId.trim();
     }
 
     public String getTagType() {
@@ -39,6 +57,14 @@ public class HyTags {
         this.tagName = tagName == null ? null : tagName.trim();
     }
 
+    public String getTagCat() {
+        return tagCat;
+    }
+
+    public void setTagCat(String tagCat) {
+        this.tagCat = tagCat == null ? null : tagCat.trim();
+    }
+
     public int getSortId() {
         return sortId;
     }
@@ -53,21 +79,5 @@ public class HyTags {
 
     public void setStatus(String status) {
         this.status = status == null ? null : status.trim();
-    }
-
-    public String getScopeType() {
-        return scopeType;
-    }
-
-    public void setScopeType(String scopeType) {
-        this.scopeType = scopeType == null ? null : scopeType.trim();
-    }
-
-    public String getTagCat() {
-        return tagCat;
-    }
-
-    public void setTagCat(String tagCat) {
-        this.tagCat = tagCat == null ? null : tagCat.trim();
     }
 }

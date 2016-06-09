@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.the.harbor.base.enumeration.hytags.Status;
+import com.the.harbor.base.enumeration.hytags.TagCat;
 import com.the.harbor.dao.mapper.bo.HyCountry;
 import com.the.harbor.dao.mapper.bo.HyCountryCriteria;
 import com.the.harbor.dao.mapper.bo.HyIndustry;
@@ -60,7 +61,7 @@ public class BasicDataSVImpl implements IBasicDataSV {
 	@Override
 	public List<HyTags> getAllHyTags() {
 		HyTagsCriteria sql = new HyTagsCriteria();
-		sql.or().andStatusEqualTo(Status.VALID.getValue());
+		sql.or().andStatusEqualTo(Status.VALID.getValue()).andTagCatEqualTo(TagCat.SYSTEM.getValue());
 		sql.setOrderByClause(" sort_id asc");
 		return hyTagsMapper.selectByExample(sql);
 	}

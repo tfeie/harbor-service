@@ -3,7 +3,7 @@ package com.the.harbor.dao.mapper.bo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HyTagsCriteria {
+public class HyUserTagsCriteria {
     protected String orderByClause;
 
     protected boolean distinct;
@@ -14,7 +14,7 @@ public class HyTagsCriteria {
 
     protected Integer limitEnd;
 
-    public HyTagsCriteria() {
+    public HyUserTagsCriteria() {
         oredCriteria = new ArrayList<Criteria>();
     }
 
@@ -124,6 +124,66 @@ public class HyTagsCriteria {
             criteria.add(new Criterion(condition, value1, value2));
         }
 
+        public Criteria andRecordIdIsNull() {
+            addCriterion("RECORD_ID is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordIdIsNotNull() {
+            addCriterion("RECORD_ID is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordIdEqualTo(long value) {
+            addCriterion("RECORD_ID =", value, "recordId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordIdNotEqualTo(long value) {
+            addCriterion("RECORD_ID <>", value, "recordId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordIdGreaterThan(long value) {
+            addCriterion("RECORD_ID >", value, "recordId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordIdGreaterThanOrEqualTo(long value) {
+            addCriterion("RECORD_ID >=", value, "recordId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordIdLessThan(long value) {
+            addCriterion("RECORD_ID <", value, "recordId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordIdLessThanOrEqualTo(long value) {
+            addCriterion("RECORD_ID <=", value, "recordId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordIdIn(List<Long> values) {
+            addCriterion("RECORD_ID in", values, "recordId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordIdNotIn(List<Long> values) {
+            addCriterion("RECORD_ID not in", values, "recordId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordIdBetween(long value1, long value2) {
+            addCriterion("RECORD_ID between", value1, value2, "recordId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordIdNotBetween(long value1, long value2) {
+            addCriterion("RECORD_ID not between", value1, value2, "recordId");
+            return (Criteria) this;
+        }
+
         public Criteria andTagIdIsNull() {
             addCriterion("TAG_ID is null");
             return (Criteria) this;
@@ -191,6 +251,76 @@ public class HyTagsCriteria {
 
         public Criteria andTagIdNotBetween(String value1, String value2) {
             addCriterion("TAG_ID not between", value1, value2, "tagId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdIsNull() {
+            addCriterion("USER_ID is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdIsNotNull() {
+            addCriterion("USER_ID is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdEqualTo(String value) {
+            addCriterion("USER_ID =", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdNotEqualTo(String value) {
+            addCriterion("USER_ID <>", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdGreaterThan(String value) {
+            addCriterion("USER_ID >", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdGreaterThanOrEqualTo(String value) {
+            addCriterion("USER_ID >=", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdLessThan(String value) {
+            addCriterion("USER_ID <", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdLessThanOrEqualTo(String value) {
+            addCriterion("USER_ID <=", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdLike(String value) {
+            addCriterion("USER_ID like", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdNotLike(String value) {
+            addCriterion("USER_ID not like", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdIn(List<String> values) {
+            addCriterion("USER_ID in", values, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdNotIn(List<String> values) {
+            addCriterion("USER_ID not in", values, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdBetween(String value1, String value2) {
+            addCriterion("USER_ID between", value1, value2, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdNotBetween(String value1, String value2) {
+            addCriterion("USER_ID not between", value1, value2, "userId");
             return (Criteria) this;
         }
 
@@ -334,6 +464,76 @@ public class HyTagsCriteria {
             return (Criteria) this;
         }
 
+        public Criteria andTagCatIsNull() {
+            addCriterion("TAG_CAT is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTagCatIsNotNull() {
+            addCriterion("TAG_CAT is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTagCatEqualTo(String value) {
+            addCriterion("TAG_CAT =", value, "tagCat");
+            return (Criteria) this;
+        }
+
+        public Criteria andTagCatNotEqualTo(String value) {
+            addCriterion("TAG_CAT <>", value, "tagCat");
+            return (Criteria) this;
+        }
+
+        public Criteria andTagCatGreaterThan(String value) {
+            addCriterion("TAG_CAT >", value, "tagCat");
+            return (Criteria) this;
+        }
+
+        public Criteria andTagCatGreaterThanOrEqualTo(String value) {
+            addCriterion("TAG_CAT >=", value, "tagCat");
+            return (Criteria) this;
+        }
+
+        public Criteria andTagCatLessThan(String value) {
+            addCriterion("TAG_CAT <", value, "tagCat");
+            return (Criteria) this;
+        }
+
+        public Criteria andTagCatLessThanOrEqualTo(String value) {
+            addCriterion("TAG_CAT <=", value, "tagCat");
+            return (Criteria) this;
+        }
+
+        public Criteria andTagCatLike(String value) {
+            addCriterion("TAG_CAT like", value, "tagCat");
+            return (Criteria) this;
+        }
+
+        public Criteria andTagCatNotLike(String value) {
+            addCriterion("TAG_CAT not like", value, "tagCat");
+            return (Criteria) this;
+        }
+
+        public Criteria andTagCatIn(List<String> values) {
+            addCriterion("TAG_CAT in", values, "tagCat");
+            return (Criteria) this;
+        }
+
+        public Criteria andTagCatNotIn(List<String> values) {
+            addCriterion("TAG_CAT not in", values, "tagCat");
+            return (Criteria) this;
+        }
+
+        public Criteria andTagCatBetween(String value1, String value2) {
+            addCriterion("TAG_CAT between", value1, value2, "tagCat");
+            return (Criteria) this;
+        }
+
+        public Criteria andTagCatNotBetween(String value1, String value2) {
+            addCriterion("TAG_CAT not between", value1, value2, "tagCat");
+            return (Criteria) this;
+        }
+
         public Criteria andSortIdIsNull() {
             addCriterion("SORT_ID is null");
             return (Criteria) this;
@@ -461,146 +661,6 @@ public class HyTagsCriteria {
 
         public Criteria andStatusNotBetween(String value1, String value2) {
             addCriterion("STATUS not between", value1, value2, "status");
-            return (Criteria) this;
-        }
-
-        public Criteria andScopeTypeIsNull() {
-            addCriterion("SCOPE_TYPE is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andScopeTypeIsNotNull() {
-            addCriterion("SCOPE_TYPE is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andScopeTypeEqualTo(String value) {
-            addCriterion("SCOPE_TYPE =", value, "scopeType");
-            return (Criteria) this;
-        }
-
-        public Criteria andScopeTypeNotEqualTo(String value) {
-            addCriterion("SCOPE_TYPE <>", value, "scopeType");
-            return (Criteria) this;
-        }
-
-        public Criteria andScopeTypeGreaterThan(String value) {
-            addCriterion("SCOPE_TYPE >", value, "scopeType");
-            return (Criteria) this;
-        }
-
-        public Criteria andScopeTypeGreaterThanOrEqualTo(String value) {
-            addCriterion("SCOPE_TYPE >=", value, "scopeType");
-            return (Criteria) this;
-        }
-
-        public Criteria andScopeTypeLessThan(String value) {
-            addCriterion("SCOPE_TYPE <", value, "scopeType");
-            return (Criteria) this;
-        }
-
-        public Criteria andScopeTypeLessThanOrEqualTo(String value) {
-            addCriterion("SCOPE_TYPE <=", value, "scopeType");
-            return (Criteria) this;
-        }
-
-        public Criteria andScopeTypeLike(String value) {
-            addCriterion("SCOPE_TYPE like", value, "scopeType");
-            return (Criteria) this;
-        }
-
-        public Criteria andScopeTypeNotLike(String value) {
-            addCriterion("SCOPE_TYPE not like", value, "scopeType");
-            return (Criteria) this;
-        }
-
-        public Criteria andScopeTypeIn(List<String> values) {
-            addCriterion("SCOPE_TYPE in", values, "scopeType");
-            return (Criteria) this;
-        }
-
-        public Criteria andScopeTypeNotIn(List<String> values) {
-            addCriterion("SCOPE_TYPE not in", values, "scopeType");
-            return (Criteria) this;
-        }
-
-        public Criteria andScopeTypeBetween(String value1, String value2) {
-            addCriterion("SCOPE_TYPE between", value1, value2, "scopeType");
-            return (Criteria) this;
-        }
-
-        public Criteria andScopeTypeNotBetween(String value1, String value2) {
-            addCriterion("SCOPE_TYPE not between", value1, value2, "scopeType");
-            return (Criteria) this;
-        }
-
-        public Criteria andTagCatIsNull() {
-            addCriterion("TAG_CAT is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andTagCatIsNotNull() {
-            addCriterion("TAG_CAT is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andTagCatEqualTo(String value) {
-            addCriterion("TAG_CAT =", value, "tagCat");
-            return (Criteria) this;
-        }
-
-        public Criteria andTagCatNotEqualTo(String value) {
-            addCriterion("TAG_CAT <>", value, "tagCat");
-            return (Criteria) this;
-        }
-
-        public Criteria andTagCatGreaterThan(String value) {
-            addCriterion("TAG_CAT >", value, "tagCat");
-            return (Criteria) this;
-        }
-
-        public Criteria andTagCatGreaterThanOrEqualTo(String value) {
-            addCriterion("TAG_CAT >=", value, "tagCat");
-            return (Criteria) this;
-        }
-
-        public Criteria andTagCatLessThan(String value) {
-            addCriterion("TAG_CAT <", value, "tagCat");
-            return (Criteria) this;
-        }
-
-        public Criteria andTagCatLessThanOrEqualTo(String value) {
-            addCriterion("TAG_CAT <=", value, "tagCat");
-            return (Criteria) this;
-        }
-
-        public Criteria andTagCatLike(String value) {
-            addCriterion("TAG_CAT like", value, "tagCat");
-            return (Criteria) this;
-        }
-
-        public Criteria andTagCatNotLike(String value) {
-            addCriterion("TAG_CAT not like", value, "tagCat");
-            return (Criteria) this;
-        }
-
-        public Criteria andTagCatIn(List<String> values) {
-            addCriterion("TAG_CAT in", values, "tagCat");
-            return (Criteria) this;
-        }
-
-        public Criteria andTagCatNotIn(List<String> values) {
-            addCriterion("TAG_CAT not in", values, "tagCat");
-            return (Criteria) this;
-        }
-
-        public Criteria andTagCatBetween(String value1, String value2) {
-            addCriterion("TAG_CAT between", value1, value2, "tagCat");
-            return (Criteria) this;
-        }
-
-        public Criteria andTagCatNotBetween(String value1, String value2) {
-            addCriterion("TAG_CAT not between", value1, value2, "tagCat");
             return (Criteria) this;
         }
     }

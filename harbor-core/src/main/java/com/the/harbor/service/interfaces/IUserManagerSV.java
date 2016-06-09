@@ -2,6 +2,9 @@ package com.the.harbor.service.interfaces;
 
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserRegReq;
+import com.the.harbor.api.user.param.UserSystemTagQueryReq;
+import com.the.harbor.api.user.param.UserSystemTagQueryResp;
+import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
 import com.the.harbor.dao.mapper.bo.HyUser;
 
 public interface IUserManagerSV {
@@ -30,5 +33,20 @@ public interface IUserManagerSV {
 	 * @param userCertificationReq
 	 */
 	void submitUserCertification(UserCertificationReq userCertificationReq);
+
+	/**
+	 * 提交用户系统级别技能标签选择
+	 * 
+	 * @param userSystemTagReq
+	 */
+	void submitUserSelectedSystemTags(UserSystemTagSubmitReq userSystemTagReq);
+
+	/**
+	 * 获取用户系统级别的标签
+	 * 
+	 * @param userSystemTagQueryReq
+	 * @return
+	 */
+	UserSystemTagQueryResp queryUserSystemTags(UserSystemTagQueryReq userSystemTagQueryReq);
 
 }

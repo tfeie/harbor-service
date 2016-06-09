@@ -2,6 +2,9 @@ package com.the.harbor.api.user;
 
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserRegReq;
+import com.the.harbor.api.user.param.UserSystemTagQueryReq;
+import com.the.harbor.api.user.param.UserSystemTagQueryResp;
+import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.base.vo.Response;
@@ -12,6 +15,14 @@ public interface IUserSV {
 	}
 
 	@interface SubmitUserCertification {
+	}
+
+	@interface SumitUserSelectedSystemTags {
+
+	}
+
+	@interface QueryUserSystemTags {
+
 	}
 
 	/**
@@ -34,6 +45,28 @@ public interface IUserSV {
 	 * @throws SystemException
 	 */
 	Response submitUserCertification(UserCertificationReq userCertificationReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 用户选择系统预设的标签技能
+	 * 
+	 * @param userSystemTagReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	Response submitUserSelectedSystemTags(UserSystemTagSubmitReq userSystemTagReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 获取用户设定的系统级别标签
+	 * 
+	 * @param userSystemTagQueryReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	UserSystemTagQueryResp queryUserSystemTags(UserSystemTagQueryReq userSystemTagQueryReq)
 			throws BusinessException, SystemException;
 
 }
