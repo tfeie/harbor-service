@@ -1,5 +1,6 @@
 package com.the.harbor.api.user.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
 import com.the.harbor.api.user.param.UserTag;
 import com.the.harbor.base.constants.ExceptCodeConstants;
-import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.base.util.ResponseBuilder;
@@ -47,19 +47,14 @@ public class UserSVImpl implements IUserSV {
 		if (userSystemTagReq == null) {
 			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "参数为空");
 		}
-		List<UserTag> systemTags = userSystemTagReq.getSystemTags();
-		if (CollectionUtil.isEmpty(systemTags)) {
-			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "您没有选择任何标签");
+		if (CollectionUtil.isEmpty(userSystemTagReq.getInterestSelectedTags())) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "您没有选择任何兴趣标签");
 		}
-		int interestTagCount = 0;
-		int skillTagCount = 0;
-		for (UserTag t : systemTags) {
-			if (TagType.INTEREST.getValue().equals(t.getTagType())) {
-				interestTagCount++;
-			} else if (TagType.SKILL.getValue().equals(t.getTagType())) {
-				skillTagCount++;
-			}
+		if (CollectionUtil.isEmpty(userSystemTagReq.getSkillSelectedTags())) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "您没有选择技能标签");
 		}
+		int interestTagCount = userSystemTagReq.getInterestSelectedTags().size();
+		int skillTagCount = userSystemTagReq.getSkillSelectedTags().size();
 		if (interestTagCount == 0) {
 			throw new BusinessException("USER-0003", "您至少需要选择1个兴趣标签");
 		}
@@ -72,7 +67,11 @@ public class UserSVImpl implements IUserSV {
 		if (skillTagCount > 5) {
 			throw new BusinessException("USER-0003", "您最多只能选择5个技能标签");
 		}
-		userManagerSV.submitUserSelectedSystemTags(userSystemTagReq);
+		List<UserTag> systemTags = new ArrayList<UserTag>();
+		systemTags.addAll(userSystemTagReq.getInterestSelectedTags());
+		systemTags.addAll(userSystemTagReq.getSkillSelectedTags());
+
+		userManagerSV.submitUserSelectedSystemTags(userSystemTagReq.getUserId(), systemTags);
 		return ResponseBuilder.buildSuccessResponse("用户系统级兴趣技能标签提交成功");
 	}
 

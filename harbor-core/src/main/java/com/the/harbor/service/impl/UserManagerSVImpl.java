@@ -12,11 +12,9 @@ import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
-import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
 import com.the.harbor.api.user.param.UserTag;
 import com.the.harbor.base.constants.ExceptCodeConstants;
 import com.the.harbor.base.enumeration.hytags.Status;
-import com.the.harbor.base.enumeration.hytags.TagCat;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.enumeration.hyuser.AccessPermission;
 import com.the.harbor.base.enumeration.hyuser.IsMember;
@@ -118,8 +116,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	}
 
 	@Override
-	public void submitUserSelectedSystemTags(UserSystemTagSubmitReq userSystemTagReq) {
-		String userId = userSystemTagReq.getUserId();
+	public void submitUserSelectedSystemTags(String userId, List<UserTag> systemTags) {
 		if (StringUtil.isBlank(userId)) {
 			throw new BusinessException("USER_00001", "用户信息不存在");
 		}
@@ -130,7 +127,6 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		// 失效所有的系统级别的标签
 		this.invalidAllSystemTags(userId);
 		// 获取新提交上来的标签
-		List<UserTag> systemTags = userSystemTagReq.getSystemTags();
 		if (CollectionUtil.isEmpty(systemTags)) {
 			return;
 		}
@@ -144,6 +140,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 				hyUserTag = new HyUserTags();
 				hyUserTag.setRecordId(HarborSeqUtil.createHyUserTagsRecordId());
 				hyUserTag.setSortId(99);
+				hyUserTag.setTagId(userTag.getTagId());
 				hyUserTag.setStatus(Status.VALID.getValue());
 				hyUserTag.setTagCat(userTag.getTagCat());
 				hyUserTag.setTagName(userTag.getTagName());
@@ -162,14 +159,15 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	}
 
 	private void invalidAllSystemTags(String userId) {
-		HyUserTags record = new HyUserTags();
-		record.setStatus(Status.INVALID.getValue());
-		HyUserTagsCriteria sql = new HyUserTagsCriteria();
-		sql.or().andUserIdEqualTo(userId).andTagCatEqualTo(TagCat.SYSTEM.getValue());
-		int n = hyUserTagsMapper.updateByExampleSelective(record, sql);
-		if (n == 0) {
-			throw new SystemException("提交失败,请稍候重试");
+		List<HyUserTags> l = this.getHyUserSystemTag(userId);
+		if (CollectionUtil.isEmpty(l)) {
+			return;
 		}
+		for (HyUserTags record : l) {
+			record.setStatus(Status.INVALID.getValue());
+			hyUserTagsMapper.updateByPrimaryKey(record);
+		}
+
 	}
 
 	/**

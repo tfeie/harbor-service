@@ -1,10 +1,13 @@
 package com.the.harbor.service.interfaces;
 
+import java.util.List;
+
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
+import com.the.harbor.api.user.param.UserTag;
 import com.the.harbor.dao.mapper.bo.HyUser;
 
 public interface IUserManagerSV {
@@ -39,7 +42,7 @@ public interface IUserManagerSV {
 	 * 
 	 * @param userSystemTagReq
 	 */
-	void submitUserSelectedSystemTags(UserSystemTagSubmitReq userSystemTagReq);
+	void submitUserSelectedSystemTags(String userId,List<UserTag> systemTags);
 
 	/**
 	 * 获取用户系统级别的标签
