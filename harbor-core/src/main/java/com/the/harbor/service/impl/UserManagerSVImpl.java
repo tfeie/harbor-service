@@ -18,6 +18,7 @@ import com.the.harbor.base.enumeration.hytags.Status;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.enumeration.hyuser.AccessPermission;
 import com.the.harbor.base.enumeration.hyuser.IsMember;
+import com.the.harbor.base.enumeration.hyuser.MemberLevel;
 import com.the.harbor.base.enumeration.hyuser.UserStatus;
 import com.the.harbor.base.enumeration.hyuser.UserType;
 import com.the.harbor.base.exception.BusinessException;
@@ -70,7 +71,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		user.setRegDate(DateUtil.getSysDate());
 		user.setUserStatus(UserStatus.UNAUTHORIZED.getValue());
 		user.setAccessPermission(AccessPermission.ALL_ALLOWED.getValue());
-		user.setIsMember(IsMember.NO.getValue());
+		user.setMemberLevel(MemberLevel.NOT.getValue());
 		int success = hyUserMapper.insertSelective(user);
 		if (success == 0) {
 			throw new SystemException("注册失败,请稍候重试");

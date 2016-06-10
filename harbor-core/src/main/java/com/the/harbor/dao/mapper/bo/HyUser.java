@@ -61,7 +61,7 @@ public class HyUser {
 
     private Timestamp updateDate;
 
-    private String isMember;
+    private String memberLevel;
 
     private Timestamp effDate;
 
@@ -303,12 +303,12 @@ public class HyUser {
         this.updateDate = updateDate;
     }
 
-    public String getIsMember() {
-        return isMember;
+    public String getMemberLevel() {
+        return memberLevel;
     }
 
-    public void setIsMember(String isMember) {
-        this.isMember = isMember == null ? null : isMember.trim();
+    public void setMemberLevel(String memberLevel) {
+        this.memberLevel = memberLevel == null ? null : memberLevel.trim();
     }
 
     public Timestamp getEffDate() {

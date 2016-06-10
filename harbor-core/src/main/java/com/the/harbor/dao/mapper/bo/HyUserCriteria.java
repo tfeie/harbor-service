@@ -2115,73 +2115,73 @@ public class HyUserCriteria {
             return (Criteria) this;
         }
 
-        public Criteria andIsMemberIsNull() {
-            addCriterion("IS_MEMBER is null");
+        public Criteria andMemberLevelIsNull() {
+            addCriterion("MEMBER_LEVEL is null");
             return (Criteria) this;
         }
 
-        public Criteria andIsMemberIsNotNull() {
-            addCriterion("IS_MEMBER is not null");
+        public Criteria andMemberLevelIsNotNull() {
+            addCriterion("MEMBER_LEVEL is not null");
             return (Criteria) this;
         }
 
-        public Criteria andIsMemberEqualTo(String value) {
-            addCriterion("IS_MEMBER =", value, "isMember");
+        public Criteria andMemberLevelEqualTo(String value) {
+            addCriterion("MEMBER_LEVEL =", value, "memberLevel");
             return (Criteria) this;
         }
 
-        public Criteria andIsMemberNotEqualTo(String value) {
-            addCriterion("IS_MEMBER <>", value, "isMember");
+        public Criteria andMemberLevelNotEqualTo(String value) {
+            addCriterion("MEMBER_LEVEL <>", value, "memberLevel");
             return (Criteria) this;
         }
 
-        public Criteria andIsMemberGreaterThan(String value) {
-            addCriterion("IS_MEMBER >", value, "isMember");
+        public Criteria andMemberLevelGreaterThan(String value) {
+            addCriterion("MEMBER_LEVEL >", value, "memberLevel");
             return (Criteria) this;
         }
 
-        public Criteria andIsMemberGreaterThanOrEqualTo(String value) {
-            addCriterion("IS_MEMBER >=", value, "isMember");
+        public Criteria andMemberLevelGreaterThanOrEqualTo(String value) {
+            addCriterion("MEMBER_LEVEL >=", value, "memberLevel");
             return (Criteria) this;
         }
 
-        public Criteria andIsMemberLessThan(String value) {
-            addCriterion("IS_MEMBER <", value, "isMember");
+        public Criteria andMemberLevelLessThan(String value) {
+            addCriterion("MEMBER_LEVEL <", value, "memberLevel");
             return (Criteria) this;
         }
 
-        public Criteria andIsMemberLessThanOrEqualTo(String value) {
-            addCriterion("IS_MEMBER <=", value, "isMember");
+        public Criteria andMemberLevelLessThanOrEqualTo(String value) {
+            addCriterion("MEMBER_LEVEL <=", value, "memberLevel");
             return (Criteria) this;
         }
 
-        public Criteria andIsMemberLike(String value) {
-            addCriterion("IS_MEMBER like", value, "isMember");
+        public Criteria andMemberLevelLike(String value) {
+            addCriterion("MEMBER_LEVEL like", value, "memberLevel");
             return (Criteria) this;
         }
 
-        public Criteria andIsMemberNotLike(String value) {
-            addCriterion("IS_MEMBER not like", value, "isMember");
+        public Criteria andMemberLevelNotLike(String value) {
+            addCriterion("MEMBER_LEVEL not like", value, "memberLevel");
             return (Criteria) this;
         }
 
-        public Criteria andIsMemberIn(List<String> values) {
-            addCriterion("IS_MEMBER in", values, "isMember");
+        public Criteria andMemberLevelIn(List<String> values) {
+            addCriterion("MEMBER_LEVEL in", values, "memberLevel");
             return (Criteria) this;
         }
 
-        public Criteria andIsMemberNotIn(List<String> values) {
-            addCriterion("IS_MEMBER not in", values, "isMember");
+        public Criteria andMemberLevelNotIn(List<String> values) {
+            addCriterion("MEMBER_LEVEL not in", values, "memberLevel");
             return (Criteria) this;
         }
 
-        public Criteria andIsMemberBetween(String value1, String value2) {
-            addCriterion("IS_MEMBER between", value1, value2, "isMember");
+        public Criteria andMemberLevelBetween(String value1, String value2) {
+            addCriterion("MEMBER_LEVEL between", value1, value2, "memberLevel");
             return (Criteria) this;
         }
 
-        public Criteria andIsMemberNotBetween(String value1, String value2) {
-            addCriterion("IS_MEMBER not between", value1, value2, "isMember");
+        public Criteria andMemberLevelNotBetween(String value1, String value2) {
+            addCriterion("MEMBER_LEVEL not between", value1, value2, "memberLevel");
             return (Criteria) this;
         }
 

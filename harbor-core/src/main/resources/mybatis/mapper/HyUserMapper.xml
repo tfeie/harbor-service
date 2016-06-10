@@ -31,7 +31,7 @@
     <result column="CERTIFICATION_DATE" property="certificationDate" jdbcType="TIMESTAMP" />
     <result column="ACCESS_PERMISSION" property="accessPermission" jdbcType="VARCHAR" />
     <result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
-    <result column="IS_MEMBER" property="isMember" jdbcType="VARCHAR" />
+    <result column="MEMBER_LEVEL" property="memberLevel" jdbcType="VARCHAR" />
     <result column="EFF_DATE" property="effDate" jdbcType="TIMESTAMP" />
     <result column="EXP_DATE" property="expDate" jdbcType="TIMESTAMP" />
     <result column="WX_NICKNAME" property="wxNickname" jdbcType="VARCHAR" />
@@ -100,7 +100,7 @@
     ABROAD_UNIVERSITY, AT_COUNTRY, AT_PROVINCE, AT_CITY, SIGNATURE, MOBILE_PHONE, EMAIL, 
     MARITAL_STATUS, CONSTELLATION, COMPANY, INDUSTRY, TITLE, REG_DATE, USER_STATUS, IDCARD_PHOTO, 
     OVERSEAS_PHOTO, SUBMIT_CERT_DATE, CERTIFICATION_DATE, ACCESS_PERMISSION, UPDATE_DATE, 
-    IS_MEMBER, EFF_DATE, EXP_DATE, WX_NICKNAME, CERT_REMARK
+    MEMBER_LEVEL, EFF_DATE, EXP_DATE, WX_NICKNAME, CERT_REMARK
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyUserCriteria" >
     select
@@ -146,7 +146,7 @@
       COMPANY, INDUSTRY, TITLE, 
       REG_DATE, USER_STATUS, IDCARD_PHOTO, 
       OVERSEAS_PHOTO, SUBMIT_CERT_DATE, CERTIFICATION_DATE, 
-      ACCESS_PERMISSION, UPDATE_DATE, IS_MEMBER, 
+      ACCESS_PERMISSION, UPDATE_DATE, MEMBER_LEVEL, 
       EFF_DATE, EXP_DATE, WX_NICKNAME, 
       CERT_REMARK)
     values (#{userId,jdbcType=VARCHAR}, #{userType,jdbcType=VARCHAR}, #{hyId,jdbcType=VARCHAR}, 
@@ -158,7 +158,7 @@
       #{company,jdbcType=VARCHAR}, #{industry,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
       #{regDate,jdbcType=TIMESTAMP}, #{userStatus,jdbcType=VARCHAR}, #{idcardPhoto,jdbcType=VARCHAR}, 
       #{overseasPhoto,jdbcType=VARCHAR}, #{submitCertDate,jdbcType=TIMESTAMP}, #{certificationDate,jdbcType=TIMESTAMP}, 
-      #{accessPermission,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, #{isMember,jdbcType=VARCHAR}, 
+      #{accessPermission,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, #{memberLevel,jdbcType=VARCHAR}, 
       #{effDate,jdbcType=TIMESTAMP}, #{expDate,jdbcType=TIMESTAMP}, #{wxNickname,jdbcType=VARCHAR}, 
       #{certRemark,jdbcType=VARCHAR})
   </insert>
@@ -252,8 +252,8 @@
       <if test="updateDate != null" >
         UPDATE_DATE,
       </if>
-      <if test="isMember != null" >
-        IS_MEMBER,
+      <if test="memberLevel != null" >
+        MEMBER_LEVEL,
       </if>
       <if test="effDate != null" >
         EFF_DATE,
@@ -356,8 +356,8 @@
       <if test="updateDate != null" >
         #{updateDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="isMember != null" >
-        #{isMember,jdbcType=VARCHAR},
+      <if test="memberLevel != null" >
+        #{memberLevel,jdbcType=VARCHAR},
       </if>
       <if test="effDate != null" >
         #{effDate,jdbcType=TIMESTAMP},
@@ -469,8 +469,8 @@
       <if test="record.updateDate != null" >
         UPDATE_DATE = #{record.updateDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.isMember != null" >
-        IS_MEMBER = #{record.isMember,jdbcType=VARCHAR},
+      <if test="record.memberLevel != null" >
+        MEMBER_LEVEL = #{record.memberLevel,jdbcType=VARCHAR},
       </if>
       <if test="record.effDate != null" >
         EFF_DATE = #{record.effDate,jdbcType=TIMESTAMP},
@@ -520,7 +520,7 @@
       CERTIFICATION_DATE = #{record.certificationDate,jdbcType=TIMESTAMP},
       ACCESS_PERMISSION = #{record.accessPermission,jdbcType=VARCHAR},
       UPDATE_DATE = #{record.updateDate,jdbcType=TIMESTAMP},
-      IS_MEMBER = #{record.isMember,jdbcType=VARCHAR},
+      MEMBER_LEVEL = #{record.memberLevel,jdbcType=VARCHAR},
       EFF_DATE = #{record.effDate,jdbcType=TIMESTAMP},
       EXP_DATE = #{record.expDate,jdbcType=TIMESTAMP},
       WX_NICKNAME = #{record.wxNickname,jdbcType=VARCHAR},
@@ -616,8 +616,8 @@
       <if test="updateDate != null" >
         UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="isMember != null" >
-        IS_MEMBER = #{isMember,jdbcType=VARCHAR},
+      <if test="memberLevel != null" >
+        MEMBER_LEVEL = #{memberLevel,jdbcType=VARCHAR},
       </if>
       <if test="effDate != null" >
         EFF_DATE = #{effDate,jdbcType=TIMESTAMP},
@@ -664,7 +664,7 @@
       CERTIFICATION_DATE = #{certificationDate,jdbcType=TIMESTAMP},
       ACCESS_PERMISSION = #{accessPermission,jdbcType=VARCHAR},
       UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
-      IS_MEMBER = #{isMember,jdbcType=VARCHAR},
+      MEMBER_LEVEL = #{memberLevel,jdbcType=VARCHAR},
       EFF_DATE = #{effDate,jdbcType=TIMESTAMP},
       EXP_DATE = #{expDate,jdbcType=TIMESTAMP},
       WX_NICKNAME = #{wxNickname,jdbcType=VARCHAR},
