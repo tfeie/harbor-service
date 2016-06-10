@@ -94,8 +94,10 @@ public class UserSVImpl implements IUserSV {
 		if (query == null) {
 			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "参数为空");
 		}
-		
-		return null;
+		UserMemberInfo member = userManagerSV.queryUserMemberInfo(query.getUserId());
+		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
+		member.setResponseHeader(responseHeader);
+		return member;
 	}
 
 }
