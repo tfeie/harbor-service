@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.the.harbor.api.user.param.UserCertificationReq;
+import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
@@ -17,7 +18,6 @@ import com.the.harbor.base.constants.ExceptCodeConstants;
 import com.the.harbor.base.enumeration.hytags.Status;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.enumeration.hyuser.AccessPermission;
-import com.the.harbor.base.enumeration.hyuser.IsMember;
 import com.the.harbor.base.enumeration.hyuser.MemberLevel;
 import com.the.harbor.base.enumeration.hyuser.UserStatus;
 import com.the.harbor.base.enumeration.hyuser.UserType;
@@ -205,6 +205,41 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		resp.setSystemInterestTags(systemInterestTags);
 		resp.setSystemSkillTags(systemSkillTags);
 		return resp;
+	}
+
+	@Override
+	public UserMemberInfo queryUserMemberInfo(String userId) {
+		HyUser hyUser = this.getUserInfo(userId);
+		if (hyUser == null) {
+			throw new BusinessException("USER_00001", "您的信息不存在");
+		}
+		UserMemberInfo m = new UserMemberInfo();
+		m.setUserId(userId);
+		m.setMemberLevel(hyUser.getMemberLevel());
+		if (hyUser.getEffDate() != null) {
+			m.setEffDate(hyUser.getEffDate());
+			m.setEffDateStr(DateUtil.getDateString(hyUser.getEffDate(), DateUtil.DATE_FORMAT));
+		}
+
+		if (hyUser.getExpDate() != null) {
+			m.setExpDate(hyUser.getExpDate());
+			m.setExpDateStr(DateUtil.getDateString(hyUser.getExpDate(), DateUtil.DATE_FORMAT));
+
+			if (DateUtil.getSysDate().after(hyUser.getExpDate())) {
+				m.setExpflag(true);
+				m.setDesc(m.getExpDateStr());
+			} else {
+				m.setExpflag(false);
+				m.setDesc(m.getExpDateStr());
+			}
+		} else {
+			m.setExpflag(true);
+			if (MemberLevel.NOT.getValue().equals(m.getMemberLevel())) {
+				m.setDesc("您还不是会员");
+			}
+		}
+
+		return m;
 	}
 
 }

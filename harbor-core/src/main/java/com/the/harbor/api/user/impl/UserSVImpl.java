@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.the.harbor.api.user.IUserSV;
 import com.the.harbor.api.user.param.UserCertificationReq;
+import com.the.harbor.api.user.param.UserMemberInfo;
+import com.the.harbor.api.user.param.UserMemberQuery;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
@@ -85,6 +87,15 @@ public class UserSVImpl implements IUserSV {
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		resp.setResponseHeader(responseHeader);
 		return resp;
+	}
+
+	@Override
+	public UserMemberInfo queryUserMemberInfo(UserMemberQuery query) throws BusinessException, SystemException {
+		if (query == null) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "参数为空");
+		}
+		
+		return null;
 	}
 
 }

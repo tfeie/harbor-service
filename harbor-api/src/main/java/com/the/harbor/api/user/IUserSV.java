@@ -1,6 +1,8 @@
 package com.the.harbor.api.user;
 
 import com.the.harbor.api.user.param.UserCertificationReq;
+import com.the.harbor.api.user.param.UserMemberInfo;
+import com.the.harbor.api.user.param.UserMemberQuery;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
@@ -22,6 +24,10 @@ public interface IUserSV {
 	}
 
 	@interface QueryUserSystemTags {
+
+	}
+
+	@interface QueryUserMemberInfo {
 
 	}
 
@@ -68,5 +74,15 @@ public interface IUserSV {
 	 */
 	UserSystemTagQueryResp queryUserSystemTags(UserSystemTagQueryReq userSystemTagQueryReq)
 			throws BusinessException, SystemException;
+
+	/**
+	 * 查询会员信息
+	 * 
+	 * @param query
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	UserMemberInfo queryUserMemberInfo(UserMemberQuery query) throws BusinessException, SystemException;
 
 }
