@@ -3,6 +3,7 @@ package com.the.harbor.api.user;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberQuery;
+import com.the.harbor.api.user.param.UserQueryResp;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
@@ -84,5 +85,15 @@ public interface IUserSV {
 	 * @throws SystemException
 	 */
 	UserMemberInfo queryUserMemberInfo(UserMemberQuery query) throws BusinessException, SystemException;
+
+	/**
+	 * 根据OPENID获取用户信息
+	 * 
+	 * @param openId
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	UserQueryResp queryUserInfo(String openId) throws BusinessException, SystemException;
 
 }
