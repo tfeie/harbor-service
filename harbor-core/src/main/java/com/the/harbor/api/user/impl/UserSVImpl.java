@@ -3,13 +3,16 @@ package com.the.harbor.api.user.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.the.harbor.api.user.IUserSV;
 import com.the.harbor.api.user.param.UserCertificationReq;
+import com.the.harbor.api.user.param.UserInfo;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberQuery;
+import com.the.harbor.api.user.param.UserQueryResp;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
@@ -22,6 +25,8 @@ import com.the.harbor.base.util.ResponseBuilder;
 import com.the.harbor.base.vo.Response;
 import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.util.CollectionUtil;
+import com.the.harbor.commons.util.StringUtil;
+import com.the.harbor.dao.mapper.bo.HyUser;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 
 @Service(validation = "true")
@@ -98,6 +103,23 @@ public class UserSVImpl implements IUserSV {
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		member.setResponseHeader(responseHeader);
 		return member;
+	}
+
+	@Override
+	public UserQueryResp queryUserInfo(String openId) throws BusinessException, SystemException {
+		if (StringUtil.isBlank(openId)) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "用户微信openId为空");
+		}
+		UserInfo userInfo = null;
+		HyUser hyUser = userManagerSV.getUserByWeixin(openId);
+		if (hyUser != null) {
+			userInfo = new UserInfo();
+			BeanUtils.copyProperties(hyUser, userInfo);
+		}
+		UserQueryResp resp = new UserQueryResp();
+		resp.setUserInfo(userInfo);
+		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("查询成功"));
+		return null;
 	}
 
 }

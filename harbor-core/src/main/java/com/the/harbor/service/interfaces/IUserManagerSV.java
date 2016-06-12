@@ -28,7 +28,7 @@ public interface IUserManagerSV {
 	 * @return
 	 * @author zhangchao
 	 */
-	HyUser getUserByWeixin(String weixin);
+	HyUser getUserByWeixin(String wxOpenId);
 
 	/**
 	 * 提交认证材料
