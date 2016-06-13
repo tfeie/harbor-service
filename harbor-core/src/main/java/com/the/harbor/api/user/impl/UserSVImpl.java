@@ -119,7 +119,7 @@ public class UserSVImpl implements IUserSV {
 		UserQueryResp resp = new UserQueryResp();
 		resp.setUserInfo(userInfo);
 		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("查询成功"));
-		return null;
+		return resp;
 	}
 
 }
