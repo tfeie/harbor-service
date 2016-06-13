@@ -294,7 +294,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		UserMemberRenewalResp resp = new UserMemberRenewalResp();
 		resp.setChName(hyUser.getChName());
 		resp.setEnName(hyUser.getEnName());
-		resp.setExpDate(DateUtil.getDateString(effDate, DateUtil.DATE_FORMAT));
+		resp.setExpDate(DateUtil.getDateString(expDate, DateUtil.DATE_FORMAT));
 		resp.setPayMonth(payMonth);
 		resp.setUserId(hyUser.getUserId());
 		return resp;
