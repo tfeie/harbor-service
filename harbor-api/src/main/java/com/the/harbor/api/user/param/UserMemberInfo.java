@@ -10,6 +10,8 @@ public class UserMemberInfo extends Response {
 
 	private String userId;
 
+	private String openId;
+
 	private String memberLevel;
 
 	private Timestamp effDate;
@@ -19,7 +21,7 @@ public class UserMemberInfo extends Response {
 	private String effDateStr;
 
 	private String expDateStr;
-	
+
 	/**
 	 * 是否到期
 	 */
@@ -93,7 +95,13 @@ public class UserMemberInfo extends Response {
 	public void setExpflag(boolean expflag) {
 		this.expflag = expflag;
 	}
-	
-	
+
+	public String getOpenId() {
+		return openId;
+	}
+
+	public void setOpenId(String openId) {
+		this.openId = openId;
+	}
 
 }

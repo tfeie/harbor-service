@@ -215,6 +215,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		}
 		UserMemberInfo m = new UserMemberInfo();
 		m.setUserId(userId);
+		m.setOpenId(hyUser.getWxOpenid());
 		m.setMemberLevel(hyUser.getMemberLevel());
 		if (hyUser.getEffDate() != null) {
 			m.setEffDate(hyUser.getEffDate());
