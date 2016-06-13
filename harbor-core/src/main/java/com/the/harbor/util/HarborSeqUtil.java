@@ -47,4 +47,8 @@ public final class HarborSeqUtil {
 		return SeqUtil.getNewId(HarborSeqConstants.HY_USER_TAGS$RECORD_ID$SEQ);
 	}
 
+	public static String createPayOrderId() {
+		return UUIDUtil.genId32();
+	}
+
 }

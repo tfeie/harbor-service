@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.the.harbor.dao.mapper.interfaces.HyPaymentOrderMapper" >
+  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyPaymentOrder" >
+    <id column="PAY_ORDER_ID" property="payOrderId" jdbcType="VARCHAR" />
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="BUSI_TYPE" property="busiType" jdbcType="VARCHAR" />
+    <result column="PAY_AMOUNT" property="payAmount" jdbcType="BIGINT" />
+    <result column="PAY_TYPE" property="payType" jdbcType="VARCHAR" />
+    <result column="SUMMARY" property="summary" jdbcType="VARCHAR" />
+    <result column="PAY_DATE" property="payDate" jdbcType="TIMESTAMP" />
+    <result column="PAY_STATUS" property="payStatus" jdbcType="VARCHAR" />
+    <result column="NOTIFY_DATE" property="notifyDate" jdbcType="TIMESTAMP" />
+    <result column="transaction_id" property="transactionId" jdbcType="VARCHAR" />
+    <result column="time_end" property="timeEnd" jdbcType="VARCHAR" />
+    <result column="result_code" property="resultCode" jdbcType="VARCHAR" />
+    <result column="return_code" property="returnCode" jdbcType="VARCHAR" />
+    <result column="return_msg" property="returnMsg" jdbcType="VARCHAR" />
+    <result column="notify_param" property="notifyParam" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    PAY_ORDER_ID, USER_ID, BUSI_TYPE, PAY_AMOUNT, PAY_TYPE, SUMMARY, PAY_DATE, PAY_STATUS, 
+    NOTIFY_DATE, transaction_id, time_end, result_code, return_code, return_msg, notify_param
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyPaymentOrderCriteria" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'false' as QUERYID,
+    <include refid="Base_Column_List" />
+    from hy_payment_order
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from hy_payment_order
+    where PAY_ORDER_ID = #{payOrderId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from hy_payment_order
+    where PAY_ORDER_ID = #{payOrderId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HyPaymentOrderCriteria" >
+    delete from hy_payment_order
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyPaymentOrder" >
+    insert into hy_payment_order (PAY_ORDER_ID, USER_ID, BUSI_TYPE, 
+      PAY_AMOUNT, PAY_TYPE, SUMMARY, 
+      PAY_DATE, PAY_STATUS, NOTIFY_DATE, 
+      transaction_id, time_end, result_code, 
+      return_code, return_msg, notify_param
+      )
+    values (#{payOrderId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{busiType,jdbcType=VARCHAR}, 
+      #{payAmount,jdbcType=BIGINT}, #{payType,jdbcType=VARCHAR}, #{summary,jdbcType=VARCHAR}, 
+      #{payDate,jdbcType=TIMESTAMP}, #{payStatus,jdbcType=VARCHAR}, #{notifyDate,jdbcType=TIMESTAMP}, 
+      #{transactionId,jdbcType=VARCHAR}, #{timeEnd,jdbcType=VARCHAR}, #{resultCode,jdbcType=VARCHAR}, 
+      #{returnCode,jdbcType=VARCHAR}, #{returnMsg,jdbcType=VARCHAR}, #{notifyParam,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyPaymentOrder" >
+    insert into hy_payment_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="payOrderId != null" >
+        PAY_ORDER_ID,
+      </if>
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      <if test="busiType != null" >
+        BUSI_TYPE,
+      </if>
+      PAY_AMOUNT,
+      <if test="payType != null" >
+        PAY_TYPE,
+      </if>
+      <if test="summary != null" >
+        SUMMARY,
+      </if>
+      <if test="payDate != null" >
+        PAY_DATE,
+      </if>
+      <if test="payStatus != null" >
+        PAY_STATUS,
+      </if>
+      <if test="notifyDate != null" >
+        NOTIFY_DATE,
+      </if>
+      <if test="transactionId != null" >
+        transaction_id,
+      </if>
+      <if test="timeEnd != null" >
+        time_end,
+      </if>
+      <if test="resultCode != null" >
+        result_code,
+      </if>
+      <if test="returnCode != null" >
+        return_code,
+      </if>
+      <if test="returnMsg != null" >
+        return_msg,
+      </if>
+      <if test="notifyParam != null" >
+        notify_param,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="payOrderId != null" >
+        #{payOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="busiType != null" >
+        #{busiType,jdbcType=VARCHAR},
+      </if>
+      #{payAmount,jdbcType=BIGINT},
+      <if test="payType != null" >
+        #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="summary != null" >
+        #{summary,jdbcType=VARCHAR},
+      </if>
+      <if test="payDate != null" >
+        #{payDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payStatus != null" >
+        #{payStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="notifyDate != null" >
+        #{notifyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="transactionId != null" >
+        #{transactionId,jdbcType=VARCHAR},
+      </if>
+      <if test="timeEnd != null" >
+        #{timeEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="resultCode != null" >
+        #{resultCode,jdbcType=VARCHAR},
+      </if>
+      <if test="returnCode != null" >
+        #{returnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="returnMsg != null" >
+        #{returnMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="notifyParam != null" >
+        #{notifyParam,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyPaymentOrderCriteria" resultType="java.lang.Integer" >
+    select count(*) from hy_payment_order
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hy_payment_order
+    <set >
+      <if test="record.payOrderId != null" >
+        PAY_ORDER_ID = #{record.payOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null" >
+        USER_ID = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.busiType != null" >
+        BUSI_TYPE = #{record.busiType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.payAmount != null" >
+        PAY_AMOUNT = #{record.payAmount,jdbcType=BIGINT},
+      </if>
+      <if test="record.payType != null" >
+        PAY_TYPE = #{record.payType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.summary != null" >
+        SUMMARY = #{record.summary,jdbcType=VARCHAR},
+      </if>
+      <if test="record.payDate != null" >
+        PAY_DATE = #{record.payDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.payStatus != null" >
+        PAY_STATUS = #{record.payStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.notifyDate != null" >
+        NOTIFY_DATE = #{record.notifyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.transactionId != null" >
+        transaction_id = #{record.transactionId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.timeEnd != null" >
+        time_end = #{record.timeEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="record.resultCode != null" >
+        result_code = #{record.resultCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.returnCode != null" >
+        return_code = #{record.returnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.returnMsg != null" >
+        return_msg = #{record.returnMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.notifyParam != null" >
+        notify_param = #{record.notifyParam,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hy_payment_order
+    set PAY_ORDER_ID = #{record.payOrderId,jdbcType=VARCHAR},
+      USER_ID = #{record.userId,jdbcType=VARCHAR},
+      BUSI_TYPE = #{record.busiType,jdbcType=VARCHAR},
+      PAY_AMOUNT = #{record.payAmount,jdbcType=BIGINT},
+      PAY_TYPE = #{record.payType,jdbcType=VARCHAR},
+      SUMMARY = #{record.summary,jdbcType=VARCHAR},
+      PAY_DATE = #{record.payDate,jdbcType=TIMESTAMP},
+      PAY_STATUS = #{record.payStatus,jdbcType=VARCHAR},
+      NOTIFY_DATE = #{record.notifyDate,jdbcType=TIMESTAMP},
+      transaction_id = #{record.transactionId,jdbcType=VARCHAR},
+      time_end = #{record.timeEnd,jdbcType=VARCHAR},
+      result_code = #{record.resultCode,jdbcType=VARCHAR},
+      return_code = #{record.returnCode,jdbcType=VARCHAR},
+      return_msg = #{record.returnMsg,jdbcType=VARCHAR},
+      notify_param = #{record.notifyParam,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HyPaymentOrder" >
+    update hy_payment_order
+    <set >
+      <if test="userId != null" >
+        USER_ID = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="busiType != null" >
+        BUSI_TYPE = #{busiType,jdbcType=VARCHAR},
+      </if>
+      <if test="payAmount != null" >
+        PAY_AMOUNT = #{payAmount,jdbcType=BIGINT},
+      </if>
+      <if test="payType != null" >
+        PAY_TYPE = #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="summary != null" >
+        SUMMARY = #{summary,jdbcType=VARCHAR},
+      </if>
+      <if test="payDate != null" >
+        PAY_DATE = #{payDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payStatus != null" >
+        PAY_STATUS = #{payStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="notifyDate != null" >
+        NOTIFY_DATE = #{notifyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="transactionId != null" >
+        transaction_id = #{transactionId,jdbcType=VARCHAR},
+      </if>
+      <if test="timeEnd != null" >
+        time_end = #{timeEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="resultCode != null" >
+        result_code = #{resultCode,jdbcType=VARCHAR},
+      </if>
+      <if test="returnCode != null" >
+        return_code = #{returnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="returnMsg != null" >
+        return_msg = #{returnMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="notifyParam != null" >
+        notify_param = #{notifyParam,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where PAY_ORDER_ID = #{payOrderId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyPaymentOrder" >
+    update hy_payment_order
+    set USER_ID = #{userId,jdbcType=VARCHAR},
+      BUSI_TYPE = #{busiType,jdbcType=VARCHAR},
+      PAY_AMOUNT = #{payAmount,jdbcType=BIGINT},
+      PAY_TYPE = #{payType,jdbcType=VARCHAR},
+      SUMMARY = #{summary,jdbcType=VARCHAR},
+      PAY_DATE = #{payDate,jdbcType=TIMESTAMP},
+      PAY_STATUS = #{payStatus,jdbcType=VARCHAR},
+      NOTIFY_DATE = #{notifyDate,jdbcType=TIMESTAMP},
+      transaction_id = #{transactionId,jdbcType=VARCHAR},
+      time_end = #{timeEnd,jdbcType=VARCHAR},
+      result_code = #{resultCode,jdbcType=VARCHAR},
+      return_code = #{returnCode,jdbcType=VARCHAR},
+      return_msg = #{returnMsg,jdbcType=VARCHAR},
+      notify_param = #{notifyParam,jdbcType=VARCHAR}
+    where PAY_ORDER_ID = #{payOrderId,jdbcType=VARCHAR}
+  </update>
+</mapper>

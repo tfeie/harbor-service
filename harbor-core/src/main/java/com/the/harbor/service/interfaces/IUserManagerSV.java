@@ -59,5 +59,8 @@ public interface IUserManagerSV {
 	 * @return
 	 */
 	UserMemberInfo queryUserMemberInfo(String userId);
+	
+	
+	HyUser getUserInfo(String userId);
 
 }

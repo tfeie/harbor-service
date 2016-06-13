@@ -90,7 +90,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		return CollectionUtil.isEmpty(users) ? null : users.get(0);
 	}
 
-	private HyUser getUserInfo(String userId) {
+	public HyUser getUserInfo(String userId) {
 		HyUser user = hyUserMapper.selectByPrimaryKey(userId);
 		return user;
 	}
