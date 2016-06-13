@@ -12,6 +12,8 @@ import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserInfo;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberQuery;
+import com.the.harbor.api.user.param.UserMemberRenewalReq;
+import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserQueryResp;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
@@ -26,7 +28,9 @@ import com.the.harbor.base.vo.Response;
 import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.StringUtil;
+import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
 import com.the.harbor.dao.mapper.bo.HyUser;
+import com.the.harbor.service.interfaces.IPaymentBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 
 @Service(validation = "true")
@@ -34,6 +38,9 @@ public class UserSVImpl implements IUserSV {
 
 	@Autowired
 	private transient IUserManagerSV userManagerSV;
+
+	@Autowired
+	private transient IPaymentBusiSV paymentBusiSV;
 
 	@Override
 	public Response userRegister(UserRegReq userRegReq) throws BusinessException, SystemException {
@@ -119,6 +126,26 @@ public class UserSVImpl implements IUserSV {
 		UserQueryResp resp = new UserQueryResp();
 		resp.setUserInfo(userInfo);
 		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("查询成功"));
+		return resp;
+	}
+
+	@Override
+	public UserMemberRenewalResp userMemberRenewal(UserMemberRenewalReq userMemberRenewalReq)
+			throws BusinessException, SystemException {
+		if (userMemberRenewalReq == null) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "参数为空");
+		}
+		if (userMemberRenewalReq.getPayMonth() == 0) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "您的购买时长为0个月，请重选");
+		}
+		// 判断的支付的交易流水是否正确
+		HyPaymentOrder payOrder = paymentBusiSV.getHyPaymentOrder(userMemberRenewalReq.getPayOrderId());
+		if (payOrder == null) {
+			throw new BusinessException("PAY_00001", "您输入的会员支付交易流水不正确，无法续期");
+		}
+		// 执行续期动作
+		UserMemberRenewalResp resp = userManagerSV.userMemberRenewal(userMemberRenewalReq);
+		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("会员续期成功"));
 		return resp;
 	}
 

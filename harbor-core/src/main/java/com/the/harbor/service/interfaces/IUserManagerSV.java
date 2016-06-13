@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
+import com.the.harbor.api.user.param.UserMemberRenewalReq;
+import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
@@ -59,8 +61,21 @@ public interface IUserManagerSV {
 	 * @return
 	 */
 	UserMemberInfo queryUserMemberInfo(String userId);
-	
-	
+
+	/**
+	 * 获取用户信息
+	 * 
+	 * @param userId
+	 * @return
+	 */
 	HyUser getUserInfo(String userId);
+
+	/**
+	 * 会员缴费续期
+	 * 
+	 * @param userMemberRenewalReq
+	 * @return
+	 */
+	UserMemberRenewalResp userMemberRenewal(UserMemberRenewalReq userMemberRenewalReq);
 
 }

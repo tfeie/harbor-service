@@ -1,5 +1,6 @@
 package com.the.harbor.service.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
+import com.the.harbor.api.user.param.UserMemberRenewalReq;
+import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
@@ -241,6 +244,60 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		}
 
 		return m;
+	}
+
+	@Override
+	public UserMemberRenewalResp userMemberRenewal(UserMemberRenewalReq userMemberRenewalReq) {
+		// 校验用户信息
+		HyUser hyUser = this.getUserInfo(userMemberRenewalReq.getUserId());
+		if (hyUser == null) {
+			throw new BusinessException("USER_00001", "传入的用户不存在");
+		}
+		if (hyUser.getWxOpenid().equals(userMemberRenewalReq.getOpenId())) {
+			throw new BusinessException("USER_00002", "传入的微信openId与实际不符合，无法续期");
+		}
+		// 获取续期月份
+		int payMonth = userMemberRenewalReq.getPayMonth();
+		// 获取当前系统时间
+		Timestamp sysdate = DateUtil.getSysDate();
+		Timestamp effDate = null;
+		Timestamp expDate = null;
+		String memberLevel = hyUser.getMemberLevel();
+		// 会员续期的生失效时间计算
+		if (MemberLevel.NOT.getValue().equals(hyUser.getMemberLevel())) {
+			/* 1.如果当前用户还不是会员，购买成功后为普通会员。会员的生效日期为当前时间，失效日期为当前日期+购买月份 */
+			effDate = sysdate;
+			expDate = DateUtil.getOffsetMonthsTime(sysdate, payMonth);
+			memberLevel = MemberLevel.COMMON.getValue();
+		} else {
+			/* 2.如果已经是会员了，生效时间不变，失效时间需要判断是否已经过期 */
+			effDate = hyUser.getEffDate();
+			if (hyUser.getExpDate() == null) {
+				// 如果没有失效时间，理论上不存在。则默认设计为当前时间+购买月份
+				expDate = DateUtil.getOffsetMonthsTime(sysdate, payMonth);
+			} else {
+				if (sysdate.after(hyUser.getExpDate())) {
+					// 如果失效时间已经过期，则表示用户早前是会员，中间没有续费。此时续费后，失效时间为当前时间+购买月份
+					expDate = DateUtil.getOffsetMonthsTime(sysdate, payMonth);
+				} else {
+					// 如果失效时间还没有到期，则表示当前用户是会员。此时续费后，失效时间为用户当前会员失效时间+购买月份
+					expDate = DateUtil.getOffsetMonthsTime(hyUser.getExpDate(), payMonth);
+				}
+			}
+		}
+		// 执行会员续期
+		hyUser.setEffDate(effDate);
+		hyUser.setExpDate(expDate);
+		hyUser.setMemberLevel(memberLevel);
+		hyUserMapper.updateByPrimaryKeySelective(hyUser);
+		// 组织返回
+		UserMemberRenewalResp resp = new UserMemberRenewalResp();
+		resp.setChName(hyUser.getChName());
+		resp.setEnName(hyUser.getEnName());
+		resp.setExpDate(DateUtil.getDateString(effDate, DateUtil.DATE_FORMAT));
+		resp.setPayMonth(payMonth);
+		resp.setUserId(hyUser.getUserId());
+		return resp;
 	}
 
 }

@@ -3,6 +3,8 @@ package com.the.harbor.api.user;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberQuery;
+import com.the.harbor.api.user.param.UserMemberRenewalReq;
+import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserQueryResp;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
@@ -30,6 +32,10 @@ public interface IUserSV {
 
 	@interface QueryUserMemberInfo {
 
+	}
+	
+	@interface UserMemberRenewal{
+		
 	}
 
 	/**
@@ -95,5 +101,16 @@ public interface IUserSV {
 	 * @throws SystemException
 	 */
 	UserQueryResp queryUserInfo(String openId) throws BusinessException, SystemException;
+
+	/**
+	 * 会员续期服务
+	 * 
+	 * @param userMemberRenewalReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	UserMemberRenewalResp userMemberRenewal(UserMemberRenewalReq userMemberRenewalReq)
+			throws BusinessException, SystemException;
 
 }
