@@ -253,7 +253,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		if (hyUser == null) {
 			throw new BusinessException("USER_00001", "传入的用户不存在");
 		}
-		if (hyUser.getWxOpenid().equals(userMemberRenewalReq.getOpenId())) {
+		if (!hyUser.getWxOpenid().equals(userMemberRenewalReq.getOpenId())) {
 			throw new BusinessException("USER_00002", "传入的微信openId与实际不符合，无法续期");
 		}
 		// 获取续期月份
