@@ -28,6 +28,7 @@ public class PaymentBusiSVImpl implements IPaymentBusiSV {
 		p.setPayAmount(createPaymentOrderReq.getPayAmount());
 		p.setPayDate(DateUtil.getSysDate());
 		p.setPayStatus(PayStatus.NO_PAY.getValue());
+		p.setPayType(createPaymentOrderReq.getPayType());
 		p.setSummary(createPaymentOrderReq.getSummary());
 		p.setUserId(createPaymentOrderReq.getUserId());
 		hyPaymentOrderMapper.insertSelective(p);
