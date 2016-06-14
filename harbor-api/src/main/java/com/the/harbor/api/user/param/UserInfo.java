@@ -349,4 +349,14 @@ public class UserInfo implements Serializable {
 		this.certRemark = certRemark;
 	}
 
+	public String getHomePageBg() {
+		return homePageBg;
+	}
+
+	public void setHomePageBg(String homePageBg) {
+		this.homePageBg = homePageBg;
+	}
+	
+	
+
 }
