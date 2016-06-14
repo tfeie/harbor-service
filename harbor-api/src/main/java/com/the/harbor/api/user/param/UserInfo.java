@@ -19,7 +19,7 @@ public class UserInfo implements Serializable {
 
 	private String sex;
 
-	private String wxOpenid;
+	private transient String wxOpenid;
 
 	private String wxHeadimg;
 
@@ -74,6 +74,8 @@ public class UserInfo implements Serializable {
 	private String wxNickname;
 
 	private String certRemark;
+
+	private String homePageBg;
 
 	public String getUserId() {
 		return userId;

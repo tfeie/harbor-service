@@ -71,6 +71,8 @@ public class HyUser {
 
     private String certRemark;
 
+    private String homePageBg;
+
     public String getUserId() {
         return userId;
     }
@@ -341,5 +343,13 @@ public class HyUser {
 
     public void setCertRemark(String certRemark) {
         this.certRemark = certRemark == null ? null : certRemark.trim();
+    }
+
+    public String getHomePageBg() {
+        return homePageBg;
+    }
+
+    public void setHomePageBg(String homePageBg) {
+        this.homePageBg = homePageBg == null ? null : homePageBg.trim();
     }
 }

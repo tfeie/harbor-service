@@ -10,7 +10,7 @@ public class UserMemberInfo extends Response {
 
 	private String userId;
 
-	private String openId;
+	private transient String openId;
 
 	private String memberLevel;
 

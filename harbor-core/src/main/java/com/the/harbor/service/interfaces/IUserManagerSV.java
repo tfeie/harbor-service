@@ -3,6 +3,7 @@ package com.the.harbor.service.interfaces;
 import java.util.List;
 
 import com.the.harbor.api.user.param.UserCertificationReq;
+import com.the.harbor.api.user.param.UserEditReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberRenewalReq;
 import com.the.harbor.api.user.param.UserMemberRenewalResp;
@@ -10,6 +11,8 @@ import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserTag;
+import com.the.harbor.api.user.param.UserTagQueryReq;
+import com.the.harbor.api.user.param.UserTagQueryResp;
 import com.the.harbor.dao.mapper.bo.HyUser;
 
 public interface IUserManagerSV {
@@ -77,5 +80,20 @@ public interface IUserManagerSV {
 	 * @return
 	 */
 	UserMemberRenewalResp userMemberRenewal(UserMemberRenewalReq userMemberRenewalReq);
+
+	/**
+	 * 用户资料编辑
+	 * 
+	 * @param userEditReq
+	 */
+	void userEdit(UserEditReq userEditReq);
+
+	/**
+	 * 获取用户所有选择的标签
+	 * 
+	 * @param userTagQueryReq
+	 * @return
+	 */
+	UserTagQueryResp queryUserTags(UserTagQueryReq userTagQueryReq);
 
 }

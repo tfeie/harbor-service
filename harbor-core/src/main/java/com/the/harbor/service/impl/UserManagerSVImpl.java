@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.the.harbor.api.user.param.UserCertificationReq;
+import com.the.harbor.api.user.param.UserEditReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberRenewalReq;
 import com.the.harbor.api.user.param.UserMemberRenewalResp;
@@ -17,8 +18,11 @@ import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserTag;
+import com.the.harbor.api.user.param.UserTagQueryReq;
+import com.the.harbor.api.user.param.UserTagQueryResp;
 import com.the.harbor.base.constants.ExceptCodeConstants;
 import com.the.harbor.base.enumeration.hytags.Status;
+import com.the.harbor.base.enumeration.hytags.TagCat;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.enumeration.hyuser.AccessPermission;
 import com.the.harbor.base.enumeration.hyuser.MemberLevel;
@@ -134,6 +138,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		if (CollectionUtil.isEmpty(systemTags)) {
 			return;
 		}
+		int index = 1;
 		for (UserTag userTag : systemTags) {
 			// 判断标签ID是否存在
 			HyUserTags hyUserTag = this.getHyUserTag(userTag.getTagId(), userId);
@@ -143,7 +148,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			} else {
 				hyUserTag = new HyUserTags();
 				hyUserTag.setRecordId(HarborSeqUtil.createHyUserTagsRecordId());
-				hyUserTag.setSortId(99);
+				hyUserTag.setSortId(index);
 				hyUserTag.setTagId(userTag.getTagId());
 				hyUserTag.setStatus(Status.VALID.getValue());
 				hyUserTag.setTagCat(userTag.getTagCat());
@@ -152,6 +157,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 				hyUserTag.setUserId(userId);
 				hyUserTagsMapper.insert(hyUserTag);
 			}
+			index++;
 		}
 	}
 
@@ -181,6 +187,37 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	 * @return
 	 */
 	private List<HyUserTags> getHyUserSystemTag(String userId) {
+		HyUserTagsCriteria sql = new HyUserTagsCriteria();
+		sql.or().andUserIdEqualTo(userId).andTagCatEqualTo(TagCat.SYSTEM.getValue())
+				.andStatusEqualTo(Status.VALID.getValue());
+		List<HyUserTags> list = hyUserTagsMapper.selectByExample(sql);
+		return list;
+	}
+
+	/**
+	 * 失效用户所有的标签
+	 * 
+	 * @param userId
+	 */
+	private void invalidAllTags(String userId) {
+		List<HyUserTags> l = this.getHyUserTags(userId);
+		if (CollectionUtil.isEmpty(l)) {
+			return;
+		}
+		for (HyUserTags record : l) {
+			record.setStatus(Status.INVALID.getValue());
+			hyUserTagsMapper.updateByPrimaryKey(record);
+		}
+
+	}
+
+	/**
+	 * 获取用户所有有效的标签：系统+自定义
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	private List<HyUserTags> getHyUserTags(String userId) {
 		HyUserTagsCriteria sql = new HyUserTagsCriteria();
 		sql.or().andUserIdEqualTo(userId).andStatusEqualTo(Status.VALID.getValue());
 		List<HyUserTags> list = hyUserTagsMapper.selectByExample(sql);
@@ -297,6 +334,85 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		resp.setExpDate(DateUtil.getDateString(expDate, DateUtil.DATE_FORMAT));
 		resp.setPayMonth(payMonth);
 		resp.setUserId(hyUser.getUserId());
+		return resp;
+	}
+
+	@Override
+	public void userEdit(UserEditReq userEditReq) {
+		// 校验用户信息
+		HyUser hyUser = this.getUserInfo(userEditReq.getUserId());
+		if (hyUser == null) {
+			throw new BusinessException("USER_00001", "用户不存在");
+		}
+		if (!hyUser.getWxOpenid().equals(userEditReq.getWxOpenid())) {
+			throw new BusinessException("USER_00002", "传入的微信openId与实际不符合");
+		}
+		// 判断是否有自定义的标签
+		List<UserTag> tags = new ArrayList<UserTag>();
+		if (!CollectionUtil.isEmpty(userEditReq.getInterestSelectedTags())) {
+			tags.addAll(userEditReq.getInterestSelectedTags());
+		}
+		if (!CollectionUtil.isEmpty(userEditReq.getSkillSelectedTags())) {
+			tags.addAll(userEditReq.getSkillSelectedTags());
+		}
+		// 更新用户基本资料
+		HyUser user = new HyUser();
+		BeanUtils.copyProperties(user, userEditReq);
+		user.setUserId(userEditReq.getUserId());
+		hyUserMapper.updateByPrimaryKeySelective(user);
+		// 先失效所有标签
+		this.invalidAllTags(hyUser.getUserId());
+
+		// 获取新提交上来的标签
+		if (CollectionUtil.isEmpty(tags)) {
+			return;
+		}
+		int index = 1;
+		for (UserTag userTag : tags) {
+			// 判断标签ID是否存在
+			if (!StringUtil.isBlank(userTag.getTagId())) {
+				HyUserTags hyUserTag = this.getHyUserTag(userTag.getTagId(), hyUser.getUserId());
+				if (hyUserTag != null) {
+					hyUserTag.setSortId(index);
+					hyUserTag.setStatus(Status.VALID.getValue());
+					hyUserTagsMapper.updateByPrimaryKey(hyUserTag);
+				}
+			} else {
+				HyUserTags hyUserTag = new HyUserTags();
+				hyUserTag.setRecordId(HarborSeqUtil.createHyUserTagsRecordId());
+				hyUserTag.setSortId(index);
+				hyUserTag.setTagId(HarborSeqUtil.createTagId(userTag.getTagType()));
+				hyUserTag.setStatus(Status.VALID.getValue());
+				hyUserTag.setTagCat(userTag.getTagCat());
+				hyUserTag.setTagName(userTag.getTagName());
+				hyUserTag.setTagType(userTag.getTagType());
+				hyUserTag.setUserId(hyUser.getUserId());
+				hyUserTagsMapper.insert(hyUserTag);
+			}
+			index++;
+		}
+	}
+
+	@Override
+	public UserTagQueryResp queryUserTags(UserTagQueryReq userTagQueryReq) {
+		List<HyUserTags> list = this.getHyUserTags(userTagQueryReq.getUserId());
+		List<UserTag> interestTags = new ArrayList<UserTag>();
+		List<UserTag> skillTags = new ArrayList<UserTag>();
+		if (!CollectionUtil.isEmpty(list)) {
+			for (HyUserTags t : list) {
+				UserTag o = new UserTag();
+				BeanUtils.copyProperties(t, o);
+				if (TagType.INTEREST.getValue().equals(t.getTagType())) {
+					interestTags.add(o);
+				} else if (TagType.SKILL.getValue().equals(t.getTagType())) {
+					skillTags.add(o);
+				}
+			}
+		}
+		UserTagQueryResp resp = new UserTagQueryResp();
+		resp.setUserId(userTagQueryReq.getUserId());
+		resp.setInterestTags(interestTags);
+		resp.setSkillTags(skillTags);
 		return resp;
 	}
 

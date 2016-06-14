@@ -16,15 +16,15 @@ public class UserTag implements Serializable {
 	@NotBlank(message = "标签ID不能为空", groups = { IUserSV.SumitUserSelectedSystemTags.class })
 	private String tagId;
 
-	@NotBlank(message = "标签类型不能为空", groups = { IUserSV.SumitUserSelectedSystemTags.class })
+	@NotBlank(message = "标签类型不能为空", groups = { IUserSV.SumitUserSelectedSystemTags.class, IUserSV.UserEdit.class })
 	@StringEnum(enumClazz = TagType.class, message = "标签类型取值不正确", groups = {
 			IUserSV.SumitUserSelectedSystemTags.class })
 	private String tagType;
 
-	@NotBlank(message = "标签名称不能为空", groups = { IUserSV.SumitUserSelectedSystemTags.class })
+	@NotBlank(message = "标签名称不能为空", groups = { IUserSV.SumitUserSelectedSystemTags.class, IUserSV.UserEdit.class })
 	private String tagName;
 
-	@NotBlank(message = "标签类目不能为空", groups = { IUserSV.SumitUserSelectedSystemTags.class })
+	@NotBlank(message = "标签类目不能为空", groups = { IUserSV.SumitUserSelectedSystemTags.class, IUserSV.UserEdit.class })
 	@StringEnum(enumClazz = TagCat.class, message = "标签类目取值不正确", groups = { IUserSV.SumitUserSelectedSystemTags.class })
 	private String tagCat;
 

@@ -1,6 +1,7 @@
 package com.the.harbor.api.user;
 
 import com.the.harbor.api.user.param.UserCertificationReq;
+import com.the.harbor.api.user.param.UserEditReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberQuery;
 import com.the.harbor.api.user.param.UserMemberRenewalReq;
@@ -10,6 +11,8 @@ import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
+import com.the.harbor.api.user.param.UserTagQueryReq;
+import com.the.harbor.api.user.param.UserTagQueryResp;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.base.vo.Response;
@@ -17,6 +20,10 @@ import com.the.harbor.base.vo.Response;
 public interface IUserSV {
 
 	@interface UserRegister {
+	}
+
+	@interface UserEdit {
+
 	}
 
 	@interface SubmitUserCertification {
@@ -33,9 +40,13 @@ public interface IUserSV {
 	@interface QueryUserMemberInfo {
 
 	}
-	
-	@interface UserMemberRenewal{
-		
+
+	@interface UserMemberRenewal {
+
+	}
+
+	@interface QueryUserTags {
+
 	}
 
 	/**
@@ -100,7 +111,7 @@ public interface IUserSV {
 	 * @throws BusinessException
 	 * @throws SystemException
 	 */
-	UserQueryResp queryUserInfo(String openId) throws BusinessException, SystemException;
+	UserQueryResp queryUserInfoByOpenId(String openId) throws BusinessException, SystemException;
 
 	/**
 	 * 会员续期服务
@@ -112,5 +123,35 @@ public interface IUserSV {
 	 */
 	UserMemberRenewalResp userMemberRenewal(UserMemberRenewalReq userMemberRenewalReq)
 			throws BusinessException, SystemException;
+
+	/**
+	 * 根据userId获取用户信息
+	 * 
+	 * @param openId
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	UserQueryResp queryUserInfoByUserId(String userId) throws BusinessException, SystemException;
+
+	/**
+	 * 编辑用户资料
+	 * 
+	 * @param userEditReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	Response userEdit(UserEditReq userEditReq) throws BusinessException, SystemException;
+
+	/**
+	 * 获取用户选择的所有标签
+	 * 
+	 * @param userTagQueryReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	UserTagQueryResp queryUserTags(UserTagQueryReq userTagQueryReq) throws BusinessException, SystemException;
 
 }

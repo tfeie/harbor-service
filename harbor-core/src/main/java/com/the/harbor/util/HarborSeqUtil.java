@@ -51,4 +51,10 @@ public final class HarborSeqUtil {
 		return UUIDUtil.genId32();
 	}
 
+	public static String createTagId(String tagType) {
+		StringBuffer sb = new StringBuffer(tagType);
+		sb.append(SeqUtil.getNewId(HarborSeqConstants.CUSTOMIZED$TAG_ID$SEQ, 6));
+		return sb.toString();
+	}
+
 }

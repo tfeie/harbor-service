@@ -2444,6 +2444,76 @@ public class HyUserCriteria {
             addCriterion("CERT_REMARK not between", value1, value2, "certRemark");
             return (Criteria) this;
         }
+
+        public Criteria andHomePageBgIsNull() {
+            addCriterion("HOME_PAGE_BG is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHomePageBgIsNotNull() {
+            addCriterion("HOME_PAGE_BG is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHomePageBgEqualTo(String value) {
+            addCriterion("HOME_PAGE_BG =", value, "homePageBg");
+            return (Criteria) this;
+        }
+
+        public Criteria andHomePageBgNotEqualTo(String value) {
+            addCriterion("HOME_PAGE_BG <>", value, "homePageBg");
+            return (Criteria) this;
+        }
+
+        public Criteria andHomePageBgGreaterThan(String value) {
+            addCriterion("HOME_PAGE_BG >", value, "homePageBg");
+            return (Criteria) this;
+        }
+
+        public Criteria andHomePageBgGreaterThanOrEqualTo(String value) {
+            addCriterion("HOME_PAGE_BG >=", value, "homePageBg");
+            return (Criteria) this;
+        }
+
+        public Criteria andHomePageBgLessThan(String value) {
+            addCriterion("HOME_PAGE_BG <", value, "homePageBg");
+            return (Criteria) this;
+        }
+
+        public Criteria andHomePageBgLessThanOrEqualTo(String value) {
+            addCriterion("HOME_PAGE_BG <=", value, "homePageBg");
+            return (Criteria) this;
+        }
+
+        public Criteria andHomePageBgLike(String value) {
+            addCriterion("HOME_PAGE_BG like", value, "homePageBg");
+            return (Criteria) this;
+        }
+
+        public Criteria andHomePageBgNotLike(String value) {
+            addCriterion("HOME_PAGE_BG not like", value, "homePageBg");
+            return (Criteria) this;
+        }
+
+        public Criteria andHomePageBgIn(List<String> values) {
+            addCriterion("HOME_PAGE_BG in", values, "homePageBg");
+            return (Criteria) this;
+        }
+
+        public Criteria andHomePageBgNotIn(List<String> values) {
+            addCriterion("HOME_PAGE_BG not in", values, "homePageBg");
+            return (Criteria) this;
+        }
+
+        public Criteria andHomePageBgBetween(String value1, String value2) {
+            addCriterion("HOME_PAGE_BG between", value1, value2, "homePageBg");
+            return (Criteria) this;
+        }
+
+        public Criteria andHomePageBgNotBetween(String value1, String value2) {
+            addCriterion("HOME_PAGE_BG not between", value1, value2, "homePageBg");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
