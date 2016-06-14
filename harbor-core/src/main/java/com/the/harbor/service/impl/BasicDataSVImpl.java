@@ -10,6 +10,8 @@ import com.the.harbor.base.enumeration.hytags.Status;
 import com.the.harbor.base.enumeration.hytags.TagCat;
 import com.the.harbor.dao.mapper.bo.HyCountry;
 import com.the.harbor.dao.mapper.bo.HyCountryCriteria;
+import com.the.harbor.dao.mapper.bo.HyDicts;
+import com.the.harbor.dao.mapper.bo.HyDictsCriteria;
 import com.the.harbor.dao.mapper.bo.HyIndustry;
 import com.the.harbor.dao.mapper.bo.HyIndustryCriteria;
 import com.the.harbor.dao.mapper.bo.HyTags;
@@ -17,6 +19,7 @@ import com.the.harbor.dao.mapper.bo.HyTagsCriteria;
 import com.the.harbor.dao.mapper.bo.HyUniversity;
 import com.the.harbor.dao.mapper.bo.HyUniversityCriteria;
 import com.the.harbor.dao.mapper.interfaces.HyCountryMapper;
+import com.the.harbor.dao.mapper.interfaces.HyDictsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyIndustryMapper;
 import com.the.harbor.dao.mapper.interfaces.HyTagsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUniversityMapper;
@@ -37,6 +40,9 @@ public class BasicDataSVImpl implements IBasicDataSV {
 
 	@Autowired
 	private transient HyTagsMapper hyTagsMapper;
+
+	@Autowired
+	private transient HyDictsMapper hyDictsMapper;
 
 	@Override
 	public List<HyCountry> getAllHyCountries() {
@@ -64,6 +70,13 @@ public class BasicDataSVImpl implements IBasicDataSV {
 		sql.or().andStatusEqualTo(Status.VALID.getValue()).andTagCatEqualTo(TagCat.SYSTEM.getValue());
 		sql.setOrderByClause(" sort_id asc");
 		return hyTagsMapper.selectByExample(sql);
+	}
+
+	@Override
+	public List<HyDicts> getAllHyDicts() {
+		HyDictsCriteria sql = new HyDictsCriteria();
+		sql.setOrderByClause(" DISORDER asc");
+		return hyDictsMapper.selectByExample(sql);
 	}
 
 }
