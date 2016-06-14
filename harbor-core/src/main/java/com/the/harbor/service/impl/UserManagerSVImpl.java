@@ -30,6 +30,7 @@ import com.the.harbor.base.enumeration.hyuser.UserStatus;
 import com.the.harbor.base.enumeration.hyuser.UserType;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
+import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
@@ -67,7 +68,9 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		user.setHyId(hyId);
 		user.setEnName(userRegReq.getEnName());
 		user.setSex(userRegReq.getSex());
-		user.setWxHeadimg(userRegReq.getWxHeadimg());
+		user.setWxHeadimg(StringUtil.isBlank(userRegReq.getWxHeadimg())
+				? GlobalSettings.getHarborUserDefaultHeadICONURL() : userRegReq.getWxHeadimg());
+		user.setHomePageBg(GlobalSettings.getHarborUserDefaultHomePageBGURL());
 		user.setWxNickname(userRegReq.getWxNickname());
 		user.setWxOpenid(userRegReq.getWxOpenid());
 		user.setAbroadCountry(userRegReq.getAbroadCountry());
@@ -359,6 +362,10 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		HyUser user = new HyUser();
 		BeanUtils.copyProperties(user, userEditReq);
 		user.setUserId(userEditReq.getUserId());
+		user.setWxHeadimg(StringUtil.isBlank(userEditReq.getWxHeadimg())
+				? GlobalSettings.getHarborUserDefaultHeadICONURL() : userEditReq.getWxHeadimg());
+		user.setHomePageBg(StringUtil.isBlank(userEditReq.getHomePageBg())
+				? GlobalSettings.getHarborUserDefaultHomePageBGURL() : userEditReq.getHomePageBg());
 		hyUserMapper.updateByPrimaryKeySelective(user);
 		// 先失效所有标签
 		this.invalidAllTags(hyUser.getUserId());
