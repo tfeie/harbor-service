@@ -29,6 +29,7 @@ import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.base.util.ResponseBuilder;
 import com.the.harbor.base.vo.Response;
 import com.the.harbor.base.vo.ResponseHeader;
+import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
@@ -125,6 +126,10 @@ public class UserSVImpl implements IUserSV {
 		if (hyUser != null) {
 			userInfo = new UserInfo();
 			BeanUtils.copyProperties(hyUser, userInfo);
+			userInfo.setHomePageBg(StringUtil.isBlank(hyUser.getHomePageBg())
+					? GlobalSettings.getHarborUserDefaultHomePageBGURL() : hyUser.getHomePageBg());
+			userInfo.setWxHeadimg(StringUtil.isBlank(hyUser.getWxHeadimg())
+					? GlobalSettings.getHarborUserDefaultHeadICONURL() : hyUser.getWxHeadimg());
 		}
 		UserQueryResp resp = new UserQueryResp();
 		resp.setUserInfo(userInfo);
@@ -162,6 +167,10 @@ public class UserSVImpl implements IUserSV {
 		if (hyUser != null) {
 			userInfo = new UserInfo();
 			BeanUtils.copyProperties(hyUser, userInfo);
+			userInfo.setHomePageBg(StringUtil.isBlank(hyUser.getHomePageBg())
+					? GlobalSettings.getHarborUserDefaultHomePageBGURL() : hyUser.getHomePageBg());
+			userInfo.setWxHeadimg(StringUtil.isBlank(hyUser.getWxHeadimg())
+					? GlobalSettings.getHarborUserDefaultHeadICONURL() : hyUser.getWxHeadimg());
 		}
 		UserQueryResp resp = new UserQueryResp();
 		resp.setUserInfo(userInfo);
