@@ -23,13 +23,19 @@ import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
 import com.the.harbor.api.user.param.UserTag;
 import com.the.harbor.api.user.param.UserTagQueryReq;
 import com.the.harbor.api.user.param.UserTagQueryResp;
+import com.the.harbor.api.user.param.UserViewInfo;
+import com.the.harbor.api.user.param.UserViewReq;
+import com.the.harbor.api.user.param.UserViewResp;
 import com.the.harbor.base.constants.ExceptCodeConstants;
+import com.the.harbor.base.enumeration.dict.ParamCode;
+import com.the.harbor.base.enumeration.dict.TypeCode;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.base.util.ResponseBuilder;
 import com.the.harbor.base.vo.Response;
 import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
+import com.the.harbor.commons.redisdata.util.HyDictUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
@@ -215,6 +221,42 @@ public class UserSVImpl implements IUserSV {
 		UserTagQueryResp resp = userManagerSV.queryUserTags(userTagQueryReq);
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		resp.setResponseHeader(responseHeader);
+		return resp;
+	}
+
+	@Override
+	public UserViewResp queryUserView(UserViewReq userViewReq) throws BusinessException, SystemException {
+		if (userViewReq == null) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "参数为空");
+		}
+		UserViewInfo userInfo = null;
+		HyUser hyUser = userManagerSV.getUserInfo(userViewReq.getUserId());
+		if (hyUser != null) {
+			userInfo = new UserViewInfo();
+			BeanUtils.copyProperties(hyUser, userInfo);
+			userInfo.setHomePageBg(StringUtil.isBlank(hyUser.getHomePageBg())
+					? GlobalSettings.getHarborUserDefaultHomePageBGURL() : hyUser.getHomePageBg());
+			userInfo.setWxHeadimg(StringUtil.isBlank(hyUser.getWxHeadimg())
+					? GlobalSettings.getHarborUserDefaultHeadICONURL() : hyUser.getWxHeadimg());
+
+			userInfo.setAbroadCountryName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
+					ParamCode.ABROAD_COUNTRY.getValue(), hyUser.getAbroadCountry()));
+			userInfo.setAbroadUniversityName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
+					ParamCode.ABROAD_UNIVERSITY.getValue(), hyUser.getAbroadCountry()));
+			userInfo.setAtCityName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(), ParamCode.AT_CITY.getValue(),
+					hyUser.getAbroadCountry()));
+			userInfo.setUserTypeName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
+					ParamCode.USER_TYPE.getValue(), hyUser.getAbroadCountry()));
+			userInfo.setSexName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(), ParamCode.SEX.getValue(),
+					hyUser.getAbroadCountry()));
+			userInfo.setMaritalStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
+					ParamCode.MARITAL_STATUS.getValue(), hyUser.getAbroadCountry()));
+			userInfo.setConstellationName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
+					ParamCode.CONSTELLATION.getValue(), hyUser.getAbroadCountry()));
+		}
+		UserViewResp resp = new UserViewResp();
+		resp.setUserInfo(userInfo);
+		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("查询成功"));
 		return resp;
 	}
 
