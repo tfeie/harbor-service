@@ -16,8 +16,6 @@ public class UserViewInfo extends UserInfo {
 
 	private String abroadCountryName;
 
-	private String abroadUniversityName;
-
 	private String atCityName;
 
 	private String maritalStatusName;
@@ -46,14 +44,6 @@ public class UserViewInfo extends UserInfo {
 
 	public void setAbroadCountryName(String abroadCountryName) {
 		this.abroadCountryName = abroadCountryName;
-	}
-
-	public String getAbroadUniversityName() {
-		return abroadUniversityName;
-	}
-
-	public void setAbroadUniversityName(String abroadUniversityName) {
-		this.abroadUniversityName = abroadUniversityName;
 	}
 
 	public String getAtCityName() {
