@@ -29,6 +29,7 @@ import com.the.harbor.api.user.param.UserViewResp;
 import com.the.harbor.base.constants.ExceptCodeConstants;
 import com.the.harbor.base.enumeration.dict.ParamCode;
 import com.the.harbor.base.enumeration.dict.TypeCode;
+import com.the.harbor.base.enumeration.hyuser.UserStatus;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.base.util.ResponseBuilder;
@@ -254,6 +255,16 @@ public class UserSVImpl implements IUserSV {
 					ParamCode.MARITAL_STATUS.getValue(), hyUser.getAbroadCountry()));
 			userInfo.setConstellationName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
 					ParamCode.CONSTELLATION.getValue(), hyUser.getAbroadCountry()));
+			if (UserStatus.AUTHORIZED_SUCCESS.equals(hyUser.getUserStatus())) {
+				String userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
+						ParamCode.USER_STATUS.getValue(), hyUser.getUserStatus());
+				userInfo.setUserStatus(userStatus);
+			} else {
+				String userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
+						ParamCode.USER_STATUS.getValue(), UserStatus.UNAUTHORIZED.getValue());
+				userInfo.setUserStatus(userStatus);
+			}
+
 		}
 		UserViewResp resp = new UserViewResp();
 		resp.setUserInfo(userInfo);
