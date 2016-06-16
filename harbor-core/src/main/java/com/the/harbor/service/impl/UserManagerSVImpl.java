@@ -388,7 +388,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 					hyUserTag = new HyUserTags();
 					hyUserTag.setRecordId(HarborSeqUtil.createHyUserTagsRecordId());
 					hyUserTag.setSortId(index);
-					hyUserTag.setTagId(HarborSeqUtil.createTagId(userTag.getTagType()));
+					hyUserTag.setTagId(userTag.getTagId());
 					hyUserTag.setStatus(Status.VALID.getValue());
 					hyUserTag.setTagCat(userTag.getTagCat());
 					hyUserTag.setTagName(userTag.getTagName());
