@@ -360,7 +360,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		}
 		// 更新用户基本资料
 		HyUser user = new HyUser();
-		BeanUtils.copyProperties(user, userEditReq);
+		BeanUtils.copyProperties(userEditReq, user);
 		user.setUserId(userEditReq.getUserId());
 		user.setWxHeadimg(StringUtil.isBlank(userEditReq.getWxHeadimg())
 				? GlobalSettings.getHarborUserDefaultHeadICONURL() : userEditReq.getWxHeadimg());
@@ -376,13 +376,25 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		}
 		int index = 1;
 		for (UserTag userTag : tags) {
-			// 判断标签ID是否存在
 			if (!StringUtil.isBlank(userTag.getTagId())) {
+				// 标签ID存在，说明是系统内置标签，判断是否有记录
 				HyUserTags hyUserTag = this.getHyUserTag(userTag.getTagId(), hyUser.getUserId());
 				if (hyUserTag != null) {
 					hyUserTag.setSortId(index);
 					hyUserTag.setStatus(Status.VALID.getValue());
 					hyUserTagsMapper.updateByPrimaryKey(hyUserTag);
+				} else {
+					// 没有记录，则写入记录
+					hyUserTag = new HyUserTags();
+					hyUserTag.setRecordId(HarborSeqUtil.createHyUserTagsRecordId());
+					hyUserTag.setSortId(index);
+					hyUserTag.setTagId(HarborSeqUtil.createTagId(userTag.getTagType()));
+					hyUserTag.setStatus(Status.VALID.getValue());
+					hyUserTag.setTagCat(userTag.getTagCat());
+					hyUserTag.setTagName(userTag.getTagName());
+					hyUserTag.setTagType(userTag.getTagType());
+					hyUserTag.setUserId(hyUser.getUserId());
+					hyUserTagsMapper.insert(hyUserTag);
 				}
 			} else {
 				HyUserTags hyUserTag = new HyUserTags();
