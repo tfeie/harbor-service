@@ -13,6 +13,8 @@ import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
 import com.the.harbor.api.user.param.UserTagQueryReq;
 import com.the.harbor.api.user.param.UserTagQueryResp;
+import com.the.harbor.api.user.param.UserViewReq;
+import com.the.harbor.api.user.param.UserViewResp;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.base.vo.Response;
@@ -46,6 +48,10 @@ public interface IUserSV {
 	}
 
 	@interface QueryUserTags {
+
+	}
+
+	@interface QueryUserView {
 
 	}
 
@@ -153,5 +159,14 @@ public interface IUserSV {
 	 * @throws SystemException
 	 */
 	UserTagQueryResp queryUserTags(UserTagQueryReq userTagQueryReq) throws BusinessException, SystemException;
+
+	/**
+	 * 用户信息查询
+	 * @param userViewReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	UserViewResp queryUserView(UserViewReq userViewReq) throws BusinessException, SystemException;
 
 }
