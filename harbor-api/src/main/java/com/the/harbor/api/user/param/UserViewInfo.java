@@ -22,6 +22,8 @@ public class UserViewInfo extends UserInfo {
 
 	private String constellationName;
 
+	private String industryName;
+
 	public String getUserTypeName() {
 		return userTypeName;
 	}
@@ -68,6 +70,14 @@ public class UserViewInfo extends UserInfo {
 
 	public void setConstellationName(String constellationName) {
 		this.constellationName = constellationName;
+	}
+
+	public String getIndustryName() {
+		return industryName;
+	}
+
+	public void setIndustryName(String industryName) {
+		this.industryName = industryName;
 	}
 
 }
