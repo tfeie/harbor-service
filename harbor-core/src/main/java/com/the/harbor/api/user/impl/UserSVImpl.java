@@ -286,8 +286,7 @@ public class UserSVImpl implements IUserSV {
 			userInfo.setWxHeadimg(StringUtil.isBlank(hyUser.getWxHeadimg())
 					? GlobalSettings.getHarborUserDefaultHeadICONURL() : hyUser.getWxHeadimg());
 
-			userInfo.setAbroadCountryName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
-					ParamCode.ABROAD_COUNTRY.getValue(), hyUser.getAbroadCountry()));
+			userInfo.setAbroadCountryName(HyCountryUtil.getHyCountryName(hyUser.getAbroadCountry()));
 
 			userInfo.setAtCityName(HyCountryUtil.getHyCountryName(hyUser.getAbroadCountry()));
 			userInfo.setIndustryName(HyIndustryUtil.getHyIndustryName(hyUser.getIndustry()));
