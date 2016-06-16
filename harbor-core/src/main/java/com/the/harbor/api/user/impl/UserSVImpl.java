@@ -35,7 +35,9 @@ import com.the.harbor.base.util.ResponseBuilder;
 import com.the.harbor.base.vo.Response;
 import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
+import com.the.harbor.commons.redisdata.util.HyCountryUtil;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
+import com.the.harbor.commons.redisdata.util.HyIndustryUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
@@ -241,10 +243,9 @@ public class UserSVImpl implements IUserSV {
 
 			userInfo.setAbroadCountryName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
 					ParamCode.ABROAD_COUNTRY.getValue(), hyUser.getAbroadCountry()));
-			userInfo.setAbroadUniversityName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
-					ParamCode.ABROAD_UNIVERSITY.getValue(), hyUser.getAbroadCountry()));
-			userInfo.setAtCityName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(), ParamCode.AT_CITY.getValue(),
-					hyUser.getAbroadCountry()));
+
+			userInfo.setAtCityName(HyCountryUtil.getHyCountryName(hyUser.getAbroadCountry()));
+			userInfo.setIndustryName(HyIndustryUtil.getHyIndustryName(hyUser.getIndustry()));
 			userInfo.setUserTypeName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
 					ParamCode.USER_TYPE.getValue(), hyUser.getAbroadCountry()));
 			userInfo.setSexName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(), ParamCode.SEX.getValue(),
