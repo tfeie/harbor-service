@@ -57,4 +57,12 @@ public final class HarborSeqUtil {
 		return sb.toString();
 	}
 
+	public static String createGoId() {
+		return UUIDUtil.genId32();
+	}
+
+	public static String createGoDetailId() {
+		return UUIDUtil.genId32();
+	}
+
 }
