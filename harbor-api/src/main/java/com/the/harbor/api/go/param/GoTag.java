@@ -2,6 +2,10 @@ package com.the.harbor.api.go.param;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
+
+import com.the.harbor.api.go.IGoSV;
+
 public class GoTag implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -14,6 +18,7 @@ public class GoTag implements Serializable {
 	/**
 	 * 标签类型
 	 */
+	@NotNull(message="标签类型不能为空",groups = {IGoSV.CreateGo.class})
 	private String tagType;
 
 	/**

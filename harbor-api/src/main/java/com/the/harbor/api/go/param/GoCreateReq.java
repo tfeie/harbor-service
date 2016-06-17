@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
+import com.the.harbor.api.go.IGoSV;
+
 public class GoCreateReq implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -34,6 +38,7 @@ public class GoCreateReq implements Serializable {
 	private List<GoDetail> goDetails;
 
 	// 获取标签
+	@NotNull(message = "请选择活动标签", groups = { IGoSV.CreateGo.class })
 	private List<GoTag> goTags;
 
 	public String getUserId() {

@@ -9,6 +9,10 @@ import com.the.harbor.base.exception.SystemException;
 
 public interface IGoSV {
 
+	@interface CreateGo {
+
+	}
+
 	/**
 	 * 创建一个新的活动
 	 * 
