@@ -1,5 +1,7 @@
 package com.the.harbor.api.go;
 
+import javax.validation.constraints.NotNull;
+
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoCreateResp;
 import com.the.harbor.base.exception.BusinessException;
@@ -15,6 +17,6 @@ public interface IGoSV {
 	 * @throws BusinessException
 	 * @throws SystemException
 	 */
-	GoCreateResp createGo(GoCreateReq goCreateReq) throws BusinessException, SystemException;
+	GoCreateResp createGo(@NotNull(message = "参数为空") GoCreateReq goCreateReq) throws BusinessException, SystemException;
 
 }

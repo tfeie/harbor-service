@@ -18,10 +18,8 @@ public class GoSVImpl implements IGoSV {
 
 	@Override
 	public GoCreateResp createGo(GoCreateReq goCreateReq) throws BusinessException, SystemException {
-		
+
 		return null;
 	}
-	
-	
 
 }
