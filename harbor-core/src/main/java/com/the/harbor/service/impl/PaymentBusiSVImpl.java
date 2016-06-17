@@ -40,4 +40,9 @@ public class PaymentBusiSVImpl implements IPaymentBusiSV {
 		return hyPaymentOrderMapper.selectByPrimaryKey(payOrderId);
 	}
 
+	@Override
+	public void updateByPrimaryKeySelective(HyPaymentOrder order) {
+		hyPaymentOrderMapper.updateByPrimaryKeySelective(order);
+	}
+
 }

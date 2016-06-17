@@ -9,4 +9,6 @@ public interface IPaymentBusiSV {
 
 	HyPaymentOrder getHyPaymentOrder(String payOrderId);
 
+	void updateByPrimaryKeySelective(HyPaymentOrder order);
+
 }

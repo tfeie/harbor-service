@@ -76,6 +76,7 @@ public class PaymentSVImpl implements IPaymentSV {
 			} else if ("FAIL".equals(payOrder.getReturnCode())) {
 				payOrder.setPayStatus(PayStatus.FAILURE_PAY.getValue());
 			}
+			paymentBusiSV.updateByPrimaryKeySelective(payOrder);
 		}
 		return ResponseBuilder.buildSuccessResponse("支付通知记录成功");
 	}
