@@ -21,7 +21,7 @@ import com.the.harbor.api.user.param.UserTag;
 import com.the.harbor.api.user.param.UserTagQueryReq;
 import com.the.harbor.api.user.param.UserTagQueryResp;
 import com.the.harbor.base.constants.ExceptCodeConstants;
-import com.the.harbor.base.enumeration.hytags.Status;
+import com.the.harbor.base.enumeration.common.Status;
 import com.the.harbor.base.enumeration.hytags.TagCat;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.enumeration.hyuser.AccessPermission;

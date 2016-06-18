@@ -16,10 +16,9 @@ public class GoDetail implements Serializable {
 	 */
 	private String type;
 
-	/**
-	 * 明细
-	 */
 	private String detail;
+
+	private String imageUrl;
 
 	public String getId() {
 		return id;
@@ -43,6 +42,14 @@ public class GoDetail implements Serializable {
 
 	public void setDetail(String detail) {
 		this.detail = detail;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 }

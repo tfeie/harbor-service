@@ -17,6 +17,8 @@ public class HyGoDetail {
 
     private Timestamp updateDate;
 
+    private String imageUrl;
+
     public String getId() {
         return id;
     }
@@ -71,5 +73,13 @@ public class HyGoDetail {
 
     public void setUpdateDate(Timestamp updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl == null ? null : imageUrl.trim();
     }
 }

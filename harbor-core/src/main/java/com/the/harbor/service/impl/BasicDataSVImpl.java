@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.the.harbor.base.enumeration.hytags.Status;
+import com.the.harbor.base.enumeration.common.Status;
 import com.the.harbor.base.enumeration.hytags.TagCat;
 import com.the.harbor.dao.mapper.bo.HyCountry;
 import com.the.harbor.dao.mapper.bo.HyCountryCriteria;
