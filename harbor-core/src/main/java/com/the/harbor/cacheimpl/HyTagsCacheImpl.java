@@ -34,8 +34,12 @@ public class HyTagsCacheImpl extends AbstractCache {
 		ICacheClient client = CacheFactory.getClient();
 		client.del(RedisDataKey.KEY_BASE_INTEREST_TAGS.getKey());
 		client.del(RedisDataKey.KEY_BASE_SKILL_TAGS.getKey());
+		client.del(RedisDataKey.KEY_GO_TAGS.getKey());
+		client.del(RedisDataKey.KEY_BE_TAGS.getKey());
 		List<HyTagVo> skillTags = new ArrayList<HyTagVo>();
 		List<HyTagVo> interestTags = new ArrayList<HyTagVo>();
+		List<HyTagVo> goTags = new ArrayList<HyTagVo>();
+		List<HyTagVo> beTags = new ArrayList<HyTagVo>();
 		for (HyTags o : tags) {
 			HyTagVo bo = new HyTagVo();
 			BeanUtils.copyProperties(bo, o);
@@ -45,10 +49,18 @@ public class HyTagsCacheImpl extends AbstractCache {
 			} else if (TagType.SKILL.getValue().equals(o.getTagType())
 					&& ScopeType.USER.getValue().equals(o.getScopeType())) {
 				skillTags.add(bo);
+			} else if (TagType.GO.getValue().equals(o.getTagType())
+					&& ScopeType.GO.getValue().equals(o.getScopeType())) {
+				goTags.add(bo);
+			} else if (TagType.BE.getValue().equals(o.getTagType())
+					&& ScopeType.BE.getValue().equals(o.getScopeType())) {
+				beTags.add(bo);
 			}
 		}
 		client.set(RedisDataKey.KEY_BASE_INTEREST_TAGS.getKey(), JSON.toJSONString(interestTags));
 		client.set(RedisDataKey.KEY_BASE_SKILL_TAGS.getKey(), JSON.toJSONString(skillTags));
+		client.set(RedisDataKey.KEY_GO_TAGS.getKey(), JSON.toJSONString(goTags));
+		client.set(RedisDataKey.KEY_BE_TAGS.getKey(), JSON.toJSONString(beTags));
 	}
 
 }
