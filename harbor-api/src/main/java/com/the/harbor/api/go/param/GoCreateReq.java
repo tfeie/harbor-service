@@ -1,33 +1,43 @@
 package com.the.harbor.api.go.param;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
 import com.the.harbor.api.go.IGoSV;
+import com.the.harbor.base.enumeration.hygo.GoType;
+import com.the.harbor.base.enumeration.hygo.OrgMode;
+import com.the.harbor.base.validator.StringEnum;
 
 public class GoCreateReq implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	@NotNull(message = "发起用户为空", groups = { IGoSV.CreateGo.class })
 	private String userId;
 
+	@NotNull(message = "请选择活动分类", groups = { IGoSV.CreateGo.class })
+	@StringEnum(enumClazz = GoType.class, message = "活动分类传入不合规", groups = { IGoSV.CreateGo.class })
 	private String goType;
 
+	@NotNull(message = "请输入主题", groups = { IGoSV.CreateGo.class })
 	private String topic;
 
 	private String inviteMembers;
 
-	private Timestamp expectedStartTime;
+	private String expectedStartTime;
 
+	@NotNull(message = "请输入活动预期持续时长", groups = { IGoSV.CreateGo.class })
 	private String expectedDuration;
 
+	@NotNull(message = "请选择付费模式", groups = { IGoSV.CreateGo.class })
 	private String payMode;
 
-	private long fixedPrice;
+	private String price;
 
+	@NotNull(message = "请选择活动组织形式", groups = { IGoSV.CreateGo.class })
+	@StringEnum(enumClazz = OrgMode.class, message = "活动组织形式不合规", groups = { IGoSV.CreateGo.class })
 	private String orgMode;
 
 	private String location;
@@ -35,6 +45,7 @@ public class GoCreateReq implements Serializable {
 	private String myStory;
 
 	// 活动明细
+	@NotNull(message = "请填写活动明细", groups = { IGoSV.CreateGo.class })
 	private List<GoDetail> goDetails;
 
 	// 获取标签
@@ -73,14 +84,6 @@ public class GoCreateReq implements Serializable {
 		this.inviteMembers = inviteMembers;
 	}
 
-	public Timestamp getExpectedStartTime() {
-		return expectedStartTime;
-	}
-
-	public void setExpectedStartTime(Timestamp expectedStartTime) {
-		this.expectedStartTime = expectedStartTime;
-	}
-
 	public String getExpectedDuration() {
 		return expectedDuration;
 	}
@@ -95,14 +98,6 @@ public class GoCreateReq implements Serializable {
 
 	public void setPayMode(String payMode) {
 		this.payMode = payMode;
-	}
-
-	public long getFixedPrice() {
-		return fixedPrice;
-	}
-
-	public void setFixedPrice(long fixedPrice) {
-		this.fixedPrice = fixedPrice;
 	}
 
 	public String getOrgMode() {
@@ -143,6 +138,22 @@ public class GoCreateReq implements Serializable {
 
 	public void setGoTags(List<GoTag> goTags) {
 		this.goTags = goTags;
+	}
+
+	public String getExpectedStartTime() {
+		return expectedStartTime;
+	}
+
+	public void setExpectedStartTime(String expectedStartTime) {
+		this.expectedStartTime = expectedStartTime;
+	}
+
+	public String getPrice() {
+		return price;
+	}
+
+	public void setPrice(String price) {
+		this.price = price;
 	}
 
 }
