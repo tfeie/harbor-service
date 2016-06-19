@@ -88,12 +88,12 @@ public class GoSVImpl implements IGoSV {
 			if (!valid) {
 				throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "活动详情类型取值不合规");
 			}
-			if (GoDetailType.TEXT.equals(detail.getType())) {
+			if (GoDetailType.TEXT.getValue().equals(detail.getType())) {
 				detailTextCount++;
 				if (StringUtil.isBlank(detail.getDetail())) {
 					throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "活动详情为空");
 				}
-			} else if (GoDetailType.IMAGE.equals(detail.getType())) {
+			} else if (GoDetailType.IMAGE.getValue().equals(detail.getType())) {
 				if (StringUtil.isBlank(detail.getImageUrl())) {
 					throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "请上传活动详情图片");
 				}

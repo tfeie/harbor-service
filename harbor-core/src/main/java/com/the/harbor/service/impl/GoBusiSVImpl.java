@@ -90,6 +90,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				record.setSortId(sortId);
 				record.setTagId(StringUtil.isBlank(d.getTagId()) ? HarborSeqUtil.createTagId(TagType.GO.getValue())
 						: d.getTagId());
+				record.setStatus(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
 				sortId++;
 				hyGoTagsMapper.insert(record);
 			}
