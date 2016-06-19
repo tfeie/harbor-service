@@ -13,7 +13,7 @@ public class HyGo {
 
     private String inviteMembers;
 
-    private Timestamp expectedStartTime;
+    private String expectedStartTime;
 
     private String expectedDuration;
 
@@ -73,12 +73,12 @@ public class HyGo {
         this.inviteMembers = inviteMembers == null ? null : inviteMembers.trim();
     }
 
-    public Timestamp getExpectedStartTime() {
+    public String getExpectedStartTime() {
         return expectedStartTime;
     }
 
-    public void setExpectedStartTime(Timestamp expectedStartTime) {
-        this.expectedStartTime = expectedStartTime;
+    public void setExpectedStartTime(String expectedStartTime) {
+        this.expectedStartTime = expectedStartTime == null ? null : expectedStartTime.trim();
     }
 
     public String getExpectedDuration() {

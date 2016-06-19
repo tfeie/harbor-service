@@ -10,8 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoDetail;
 import com.the.harbor.api.go.param.GoTag;
+import com.the.harbor.base.enumeration.hygo.GoType;
+import com.the.harbor.base.enumeration.hygo.OrgMode;
+import com.the.harbor.base.enumeration.hygo.PayMode;
 import com.the.harbor.base.enumeration.hygo.Status;
 import com.the.harbor.base.enumeration.hytags.TagType;
+import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
@@ -43,8 +47,23 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		Timestamp sysdate = DateUtil.getSysDate();
 		/* 1.活动主表 */
 		HyGo go = new HyGo();
-		BeanUtils.copyProperties(goCreateReq, go);
 		go.setGoId(goId);
+		go.setUserId(goCreateReq.getUserId());
+		go.setGoType(goCreateReq.getGoType());
+		go.setTopic(goCreateReq.getTopic());
+		go.setInviteMembers(
+				GoType.GROUP.getValue().equals(goCreateReq.getGoType()) ? goCreateReq.getInviteMembers() : null);
+		go.setExpectedStartTime(
+				GoType.GROUP.getValue().equals(goCreateReq.getGoType()) ? goCreateReq.getExpectedStartTime() : null);
+		go.setExpectedDuration(goCreateReq.getExpectedDuration());
+		go.setPayMode(goCreateReq.getPayMode());
+		if (PayMode.AA.getValue().equals(goCreateReq.getPayMode())
+				|| PayMode.FIXED_FEE.getValue().equals(goCreateReq.getPayMode())) {
+			go.setFixedPrice(Long.parseLong(AmountUtils.changeY2F(goCreateReq.getPrice())));
+		}
+		go.setOrgMode(goCreateReq.getOrgMode());
+		go.setLocation(OrgMode.OFFLINE.getValue().equals(goCreateReq.getOrgMode()) ? goCreateReq.getLocation() : null);
+		go.setMyStory(GoType.ONE_ON_ONE.getValue().equals(goCreateReq.getGoType()) ? goCreateReq.getMyStory() : null);
 		go.setCreateDate(sysdate);
 		go.setStatus(Status.ING.getValue());
 		hyGoMapper.insert(go);

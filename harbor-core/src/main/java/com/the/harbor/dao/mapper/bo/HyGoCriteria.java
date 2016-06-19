@@ -485,52 +485,62 @@ public class HyGoCriteria {
             return (Criteria) this;
         }
 
-        public Criteria andExpectedStartTimeEqualTo(Timestamp value) {
+        public Criteria andExpectedStartTimeEqualTo(String value) {
             addCriterion("EXPECTED_START_TIME =", value, "expectedStartTime");
             return (Criteria) this;
         }
 
-        public Criteria andExpectedStartTimeNotEqualTo(Timestamp value) {
+        public Criteria andExpectedStartTimeNotEqualTo(String value) {
             addCriterion("EXPECTED_START_TIME <>", value, "expectedStartTime");
             return (Criteria) this;
         }
 
-        public Criteria andExpectedStartTimeGreaterThan(Timestamp value) {
+        public Criteria andExpectedStartTimeGreaterThan(String value) {
             addCriterion("EXPECTED_START_TIME >", value, "expectedStartTime");
             return (Criteria) this;
         }
 
-        public Criteria andExpectedStartTimeGreaterThanOrEqualTo(Timestamp value) {
+        public Criteria andExpectedStartTimeGreaterThanOrEqualTo(String value) {
             addCriterion("EXPECTED_START_TIME >=", value, "expectedStartTime");
             return (Criteria) this;
         }
 
-        public Criteria andExpectedStartTimeLessThan(Timestamp value) {
+        public Criteria andExpectedStartTimeLessThan(String value) {
             addCriterion("EXPECTED_START_TIME <", value, "expectedStartTime");
             return (Criteria) this;
         }
 
-        public Criteria andExpectedStartTimeLessThanOrEqualTo(Timestamp value) {
+        public Criteria andExpectedStartTimeLessThanOrEqualTo(String value) {
             addCriterion("EXPECTED_START_TIME <=", value, "expectedStartTime");
             return (Criteria) this;
         }
 
-        public Criteria andExpectedStartTimeIn(List<Timestamp> values) {
+        public Criteria andExpectedStartTimeLike(String value) {
+            addCriterion("EXPECTED_START_TIME like", value, "expectedStartTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andExpectedStartTimeNotLike(String value) {
+            addCriterion("EXPECTED_START_TIME not like", value, "expectedStartTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andExpectedStartTimeIn(List<String> values) {
             addCriterion("EXPECTED_START_TIME in", values, "expectedStartTime");
             return (Criteria) this;
         }
 
-        public Criteria andExpectedStartTimeNotIn(List<Timestamp> values) {
+        public Criteria andExpectedStartTimeNotIn(List<String> values) {
             addCriterion("EXPECTED_START_TIME not in", values, "expectedStartTime");
             return (Criteria) this;
         }
 
-        public Criteria andExpectedStartTimeBetween(Timestamp value1, Timestamp value2) {
+        public Criteria andExpectedStartTimeBetween(String value1, String value2) {
             addCriterion("EXPECTED_START_TIME between", value1, value2, "expectedStartTime");
             return (Criteria) this;
         }
 
-        public Criteria andExpectedStartTimeNotBetween(Timestamp value1, Timestamp value2) {
+        public Criteria andExpectedStartTimeNotBetween(String value1, String value2) {
             addCriterion("EXPECTED_START_TIME not between", value1, value2, "expectedStartTime");
             return (Criteria) this;
         }

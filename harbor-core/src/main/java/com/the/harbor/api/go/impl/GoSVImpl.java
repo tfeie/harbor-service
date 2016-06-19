@@ -10,7 +10,9 @@ import com.the.harbor.api.go.param.GoDetail;
 import com.the.harbor.api.go.param.GoTag;
 import com.the.harbor.base.constants.ExceptCodeConstants;
 import com.the.harbor.base.enumeration.hygo.GoDetailType;
+import com.the.harbor.base.enumeration.hygo.GoType;
 import com.the.harbor.base.enumeration.hygo.OrgMode;
+import com.the.harbor.base.enumeration.hygo.PayMode;
 import com.the.harbor.base.enumeration.hytags.TagCat;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.exception.BusinessException;
@@ -44,6 +46,31 @@ public class GoSVImpl implements IGoSV {
 			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "参数为空");
 		}
 		// 业务规则校验
+		if (GoType.GROUP.getValue().equals(goCreateReq.getGoType())) {
+			// 活动邀请人数不能为空
+			if (StringUtil.isBlank(goCreateReq.getInviteMembers())) {
+				throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "请输入活动邀请人数");
+			}
+			// 预期开始时间不能为空
+			if (StringUtil.isBlank(goCreateReq.getExpectedStartTime())) {
+				throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "请输入预期开始时间");
+			}
+		} else if (GoType.ONE_ON_ONE.getValue().equals(goCreateReq.getGoType())) {
+			// 我的故事不能为空
+			if (StringUtil.isBlank(goCreateReq.getMyStory())) {
+				throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "请输入我的故事");
+			}
+			if (!PayMode.FIXED_FEE.getValue().equals(goCreateReq.getPayMode())) {
+				throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "One On One的活动付费方式只能选择固定费用");
+			}
+		}
+		if (PayMode.FIXED_FEE.getValue().equals(goCreateReq.getPayMode())
+				|| PayMode.AA.getValue().equals(goCreateReq.getPayMode())) {
+			// 如果活动付费为固定费用或AA，则费用不能为空
+			if (StringUtil.isBlank(goCreateReq.getPrice())) {
+				throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "请输入活动费用");
+			}
+		}
 		if (OrgMode.OFFLINE.getValue().equals(goCreateReq.getOrgMode())) {
 			if (StringUtil.isBlank(goCreateReq.getLocation())) {
 				throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "活动组织为线下，请输入活动地点");
