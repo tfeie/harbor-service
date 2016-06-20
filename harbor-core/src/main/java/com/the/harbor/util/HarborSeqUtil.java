@@ -65,4 +65,8 @@ public final class HarborSeqUtil {
 		return UUIDUtil.genId32();
 	}
 
+	public static String createGoOrderId() {
+		return UUIDUtil.genId32();
+	}
+
 }

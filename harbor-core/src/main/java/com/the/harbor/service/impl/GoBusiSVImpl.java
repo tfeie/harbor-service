@@ -1,31 +1,41 @@
 package com.the.harbor.service.impl;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoDetail;
+import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.GoTag;
+import com.the.harbor.api.pay.param.CreatePaymentOrderReq;
 import com.the.harbor.base.enumeration.hygo.GoType;
 import com.the.harbor.base.enumeration.hygo.OrgMode;
 import com.the.harbor.base.enumeration.hygo.PayMode;
 import com.the.harbor.base.enumeration.hygo.Status;
+import com.the.harbor.base.enumeration.hygoorder.OrderStatus;
 import com.the.harbor.base.enumeration.hytags.TagType;
+import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HyGo;
 import com.the.harbor.dao.mapper.bo.HyGoDetail;
+import com.the.harbor.dao.mapper.bo.HyGoOrder;
+import com.the.harbor.dao.mapper.bo.HyGoOrderCriteria;
 import com.the.harbor.dao.mapper.bo.HyGoTags;
 import com.the.harbor.dao.mapper.interfaces.HyGoDetailMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoMapper;
+import com.the.harbor.dao.mapper.interfaces.HyGoOrderMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoTagsMapper;
 import com.the.harbor.service.interfaces.IGoBusiSV;
+import com.the.harbor.service.interfaces.IPaymentBusiSV;
 import com.the.harbor.util.HarborSeqUtil;
 
 @Component
@@ -40,6 +50,12 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 	@Autowired
 	private transient HyGoMapper hyGoMapper;
+
+	@Autowired
+	private transient HyGoOrderMapper hyGoOrderMapper;
+
+	@Autowired
+	private transient IPaymentBusiSV paymentBusiSV;
 
 	@Override
 	public String createGo(GoCreateReq goCreateReq) {
@@ -97,6 +113,73 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		}
 
 		return goId;
+	}
+
+	@Override
+	public HyGoOrder getHyGoOrder(String userId, String goId) {
+		HyGoOrderCriteria sql = new HyGoOrderCriteria();
+		sql.or().andUserIdEqualTo(userId).andGoIdEqualTo(goId);
+		List<HyGoOrder> list = hyGoOrderMapper.selectByExample(sql);
+		return CollectionUtil.isEmpty(list) ? null : list.get(0);
+	}
+
+	@Override
+	public String orderOneOnOne(GoOrderCreateReq goOrderCreateReq) {
+		// 判断是否重复参加
+		HyGoOrder o = this.getHyGoOrder(goOrderCreateReq.getUserId(), goOrderCreateReq.getGoId());
+		if (o != null && !OrderStatus.CANCEL.getValue().equals(o.getOrderStatus())) {
+			throw new BusinessException("GO_0001", "您已经预约了此活动");
+		}
+		String orderId = HarborSeqUtil.createGoOrderId();
+		Timestamp sysdate = DateUtil.getSysDate();
+		HyGoOrder record = new HyGoOrder();
+		record.setOrderId(orderId);
+		record.setUserId(goOrderCreateReq.getUserId());
+		record.setGoId(goOrderCreateReq.getGoId());
+		record.setGoType(goOrderCreateReq.getGoId());
+		record.setOrderStatus(OrderStatus.WAIT_PAY.getValue());// 默认待支付
+		record.setQuestions(goOrderCreateReq.getQuestions());
+		record.setSelfIntro(goOrderCreateReq.getSelfIntro());
+		record.setCreateDate(sysdate);
+		record.setStsDate(sysdate);
+		hyGoOrderMapper.insert(record);
+		return orderId;
+	}
+
+	@Override
+	public String createGoPaymentOrder(CreateGoPaymentOrderReq createGoPaymentOrderReq) {
+		String goOrderId = createGoPaymentOrderReq.getGoOrderId();
+		// 判断此业务流水是否已经产生了交易流水
+		HyGoOrder goOrder = this.getHyGoOrder(goOrderId);
+		if (goOrder == null) {
+			throw new BusinessException("GO_0001", "产生支付交易流水失败:预约记录不存在");
+		}
+		if (!StringUtil.isBlank(goOrder.getPayOrderId())) {
+			throw new BusinessException("GO_0001", "此活动预约记录已经发起一笔支付交易[" + goOrder.getPayOrderId() + "]");
+		}
+		// 产生一笔支付交易流水
+		CreatePaymentOrderReq createPaymentOrderReq = new CreatePaymentOrderReq();
+		BeanUtils.copyProperties(createGoPaymentOrderReq, createPaymentOrderReq);
+		String payOrderId = paymentBusiSV.createPaymentOrder(createPaymentOrderReq);
+		// 关联上活动预约业务流水
+		Timestamp sysdate = DateUtil.getSysDate();
+		HyGoOrder record = new HyGoOrder();
+		record.setOrderId(goOrderId);
+		record.setPayOrderId(payOrderId);
+		record.setStsDate(sysdate);
+		record.setPayStsDate(sysdate);
+		hyGoOrderMapper.updateByPrimaryKey(record);
+		return payOrderId;
+	}
+
+	@Override
+	public HyGoOrder getHyGoOrder(String orderId) {
+		return hyGoOrderMapper.selectByPrimaryKey(orderId);
+	}
+
+	@Override
+	public HyGo getHyGo(String goId) {
+		return hyGoMapper.selectByPrimaryKey(goId);
 	}
 
 }

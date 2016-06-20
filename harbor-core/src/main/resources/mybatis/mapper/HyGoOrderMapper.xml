@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.the.harbor.dao.mapper.interfaces.HyGoOrderMapper" >
+  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyGoOrder" >
+    <id column="ORDER_ID" property="orderId" jdbcType="VARCHAR" />
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="GO_ID" property="goId" jdbcType="VARCHAR" />
+    <result column="GO_TYPE" property="goType" jdbcType="VARCHAR" />
+    <result column="ORDER_STATUS" property="orderStatus" jdbcType="VARCHAR" />
+    <result column="QUESTIONS" property="questions" jdbcType="VARCHAR" />
+    <result column="SELF_INTRO" property="selfIntro" jdbcType="VARCHAR" />
+    <result column="PAY_ORDER_ID" property="payOrderId" jdbcType="VARCHAR" />
+    <result column="CONFIRM_DATE" property="confirmDate" jdbcType="TIMESTAMP" />
+    <result column="EXPECTED_TIME1" property="expectedTime1" jdbcType="VARCHAR" />
+    <result column="EXPECTED_TIME2" property="expectedTime2" jdbcType="VARCHAR" />
+    <result column="EXPECTED_LOCATION1" property="expectedLocation1" jdbcType="VARCHAR" />
+    <result column="EXPECTED_LOCATION2" property="expectedLocation2" jdbcType="VARCHAR" />
+    <result column="CONFIRM_TIME" property="confirmTime" jdbcType="VARCHAR" />
+    <result column="CONFIRM_LOCATION" property="confirmLocation" jdbcType="VARCHAR" />
+    <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="PAY_STS_DATE" property="payStsDate" jdbcType="TIMESTAMP" />
+    <result column="CONFIRM_STS_DATE" property="confirmStsDate" jdbcType="TIMESTAMP" />
+    <result column="STS_DATE" property="stsDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    ORDER_ID, USER_ID, GO_ID, GO_TYPE, ORDER_STATUS, QUESTIONS, SELF_INTRO, PAY_ORDER_ID, 
+    CONFIRM_DATE, EXPECTED_TIME1, EXPECTED_TIME2, EXPECTED_LOCATION1, EXPECTED_LOCATION2, 
+    CONFIRM_TIME, CONFIRM_LOCATION, CREATE_DATE, PAY_STS_DATE, CONFIRM_STS_DATE, STS_DATE
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyGoOrderCriteria" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'false' as QUERYID,
+    <include refid="Base_Column_List" />
+    from hy_go_order
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from hy_go_order
+    where ORDER_ID = #{orderId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from hy_go_order
+    where ORDER_ID = #{orderId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HyGoOrderCriteria" >
+    delete from hy_go_order
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyGoOrder" >
+    insert into hy_go_order (ORDER_ID, USER_ID, GO_ID, 
+      GO_TYPE, ORDER_STATUS, QUESTIONS, 
+      SELF_INTRO, PAY_ORDER_ID, CONFIRM_DATE, 
+      EXPECTED_TIME1, EXPECTED_TIME2, EXPECTED_LOCATION1, 
+      EXPECTED_LOCATION2, CONFIRM_TIME, CONFIRM_LOCATION, 
+      CREATE_DATE, PAY_STS_DATE, CONFIRM_STS_DATE, 
+      STS_DATE)
+    values (#{orderId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{goId,jdbcType=VARCHAR}, 
+      #{goType,jdbcType=VARCHAR}, #{orderStatus,jdbcType=VARCHAR}, #{questions,jdbcType=VARCHAR}, 
+      #{selfIntro,jdbcType=VARCHAR}, #{payOrderId,jdbcType=VARCHAR}, #{confirmDate,jdbcType=TIMESTAMP}, 
+      #{expectedTime1,jdbcType=VARCHAR}, #{expectedTime2,jdbcType=VARCHAR}, #{expectedLocation1,jdbcType=VARCHAR}, 
+      #{expectedLocation2,jdbcType=VARCHAR}, #{confirmTime,jdbcType=VARCHAR}, #{confirmLocation,jdbcType=VARCHAR}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{payStsDate,jdbcType=TIMESTAMP}, #{confirmStsDate,jdbcType=TIMESTAMP}, 
+      #{stsDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyGoOrder" >
+    insert into hy_go_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="orderId != null" >
+        ORDER_ID,
+      </if>
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      <if test="goId != null" >
+        GO_ID,
+      </if>
+      <if test="goType != null" >
+        GO_TYPE,
+      </if>
+      <if test="orderStatus != null" >
+        ORDER_STATUS,
+      </if>
+      <if test="questions != null" >
+        QUESTIONS,
+      </if>
+      <if test="selfIntro != null" >
+        SELF_INTRO,
+      </if>
+      <if test="payOrderId != null" >
+        PAY_ORDER_ID,
+      </if>
+      <if test="confirmDate != null" >
+        CONFIRM_DATE,
+      </if>
+      <if test="expectedTime1 != null" >
+        EXPECTED_TIME1,
+      </if>
+      <if test="expectedTime2 != null" >
+        EXPECTED_TIME2,
+      </if>
+      <if test="expectedLocation1 != null" >
+        EXPECTED_LOCATION1,
+      </if>
+      <if test="expectedLocation2 != null" >
+        EXPECTED_LOCATION2,
+      </if>
+      <if test="confirmTime != null" >
+        CONFIRM_TIME,
+      </if>
+      <if test="confirmLocation != null" >
+        CONFIRM_LOCATION,
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE,
+      </if>
+      <if test="payStsDate != null" >
+        PAY_STS_DATE,
+      </if>
+      <if test="confirmStsDate != null" >
+        CONFIRM_STS_DATE,
+      </if>
+      <if test="stsDate != null" >
+        STS_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="goId != null" >
+        #{goId,jdbcType=VARCHAR},
+      </if>
+      <if test="goType != null" >
+        #{goType,jdbcType=VARCHAR},
+      </if>
+      <if test="orderStatus != null" >
+        #{orderStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="questions != null" >
+        #{questions,jdbcType=VARCHAR},
+      </if>
+      <if test="selfIntro != null" >
+        #{selfIntro,jdbcType=VARCHAR},
+      </if>
+      <if test="payOrderId != null" >
+        #{payOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmDate != null" >
+        #{confirmDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectedTime1 != null" >
+        #{expectedTime1,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedTime2 != null" >
+        #{expectedTime2,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedLocation1 != null" >
+        #{expectedLocation1,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedLocation2 != null" >
+        #{expectedLocation2,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmTime != null" >
+        #{confirmTime,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmLocation != null" >
+        #{confirmLocation,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payStsDate != null" >
+        #{payStsDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="confirmStsDate != null" >
+        #{confirmStsDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="stsDate != null" >
+        #{stsDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyGoOrderCriteria" resultType="java.lang.Integer" >
+    select count(*) from hy_go_order
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hy_go_order
+    <set >
+      <if test="record.orderId != null" >
+        ORDER_ID = #{record.orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null" >
+        USER_ID = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goId != null" >
+        GO_ID = #{record.goId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goType != null" >
+        GO_TYPE = #{record.goType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.orderStatus != null" >
+        ORDER_STATUS = #{record.orderStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.questions != null" >
+        QUESTIONS = #{record.questions,jdbcType=VARCHAR},
+      </if>
+      <if test="record.selfIntro != null" >
+        SELF_INTRO = #{record.selfIntro,jdbcType=VARCHAR},
+      </if>
+      <if test="record.payOrderId != null" >
+        PAY_ORDER_ID = #{record.payOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.confirmDate != null" >
+        CONFIRM_DATE = #{record.confirmDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.expectedTime1 != null" >
+        EXPECTED_TIME1 = #{record.expectedTime1,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expectedTime2 != null" >
+        EXPECTED_TIME2 = #{record.expectedTime2,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expectedLocation1 != null" >
+        EXPECTED_LOCATION1 = #{record.expectedLocation1,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expectedLocation2 != null" >
+        EXPECTED_LOCATION2 = #{record.expectedLocation2,jdbcType=VARCHAR},
+      </if>
+      <if test="record.confirmTime != null" >
+        CONFIRM_TIME = #{record.confirmTime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.confirmLocation != null" >
+        CONFIRM_LOCATION = #{record.confirmLocation,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDate != null" >
+        CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.payStsDate != null" >
+        PAY_STS_DATE = #{record.payStsDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.confirmStsDate != null" >
+        CONFIRM_STS_DATE = #{record.confirmStsDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.stsDate != null" >
+        STS_DATE = #{record.stsDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hy_go_order
+    set ORDER_ID = #{record.orderId,jdbcType=VARCHAR},
+      USER_ID = #{record.userId,jdbcType=VARCHAR},
+      GO_ID = #{record.goId,jdbcType=VARCHAR},
+      GO_TYPE = #{record.goType,jdbcType=VARCHAR},
+      ORDER_STATUS = #{record.orderStatus,jdbcType=VARCHAR},
+      QUESTIONS = #{record.questions,jdbcType=VARCHAR},
+      SELF_INTRO = #{record.selfIntro,jdbcType=VARCHAR},
+      PAY_ORDER_ID = #{record.payOrderId,jdbcType=VARCHAR},
+      CONFIRM_DATE = #{record.confirmDate,jdbcType=TIMESTAMP},
+      EXPECTED_TIME1 = #{record.expectedTime1,jdbcType=VARCHAR},
+      EXPECTED_TIME2 = #{record.expectedTime2,jdbcType=VARCHAR},
+      EXPECTED_LOCATION1 = #{record.expectedLocation1,jdbcType=VARCHAR},
+      EXPECTED_LOCATION2 = #{record.expectedLocation2,jdbcType=VARCHAR},
+      CONFIRM_TIME = #{record.confirmTime,jdbcType=VARCHAR},
+      CONFIRM_LOCATION = #{record.confirmLocation,jdbcType=VARCHAR},
+      CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
+      PAY_STS_DATE = #{record.payStsDate,jdbcType=TIMESTAMP},
+      CONFIRM_STS_DATE = #{record.confirmStsDate,jdbcType=TIMESTAMP},
+      STS_DATE = #{record.stsDate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HyGoOrder" >
+    update hy_go_order
+    <set >
+      <if test="userId != null" >
+        USER_ID = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="goId != null" >
+        GO_ID = #{goId,jdbcType=VARCHAR},
+      </if>
+      <if test="goType != null" >
+        GO_TYPE = #{goType,jdbcType=VARCHAR},
+      </if>
+      <if test="orderStatus != null" >
+        ORDER_STATUS = #{orderStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="questions != null" >
+        QUESTIONS = #{questions,jdbcType=VARCHAR},
+      </if>
+      <if test="selfIntro != null" >
+        SELF_INTRO = #{selfIntro,jdbcType=VARCHAR},
+      </if>
+      <if test="payOrderId != null" >
+        PAY_ORDER_ID = #{payOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmDate != null" >
+        CONFIRM_DATE = #{confirmDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectedTime1 != null" >
+        EXPECTED_TIME1 = #{expectedTime1,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedTime2 != null" >
+        EXPECTED_TIME2 = #{expectedTime2,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedLocation1 != null" >
+        EXPECTED_LOCATION1 = #{expectedLocation1,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedLocation2 != null" >
+        EXPECTED_LOCATION2 = #{expectedLocation2,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmTime != null" >
+        CONFIRM_TIME = #{confirmTime,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmLocation != null" >
+        CONFIRM_LOCATION = #{confirmLocation,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payStsDate != null" >
+        PAY_STS_DATE = #{payStsDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="confirmStsDate != null" >
+        CONFIRM_STS_DATE = #{confirmStsDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="stsDate != null" >
+        STS_DATE = #{stsDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ORDER_ID = #{orderId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyGoOrder" >
+    update hy_go_order
+    set USER_ID = #{userId,jdbcType=VARCHAR},
+      GO_ID = #{goId,jdbcType=VARCHAR},
+      GO_TYPE = #{goType,jdbcType=VARCHAR},
+      ORDER_STATUS = #{orderStatus,jdbcType=VARCHAR},
+      QUESTIONS = #{questions,jdbcType=VARCHAR},
+      SELF_INTRO = #{selfIntro,jdbcType=VARCHAR},
+      PAY_ORDER_ID = #{payOrderId,jdbcType=VARCHAR},
+      CONFIRM_DATE = #{confirmDate,jdbcType=TIMESTAMP},
+      EXPECTED_TIME1 = #{expectedTime1,jdbcType=VARCHAR},
+      EXPECTED_TIME2 = #{expectedTime2,jdbcType=VARCHAR},
+      EXPECTED_LOCATION1 = #{expectedLocation1,jdbcType=VARCHAR},
+      EXPECTED_LOCATION2 = #{expectedLocation2,jdbcType=VARCHAR},
+      CONFIRM_TIME = #{confirmTime,jdbcType=VARCHAR},
+      CONFIRM_LOCATION = #{confirmLocation,jdbcType=VARCHAR},
+      CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      PAY_STS_DATE = #{payStsDate,jdbcType=TIMESTAMP},
+      CONFIRM_STS_DATE = #{confirmStsDate,jdbcType=TIMESTAMP},
+      STS_DATE = #{stsDate,jdbcType=TIMESTAMP}
+    where ORDER_ID = #{orderId,jdbcType=VARCHAR}
+  </update>
+</mapper>
