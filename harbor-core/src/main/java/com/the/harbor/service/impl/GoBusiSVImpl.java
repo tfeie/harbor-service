@@ -136,7 +136,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		record.setOrderId(orderId);
 		record.setUserId(goOrderCreateReq.getUserId());
 		record.setGoId(goOrderCreateReq.getGoId());
-		record.setGoType(goOrderCreateReq.getGoId());
+		record.setGoType(o.getGoType());
 		record.setOrderStatus(OrderStatus.WAIT_PAY.getValue());// 默认待支付
 		record.setQuestions(goOrderCreateReq.getQuestions());
 		record.setSelfIntro(goOrderCreateReq.getSelfIntro());

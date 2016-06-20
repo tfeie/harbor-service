@@ -164,6 +164,8 @@ public class GoSVImpl implements IGoSV {
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("ok");
 		resp.setJoin(join);
 		resp.setRemark(remark);
+		resp.setOrderId(goOrder.getOrderId());
+		resp.setOrderStatus(goOrder.getOrderStatus());
 		resp.setResponseHeader(responseHeader);
 		return resp;
 	}

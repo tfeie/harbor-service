@@ -22,9 +22,6 @@ public class GoOrderCreateReq implements Serializable {
 	@NotNull(message = "参与的活动ID为空", groups = { IGoSV.OrderOneOnOne.class })
 	private String goId;
 
-	@NotNull(message = "参与的活动类型为空", groups = { IGoSV.OrderOneOnOne.class })
-	private String goType;
-
 	@NotNull(message = "想请教的问题为空", groups = { IGoSV.OrderOneOnOne.class })
 	private String questions;
 
@@ -45,14 +42,6 @@ public class GoOrderCreateReq implements Serializable {
 
 	public void setGoId(String goId) {
 		this.goId = goId;
-	}
-
-	public String getGoType() {
-		return goType;
-	}
-
-	public void setGoType(String goType) {
-		this.goType = goType;
 	}
 
 	public String getQuestions() {
