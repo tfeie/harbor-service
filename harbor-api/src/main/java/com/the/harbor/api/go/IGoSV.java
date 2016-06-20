@@ -12,8 +12,10 @@ import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.GoOrderCreateResp;
 import com.the.harbor.api.go.param.GoOrderQueryReq;
 import com.the.harbor.api.go.param.GoOrderQueryResp;
+import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
+import com.the.harbor.base.vo.Response;
 
 public interface IGoSV {
 
@@ -34,6 +36,10 @@ public interface IGoSV {
 	}
 
 	@interface QueryGoOrderDetail {
+
+	}
+
+	@interface UpdateGoOrderPay {
 
 	}
 
@@ -90,6 +96,17 @@ public interface IGoSV {
 	 * @throws SystemException
 	 */
 	GoOrderQueryResp queryGoOrderDetail(@NotNull(message = "参数为空") GoOrderQueryReq goOrderQueryReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 更新活动支付状态
+	 * 
+	 * @param updateGoOrderPayReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	Response updateGoOrderPay(@NotNull(message = "参数为空") UpdateGoOrderPayReq updateGoOrderPayReq)
 			throws BusinessException, SystemException;
 
 }

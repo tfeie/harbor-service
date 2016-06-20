@@ -13,6 +13,7 @@ import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoDetail;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.GoTag;
+import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.api.pay.param.CreatePaymentOrderReq;
 import com.the.harbor.base.enumeration.hygo.GoType;
 import com.the.harbor.base.enumeration.hygo.OrgMode;
@@ -184,6 +185,33 @@ public class GoBusiSVImpl implements IGoBusiSV {
 	@Override
 	public HyGo getHyGo(String goId) {
 		return hyGoMapper.selectByPrimaryKey(goId);
+	}
+
+	@Override
+	public void updateGoOrderPay(UpdateGoOrderPayReq updateGoOrderPayReq) {
+		HyGoOrder goOrder = this.getHyGoOrder(updateGoOrderPayReq.getGoOrderId());
+		if (goOrder == null) {
+			throw new BusinessException("GO_0001", "更新活动支付状态失败:预约记录不存在");
+		}
+		if (!updateGoOrderPayReq.getPayOrderId().equals(goOrder.getPayOrderId())) {
+			throw new BusinessException("GO_0001", "更新活动支付状态失败:支付流水不正确");
+		}
+		if (OrderStatus.WAIT_PAY.equals(goOrder.getOrderStatus())) {
+			// 如果原来是待支付状态，支付成功则更改成 待海牛确认；支付失败 更改成支付失败
+			String orderStatus = null;
+			if ("SUCCESS".equals(updateGoOrderPayReq.getPayStatus())) {
+				orderStatus = OrderStatus.WAIT_CONFIRM.getValue();
+			} else {
+				orderStatus = OrderStatus.PAY_FAILURE.getValue();
+			}
+			Timestamp sysdate = DateUtil.getSysDate();
+			HyGoOrder o = new HyGoOrder();
+			o.setOrderId(goOrder.getOrderId());
+			o.setOrderStatus(orderStatus);
+			o.setStsDate(sysdate);
+			o.setPayStsDate(sysdate);
+			hyGoOrderMapper.updateByPrimaryKeySelective(o);
+		}
 	}
 
 }

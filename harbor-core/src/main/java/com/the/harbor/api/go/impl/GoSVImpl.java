@@ -17,6 +17,7 @@ import com.the.harbor.api.go.param.GoOrderCreateResp;
 import com.the.harbor.api.go.param.GoOrderQueryReq;
 import com.the.harbor.api.go.param.GoOrderQueryResp;
 import com.the.harbor.api.go.param.GoTag;
+import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.base.constants.ExceptCodeConstants;
 import com.the.harbor.base.enumeration.hygo.GoDetailType;
 import com.the.harbor.base.enumeration.hygo.GoType;
@@ -29,6 +30,7 @@ import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.base.util.ResponseBuilder;
 import com.the.harbor.base.util.ValidatorUtil;
+import com.the.harbor.base.vo.Response;
 import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.StringUtil;
@@ -236,6 +238,17 @@ public class GoSVImpl implements IGoSV {
 		resp.setFixedPrice(hyGo.getFixedPrice());
 		resp.setResponseHeader(responseHeader);
 		return resp;
+	}
+
+	@Override
+	public Response updateGoOrderPay(UpdateGoOrderPayReq updateGoOrderPayReq)
+			throws BusinessException, SystemException {
+		if (!"SUCCESS".equals(updateGoOrderPayReq.getPayStatus())
+				&& !"FAIL".equals(updateGoOrderPayReq.getPayStatus())) {
+			throw new BusinessException("GO_0001", "支付结果状态不合格");
+		}
+		goBusiSV.updateGoOrderPay(updateGoOrderPayReq);
+		return ResponseBuilder.buildSuccessResponse("修改成功");
 	}
 
 }
