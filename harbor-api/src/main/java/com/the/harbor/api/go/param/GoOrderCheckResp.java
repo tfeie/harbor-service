@@ -22,6 +22,16 @@ public class GoOrderCheckResp extends Response {
 	 */
 	private String remark;
 
+	/**
+	 * 预约订单号
+	 */
+	private String orderId;
+
+	/**
+	 * 预约流水
+	 */
+	private String orderStatus;
+
 	public boolean isJoin() {
 		return join;
 	}
@@ -37,6 +47,21 @@ public class GoOrderCheckResp extends Response {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-	
-	
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+
 }
