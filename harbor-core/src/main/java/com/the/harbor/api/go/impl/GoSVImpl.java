@@ -233,6 +233,7 @@ public class GoSVImpl implements IGoSV {
 		GoOrderQueryResp resp = new GoOrderQueryResp();
 		BeanUtils.copyProperties(goOrder, resp);
 		resp.setTopic(hyGo.getTopic());
+		resp.setFixedPrice(hyGo.getFixedPrice());
 		resp.setResponseHeader(responseHeader);
 		return resp;
 	}

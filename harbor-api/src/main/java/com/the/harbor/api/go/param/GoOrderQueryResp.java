@@ -55,6 +55,9 @@ public class GoOrderQueryResp extends Response {
 	// 活动标题
 	private String topic;
 
+	// 活动费用
+	private long fixedPrice;
+
 	public String getOrderId() {
 		return orderId;
 	}
@@ -214,5 +217,15 @@ public class GoOrderQueryResp extends Response {
 	public void setTopic(String topic) {
 		this.topic = topic;
 	}
+
+	public long getFixedPrice() {
+		return fixedPrice;
+	}
+
+	public void setFixedPrice(long fixedPrice) {
+		this.fixedPrice = fixedPrice;
+	}
+	
+	
 
 }

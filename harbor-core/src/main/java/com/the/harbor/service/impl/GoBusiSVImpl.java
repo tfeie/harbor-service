@@ -125,6 +125,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 	@Override
 	public String orderOneOnOne(GoOrderCreateReq goOrderCreateReq) {
+		HyGo hyGo = this.getHyGo(goOrderCreateReq.getGoId());
+		if (hyGo == null) {
+			throw new BusinessException("GO_0001", "预约的活动不存在");
+		}
 		// 判断是否重复参加
 		HyGoOrder o = this.getHyGoOrder(goOrderCreateReq.getUserId(), goOrderCreateReq.getGoId());
 		if (o != null && !OrderStatus.CANCEL.getValue().equals(o.getOrderStatus())) {
@@ -136,7 +140,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		record.setOrderId(orderId);
 		record.setUserId(goOrderCreateReq.getUserId());
 		record.setGoId(goOrderCreateReq.getGoId());
-		record.setGoType(o.getGoType());
+		record.setGoType(hyGo.getGoType());
 		record.setOrderStatus(OrderStatus.WAIT_PAY.getValue());// 默认待支付
 		record.setQuestions(goOrderCreateReq.getQuestions());
 		record.setSelfIntro(goOrderCreateReq.getSelfIntro());
