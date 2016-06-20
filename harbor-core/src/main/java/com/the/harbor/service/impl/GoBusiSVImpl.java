@@ -173,7 +173,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		record.setPayOrderId(payOrderId);
 		record.setStsDate(sysdate);
 		record.setPayStsDate(sysdate);
-		hyGoOrderMapper.updateByPrimaryKey(record);
+		hyGoOrderMapper.updateByPrimaryKeySelective(record);
 		return payOrderId;
 	}
 
