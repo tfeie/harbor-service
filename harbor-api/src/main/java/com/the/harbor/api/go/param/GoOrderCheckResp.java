@@ -13,9 +13,9 @@ public class GoOrderCheckResp extends Response {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 是否参与
+	 * 参与状态 1:自己发布的活动本人不可预约 2:已经预约 3：可以预约
 	 */
-	private boolean join;
+	private String join;
 
 	/**
 	 * 说明
@@ -23,20 +23,20 @@ public class GoOrderCheckResp extends Response {
 	private String remark;
 
 	/**
-	 * 预约订单号
+	 * 预约订单号.join=2
 	 */
 	private String orderId;
 
 	/**
-	 * 预约流水
+	 * 预约状态.join=2
 	 */
 	private String orderStatus;
 
-	public boolean isJoin() {
+	public String getJoin() {
 		return join;
 	}
 
-	public void setJoin(boolean join) {
+	public void setJoin(String join) {
 		this.join = join;
 	}
 

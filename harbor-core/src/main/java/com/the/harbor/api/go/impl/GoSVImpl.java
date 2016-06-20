@@ -150,22 +150,41 @@ public class GoSVImpl implements IGoSV {
 
 	@Override
 	public GoOrderCheckResp checkUserJoinGo(GoOrderCheckReq goOrderCheckReq) throws BusinessException, SystemException {
-		HyGoOrder goOrder = goBusiSV.getHyGoOrder(goOrderCheckReq.getUserId(), goOrderCheckReq.getGoId());
-		boolean join = false;
 		String remark = null;
-		if (goOrder != null) {
-			if (!OrderStatus.CANCEL.getValue().equals(goOrder.getOrderStatus())) {
-				// 如果不是取消，则认为订购了
-				join = true;
-				remark = "您已经预约了此活动，不能重复预约";
+		String join = null;
+		String orderId = null;
+		String orderStatus = null;
+		/* 1.获取活动信息 */
+		HyGo hyGo = goBusiSV.getHyGo(goOrderCheckReq.getGoId());
+		if (hyGo == null) {
+			throw new BusinessException("GO_0001", "预约的活动不存在");
+		}
+		// 判断是否是自己发布的活动
+		if (goOrderCheckReq.getUserId().equals(hyGo.getUserId())) {
+			join = "1";
+			remark = "不可预约本人发布的活动";
+		} else {
+			HyGoOrder goOrder = goBusiSV.getHyGoOrder(goOrderCheckReq.getUserId(), goOrderCheckReq.getGoId());
+			if (goOrder != null) {
+				if (!OrderStatus.CANCEL.getValue().equals(goOrder.getOrderStatus())) {
+					// 如果不是取消，则认为订购了
+					join = "2";
+					remark = "您已经预约了此活动，不能重复预约";
+					orderId = goOrder.getOrderId();
+					orderStatus = goOrder.getOrderStatus();
+				}
+			} else {
+				join = "3";
+				remark = "您可以预约此活动";
 			}
 		}
+
 		GoOrderCheckResp resp = new GoOrderCheckResp();
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("ok");
 		resp.setJoin(join);
 		resp.setRemark(remark);
-		resp.setOrderId(goOrder.getOrderId());
-		resp.setOrderStatus(goOrder.getOrderStatus());
+		resp.setOrderId(orderId);
+		resp.setOrderStatus(orderStatus);
 		resp.setResponseHeader(responseHeader);
 		return resp;
 	}
