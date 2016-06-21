@@ -15,6 +15,9 @@ import com.the.harbor.api.go.param.GoOrder;
 import com.the.harbor.api.go.param.GoOrderConfirmReq;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.GoOrderCreateResp;
+import com.the.harbor.api.go.param.GoOrderFinishReq;
+import com.the.harbor.api.go.param.GoOrderMeetLocaltionConfirmReq;
+import com.the.harbor.api.go.param.GoOrderMeetLocaltionReq;
 import com.the.harbor.api.go.param.GoOrderQueryReq;
 import com.the.harbor.api.go.param.GoOrderQueryResp;
 import com.the.harbor.api.go.param.GoQueryReq;
@@ -270,6 +273,30 @@ public class GoSVImpl implements IGoSV {
 			throw new BusinessException("确认码取值不正确");
 		}
 		goBusiSV.confirmGoOrder(goOrderConfirmReq);
+		return ResponseBuilder.buildSuccessResponse("确认成功");
+	}
+
+	@Override
+	public Response setGoOrderMeetLocaltion(GoOrderMeetLocaltionReq goOrderMeetLocaltionReq)
+			throws BusinessException, SystemException {
+		if (StringUtil.isBlank(goOrderMeetLocaltionReq.getExpectedTime2())
+				&& StringUtil.isBlank(goOrderMeetLocaltionReq.getExpectedLocation2())) {
+			throw new BusinessException("第2条时间地点信息不完整");
+		}
+		goBusiSV.setGoOrderMeetLocaltion(goOrderMeetLocaltionReq);
+		return ResponseBuilder.buildSuccessResponse("设置成功");
+	}
+
+	@Override
+	public Response confirmGoOrderMeetLocaltion(GoOrderMeetLocaltionConfirmReq goOrderMeetLocaltionConfirmReq)
+			throws BusinessException, SystemException {
+		goBusiSV.confirmGoOrderMeetLocaltion(goOrderMeetLocaltionConfirmReq);
+		return ResponseBuilder.buildSuccessResponse("确认成功");
+	}
+
+	@Override
+	public Response finishGoOrder(GoOrderFinishReq goOrderFinishReq) throws BusinessException, SystemException {
+		goBusiSV.finishGoOrder(goOrderFinishReq);
 		return ResponseBuilder.buildSuccessResponse("确认成功");
 	}
 

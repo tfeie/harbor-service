@@ -9,6 +9,9 @@ import com.the.harbor.api.go.param.GoCreateResp;
 import com.the.harbor.api.go.param.GoOrderConfirmReq;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.GoOrderCreateResp;
+import com.the.harbor.api.go.param.GoOrderFinishReq;
+import com.the.harbor.api.go.param.GoOrderMeetLocaltionConfirmReq;
+import com.the.harbor.api.go.param.GoOrderMeetLocaltionReq;
 import com.the.harbor.api.go.param.GoOrderQueryReq;
 import com.the.harbor.api.go.param.GoOrderQueryResp;
 import com.the.harbor.api.go.param.GoQueryReq;
@@ -49,6 +52,18 @@ public interface IGoSV {
 	}
 
 	@interface ConfirmGoOrder {
+
+	}
+
+	@interface SetGoOrderMeetLocaltion {
+
+	}
+
+	@interface ConfirmGoOrderMeetLocaltion {
+
+	}
+
+	@interface FinishGoOrder {
 
 	}
 
@@ -137,6 +152,40 @@ public interface IGoSV {
 	 * @throws SystemException
 	 */
 	Response confirmGoOrder(@NotNull(message = "参数为空") GoOrderConfirmReq goOrderConfirmReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 海牛设置活动预期地点
+	 * 
+	 * @param goOrderMeetLocaltionReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	Response setGoOrderMeetLocaltion(@NotNull(message = "参数为空") GoOrderMeetLocaltionReq goOrderMeetLocaltionReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 小白选择确认活动时间
+	 * 
+	 * @param goOrderMeetLocaltionConfirmReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	Response confirmGoOrderMeetLocaltion(
+			@NotNull(message = "参数为空") GoOrderMeetLocaltionConfirmReq goOrderMeetLocaltionConfirmReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 小白确认活动结束
+	 * 
+	 * @param goOrderMeetLocaltionConfirmReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	Response finishGoOrder(@NotNull(message = "参数为空") GoOrderFinishReq goOrderFinishReq)
 			throws BusinessException, SystemException;
 
 }

@@ -13,6 +13,9 @@ import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoDetail;
 import com.the.harbor.api.go.param.GoOrderConfirmReq;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
+import com.the.harbor.api.go.param.GoOrderFinishReq;
+import com.the.harbor.api.go.param.GoOrderMeetLocaltionConfirmReq;
+import com.the.harbor.api.go.param.GoOrderMeetLocaltionReq;
 import com.the.harbor.api.go.param.GoTag;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.api.pay.param.CreatePaymentOrderReq;
@@ -231,6 +234,9 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		if (hyGo == null) {
 			throw new BusinessException("GO_0001", "活动信息不存在");
 		}
+		if (!hyGo.getUserId().equals(goOrderConfirmReq.getPublishUserId())) {
+			throw new BusinessException("操作无效:您不是活动发起方");
+		}
 		HyGoOrder o = new HyGoOrder();
 		o.setOrderId(hyGoOrder.getOrderId());
 		if ("confirm".equals(goOrderConfirmReq.getAckFlag())) {
@@ -243,6 +249,66 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		o.setConfirmDate(sysdate);
 		hyGoOrderMapper.updateByPrimaryKeySelective(o);
 
+	}
+
+	@Override
+	public void setGoOrderMeetLocaltion(GoOrderMeetLocaltionReq goOrderMeetLocaltionReq) {
+		HyGoOrder hyGoOrder = this.getHyGoOrder(goOrderMeetLocaltionReq.getGoOrderId());
+		if (hyGoOrder == null) {
+			throw new BusinessException("GO_0001", "活动预约信息不存在");
+		}
+		HyGo hyGo = this.getHyGo(hyGoOrder.getGoId());
+		if (hyGo == null) {
+			throw new BusinessException("GO_0001", "活动信息不存在");
+		}
+		if (!hyGo.getUserId().equals(goOrderMeetLocaltionReq.getPublishUserId())) {
+			throw new BusinessException("操作无效:您不是活动发起方");
+		}
+		HyGoOrder o = new HyGoOrder();
+		o.setOrderId(hyGoOrder.getOrderId());
+		Timestamp sysdate = DateUtil.getSysDate();
+		o.setExpectedLocation1(goOrderMeetLocaltionReq.getExpectedLocation1());
+		o.setExpectedLocation2(goOrderMeetLocaltionReq.getExpectedLocation2());
+		o.setExpectedTime1(goOrderMeetLocaltionReq.getExpectedTime1());
+		o.setExpectedTime2(goOrderMeetLocaltionReq.getExpectedTime2());
+		o.setConfirmStsDate(sysdate);
+		hyGoOrderMapper.updateByPrimaryKeySelective(o);
+
+	}
+
+	@Override
+	public void confirmGoOrderMeetLocaltion(GoOrderMeetLocaltionConfirmReq goOrderMeetLocaltionConfirmReq) {
+		HyGoOrder hyGoOrder = this.getHyGoOrder(goOrderMeetLocaltionConfirmReq.getGoOrderId());
+		if (hyGoOrder == null) {
+			throw new BusinessException("GO_0001", "活动预约信息不存在");
+		}
+		if (!hyGoOrder.getUserId().equals(goOrderMeetLocaltionConfirmReq.getUserId())) {
+			throw new BusinessException("操作无效:您不是活动预约者");
+		}
+		HyGoOrder o = new HyGoOrder();
+		o.setOrderId(hyGoOrder.getOrderId());
+		Timestamp sysdate = DateUtil.getSysDate();
+		o.setConfirmTime(goOrderMeetLocaltionConfirmReq.getConfirmTime());
+		o.setConfirmLocation(goOrderMeetLocaltionConfirmReq.getConfirmLocation());
+		o.setConfirmStsDate(sysdate);
+		hyGoOrderMapper.updateByPrimaryKeySelective(o);
+	}
+
+	@Override
+	public void finishGoOrder(GoOrderFinishReq goOrderFinishReq) {
+		HyGoOrder hyGoOrder = this.getHyGoOrder(goOrderFinishReq.getGoOrderId());
+		if (hyGoOrder == null) {
+			throw new BusinessException("GO_0001", "活动预约信息不存在");
+		}
+		if (!hyGoOrder.getUserId().equals(goOrderFinishReq.getUserId())) {
+			throw new BusinessException("操作无效:您不是活动预约者");
+		}
+		HyGoOrder o = new HyGoOrder();
+		o.setOrderId(hyGoOrder.getOrderId());
+		Timestamp sysdate = DateUtil.getSysDate();
+		o.setOrderStatus(OrderStatus.FINISH.getValue());
+		o.setStsDate(sysdate);
+		hyGoOrderMapper.updateByPrimaryKeySelective(o);
 	}
 
 }
