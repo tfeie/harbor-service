@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoDetail;
+import com.the.harbor.api.go.param.GoOrderConfirmReq;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.GoTag;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
@@ -218,6 +219,30 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			o.setPayStsDate(sysdate);
 			hyGoOrderMapper.updateByPrimaryKeySelective(o);
 		}
+	}
+
+	@Override
+	public void confirmGoOrder(GoOrderConfirmReq goOrderConfirmReq) {
+		HyGoOrder hyGoOrder = this.getHyGoOrder(goOrderConfirmReq.getGoOrderId());
+		if (hyGoOrder == null) {
+			throw new BusinessException("GO_0001", "活动预约信息不存在");
+		}
+		HyGo hyGo = this.getHyGo(hyGoOrder.getGoId());
+		if (hyGo == null) {
+			throw new BusinessException("GO_0001", "活动信息不存在");
+		}
+		HyGoOrder o = new HyGoOrder();
+		o.setOrderId(hyGoOrder.getOrderId());
+		if ("confirm".equals(goOrderConfirmReq.getAckFlag())) {
+			o.setOrderStatus(OrderStatus.WAIT_MEET.getValue());
+		} else if ("reject".equals(goOrderConfirmReq.getAckFlag())) {
+			o.setOrderStatus(OrderStatus.REJECT.getValue());
+		}
+		Timestamp sysdate = DateUtil.getSysDate();
+		o.setStsDate(sysdate);
+		o.setConfirmDate(sysdate);
+		hyGoOrderMapper.updateByPrimaryKeySelective(o);
+
 	}
 
 }

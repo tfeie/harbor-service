@@ -2,6 +2,7 @@ package com.the.harbor.service.interfaces;
 
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.GoCreateReq;
+import com.the.harbor.api.go.param.GoOrderConfirmReq;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.dao.mapper.bo.HyGo;
@@ -22,5 +23,7 @@ public interface IGoBusiSV {
 	HyGo getHyGo(String goId);
 
 	void updateGoOrderPay(UpdateGoOrderPayReq updateGoOrderPayReq);
+
+	void confirmGoOrder(GoOrderConfirmReq goOrderConfirmReq);
 
 }

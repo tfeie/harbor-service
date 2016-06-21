@@ -12,6 +12,7 @@ import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoCreateResp;
 import com.the.harbor.api.go.param.GoDetail;
 import com.the.harbor.api.go.param.GoOrder;
+import com.the.harbor.api.go.param.GoOrderConfirmReq;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.GoOrderCreateResp;
 import com.the.harbor.api.go.param.GoOrderQueryReq;
@@ -261,6 +262,15 @@ public class GoSVImpl implements IGoSV {
 		resp.setGoOrder(goOrder);
 		resp.setResponseHeader(responseHeader);
 		return resp;
+	}
+
+	@Override
+	public Response confirmGoOrder(GoOrderConfirmReq goOrderConfirmReq) throws BusinessException, SystemException {
+		if (!("confirm".equals(goOrderConfirmReq.getAckFlag()) || "reject".equals(goOrderConfirmReq.getAckFlag()))) {
+			throw new BusinessException("确认码取值不正确");
+		}
+		goBusiSV.confirmGoOrder(goOrderConfirmReq);
+		return ResponseBuilder.buildSuccessResponse("确认成功");
 	}
 
 }
