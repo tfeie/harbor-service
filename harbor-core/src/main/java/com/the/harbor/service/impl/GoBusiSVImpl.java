@@ -161,9 +161,9 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			throw new BusinessException("GO_0001", "产生支付交易流水失败:预约记录不存在");
 		}
 		if (!StringUtil.isBlank(goOrder.getPayOrderId())) {
-			if (!OrderStatus.WAIT_PAY.getValue().equals(goOrder.getOrderStatus())
-					|| !OrderStatus.PAY_FAILURE.getValue().equals(goOrder.getOrderStatus())) {
-				throw new BusinessException("GO_0001", "此活动预约记录已经发起一笔支付交易[" + goOrder.getPayOrderId() + "]");
+			if (!(OrderStatus.WAIT_PAY.getValue().equals(goOrder.getOrderStatus())
+					|| OrderStatus.PAY_FAILURE.getValue().equals(goOrder.getOrderStatus()))) {
+				throw new BusinessException("GO_0001", "此活动预约记录已经发起一笔支付交易");
 			}
 			payOrderId = goOrder.getPayOrderId();
 		} else {
