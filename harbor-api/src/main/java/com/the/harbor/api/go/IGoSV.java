@@ -6,6 +6,7 @@ import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderResp;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoCreateResp;
+import com.the.harbor.api.go.param.GoOrderConfirmReq;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.GoOrderCreateResp;
 import com.the.harbor.api.go.param.GoOrderQueryReq;
@@ -42,9 +43,13 @@ public interface IGoSV {
 	@interface UpdateGoOrderPay {
 
 	}
-	
+
 	@interface QueryUserOrderGo {
-		
+
+	}
+
+	@interface ConfirmGoOrder {
+
 	}
 
 	/**
@@ -100,9 +105,10 @@ public interface IGoSV {
 	 */
 	GoOrderQueryResp queryGoOrder(@NotNull(message = "参数为空") GoOrderQueryReq goOrderQueryReq)
 			throws BusinessException, SystemException;
-	
+
 	/**
 	 * 查询用户订购的某个活动
+	 * 
 	 * @param goOrderQueryReq
 	 * @return
 	 * @throws BusinessException
@@ -120,6 +126,17 @@ public interface IGoSV {
 	 * @throws SystemException
 	 */
 	Response updateGoOrderPay(@NotNull(message = "参数为空") UpdateGoOrderPayReq updateGoOrderPayReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 海牛确认
+	 * 
+	 * @param goOrderConfirmReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	Response confirmGoOrder(@NotNull(message = "参数为空") GoOrderConfirmReq goOrderConfirmReq)
 			throws BusinessException, SystemException;
 
 }
