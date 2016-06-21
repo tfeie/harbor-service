@@ -202,7 +202,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		if (!updateGoOrderPayReq.getPayOrderId().equals(goOrder.getPayOrderId())) {
 			throw new BusinessException("GO_0001", "更新活动支付状态失败:支付流水不正确");
 		}
-		if (OrderStatus.WAIT_PAY.equals(goOrder.getOrderStatus())) {
+		if (OrderStatus.WAIT_PAY.getValue().equals(goOrder.getOrderStatus())) {
 			// 如果原来是待支付状态，支付成功则更改成 待海牛确认；支付失败 更改成支付失败
 			String orderStatus = null;
 			if ("SUCCESS".equals(updateGoOrderPayReq.getPayStatus())) {
