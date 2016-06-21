@@ -6,12 +6,12 @@ import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderResp;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoCreateResp;
-import com.the.harbor.api.go.param.GoOrderCheckReq;
-import com.the.harbor.api.go.param.GoOrderCheckResp;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.GoOrderCreateResp;
 import com.the.harbor.api.go.param.GoOrderQueryReq;
 import com.the.harbor.api.go.param.GoOrderQueryResp;
+import com.the.harbor.api.go.param.GoQueryReq;
+import com.the.harbor.api.go.param.GoQueryResp;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
@@ -23,7 +23,7 @@ public interface IGoSV {
 
 	}
 
-	@interface CheckUserJoinGo {
+	@interface QueryGo {
 
 	}
 
@@ -35,7 +35,7 @@ public interface IGoSV {
 
 	}
 
-	@interface QueryGoOrderDetail {
+	@interface QueryGoOrder {
 
 	}
 
@@ -54,15 +54,14 @@ public interface IGoSV {
 	GoCreateResp createGo(@NotNull(message = "参数为空") GoCreateReq goCreateReq) throws BusinessException, SystemException;
 
 	/**
-	 * 校验用户是否参与了某个活动
+	 * 查询GO信息
 	 * 
-	 * @param goOrderCheckReq
+	 * @param goQueryReq
 	 * @return
 	 * @throws BusinessException
 	 * @throws SystemException
 	 */
-	GoOrderCheckResp checkUserJoinGo(@NotNull(message = "参数为空") GoOrderCheckReq goOrderCheckReq)
-			throws BusinessException, SystemException;
+	GoQueryResp queryGo(@NotNull(message = "参数为空") GoQueryReq goQueryReq) throws BusinessException, SystemException;
 
 	/**
 	 * 预约一个OneOnOne的活动
@@ -95,7 +94,7 @@ public interface IGoSV {
 	 * @throws BusinessException
 	 * @throws SystemException
 	 */
-	GoOrderQueryResp queryGoOrderDetail(@NotNull(message = "参数为空") GoOrderQueryReq goOrderQueryReq)
+	GoOrderQueryResp queryGoOrder(@NotNull(message = "参数为空") GoOrderQueryReq goOrderQueryReq)
 			throws BusinessException, SystemException;
 
 	/**

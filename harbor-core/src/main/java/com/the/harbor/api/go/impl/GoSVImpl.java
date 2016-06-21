@@ -7,23 +7,26 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.the.harbor.api.go.IGoSV;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderResp;
+import com.the.harbor.api.go.param.Go;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoCreateResp;
 import com.the.harbor.api.go.param.GoDetail;
-import com.the.harbor.api.go.param.GoOrderCheckReq;
-import com.the.harbor.api.go.param.GoOrderCheckResp;
+import com.the.harbor.api.go.param.GoOrder;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.GoOrderCreateResp;
 import com.the.harbor.api.go.param.GoOrderQueryReq;
 import com.the.harbor.api.go.param.GoOrderQueryResp;
+import com.the.harbor.api.go.param.GoQueryReq;
+import com.the.harbor.api.go.param.GoQueryResp;
 import com.the.harbor.api.go.param.GoTag;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.base.constants.ExceptCodeConstants;
+import com.the.harbor.base.enumeration.dict.ParamCode;
+import com.the.harbor.base.enumeration.dict.TypeCode;
 import com.the.harbor.base.enumeration.hygo.GoDetailType;
 import com.the.harbor.base.enumeration.hygo.GoType;
 import com.the.harbor.base.enumeration.hygo.OrgMode;
 import com.the.harbor.base.enumeration.hygo.PayMode;
-import com.the.harbor.base.enumeration.hygoorder.OrderStatus;
 import com.the.harbor.base.enumeration.hytags.TagCat;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.exception.BusinessException;
@@ -32,6 +35,7 @@ import com.the.harbor.base.util.ResponseBuilder;
 import com.the.harbor.base.util.ValidatorUtil;
 import com.the.harbor.base.vo.Response;
 import com.the.harbor.base.vo.ResponseHeader;
+import com.the.harbor.commons.redisdata.util.HyDictUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HyGo;
@@ -151,47 +155,6 @@ public class GoSVImpl implements IGoSV {
 	}
 
 	@Override
-	public GoOrderCheckResp checkUserJoinGo(GoOrderCheckReq goOrderCheckReq) throws BusinessException, SystemException {
-		String remark = null;
-		String join = null;
-		String orderId = null;
-		String orderStatus = null;
-		/* 1.获取活动信息 */
-		HyGo hyGo = goBusiSV.getHyGo(goOrderCheckReq.getGoId());
-		if (hyGo == null) {
-			throw new BusinessException("GO_0001", "预约的活动不存在");
-		}
-		// 判断是否是自己发布的活动
-		if (goOrderCheckReq.getUserId().equals(hyGo.getUserId())) {
-			join = "1";
-			remark = "不可预约本人发布的活动";
-		} else {
-			HyGoOrder goOrder = goBusiSV.getHyGoOrder(goOrderCheckReq.getUserId(), goOrderCheckReq.getGoId());
-			if (goOrder != null) {
-				if (!OrderStatus.CANCEL.getValue().equals(goOrder.getOrderStatus())) {
-					// 如果不是取消，则认为订购了
-					join = "2";
-					remark = "您已经预约了此活动，不能重复预约";
-					orderId = goOrder.getOrderId();
-					orderStatus = goOrder.getOrderStatus();
-				}
-			} else {
-				join = "3";
-				remark = "您可以预约此活动";
-			}
-		}
-
-		GoOrderCheckResp resp = new GoOrderCheckResp();
-		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("ok");
-		resp.setJoin(join);
-		resp.setRemark(remark);
-		resp.setOrderId(orderId);
-		resp.setOrderStatus(orderStatus);
-		resp.setResponseHeader(responseHeader);
-		return resp;
-	}
-
-	@Override
 	public GoOrderCreateResp orderOneOnOne(GoOrderCreateReq goOrderCreateReq)
 			throws BusinessException, SystemException {
 		String orderId = goBusiSV.orderOneOnOne(goOrderCreateReq);
@@ -219,23 +182,26 @@ public class GoSVImpl implements IGoSV {
 	}
 
 	@Override
-	public GoOrderQueryResp queryGoOrderDetail(GoOrderQueryReq goOrderQueryReq)
-			throws BusinessException, SystemException {
+	public GoOrderQueryResp queryGoOrder(GoOrderQueryReq goOrderQueryReq) throws BusinessException, SystemException {
 		// 获取预约流水记录
-		HyGoOrder goOrder = goBusiSV.getHyGoOrder(goOrderQueryReq.getGoOrderId());
-		if (goOrder == null) {
+		HyGoOrder hyGoOrder = goBusiSV.getHyGoOrder(goOrderQueryReq.getGoOrderId());
+		if (hyGoOrder == null) {
 			throw new BusinessException("GO_0001", "预约记录不存在");
 		}
 		// 获取活动信息
-		HyGo hyGo = goBusiSV.getHyGo(goOrder.getGoId());
+		HyGo hyGo = goBusiSV.getHyGo(hyGoOrder.getGoId());
 		if (hyGo == null) {
 			throw new BusinessException("GO_0001", "活动信息不存在");
 		}
+		GoOrder goOrder = new GoOrder();
+		BeanUtils.copyProperties(goOrder, hyGoOrder);
+		goOrder.setTopic(hyGo.getTopic());
+		goOrder.setFixedPrice(hyGo.getFixedPrice());
+		goOrder.setOrderStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_ORDER.getValue(),
+				ParamCode.ORDER_STATUS.getValue(), hyGoOrder.getOrderStatus()));
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		GoOrderQueryResp resp = new GoOrderQueryResp();
-		BeanUtils.copyProperties(goOrder, resp);
-		resp.setTopic(hyGo.getTopic());
-		resp.setFixedPrice(hyGo.getFixedPrice());
+		resp.setGoOrder(goOrder);
 		resp.setResponseHeader(responseHeader);
 		return resp;
 	}
@@ -249,6 +215,24 @@ public class GoSVImpl implements IGoSV {
 		}
 		goBusiSV.updateGoOrderPay(updateGoOrderPayReq);
 		return ResponseBuilder.buildSuccessResponse("修改成功");
+	}
+
+	@Override
+	public GoQueryResp queryGo(GoQueryReq goQueryReq) throws BusinessException, SystemException {
+		// 获取活动信息
+		HyGo hyGo = goBusiSV.getHyGo(goQueryReq.getGoId());
+		if (hyGo == null) {
+			throw new BusinessException("GO_0001", "活动信息不存在");
+		}
+		Go go = new Go();
+		BeanUtils.copyProperties(go, hyGo);
+		go.setGoTypeName(
+				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.GO_TYPE.getValue(), hyGo.getGoType()));
+		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
+		GoQueryResp resp = new GoQueryResp();
+		resp.setGo(go);
+		resp.setResponseHeader(responseHeader);
+		return resp;
 	}
 
 }

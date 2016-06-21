@@ -15,7 +15,8 @@ import com.the.harbor.api.go.IGoSV;
 public class GoOrderQueryReq implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	@NotNull(message = "活动预约流水为空", groups = { IGoSV.QueryGoOrderDetail.class })
+	
+	@NotNull(message = "活动预约流水为空", groups = { IGoSV.QueryGoOrder.class })
 	private String goOrderId;
 
 	public String getGoOrderId() {
