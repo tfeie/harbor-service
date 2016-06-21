@@ -42,6 +42,10 @@ public interface IGoSV {
 	@interface UpdateGoOrderPay {
 
 	}
+	
+	@interface QueryUserOrderGo {
+		
+	}
 
 	/**
 	 * 创建一个新的活动
@@ -95,6 +99,16 @@ public interface IGoSV {
 	 * @throws SystemException
 	 */
 	GoOrderQueryResp queryGoOrder(@NotNull(message = "参数为空") GoOrderQueryReq goOrderQueryReq)
+			throws BusinessException, SystemException;
+	
+	/**
+	 * 查询用户订购的某个活动
+	 * @param goOrderQueryReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	GoOrderQueryResp queryUserOrderGo(@NotNull(message = "参数为空") GoOrderQueryReq goOrderQueryReq)
 			throws BusinessException, SystemException;
 
 	/**

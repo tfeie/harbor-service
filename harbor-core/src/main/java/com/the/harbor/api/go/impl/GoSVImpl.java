@@ -235,4 +235,30 @@ public class GoSVImpl implements IGoSV {
 		return resp;
 	}
 
+	@Override
+	public GoOrderQueryResp queryUserOrderGo(GoOrderQueryReq goOrderQueryReq)
+			throws BusinessException, SystemException {
+		GoOrder goOrder = null;
+		HyGoOrder hyGoOrder = goBusiSV.getHyGoOrder(goOrderQueryReq.getUserId(), goOrderQueryReq.getGoId());
+		if (hyGoOrder != null) {
+			HyGo hyGo = goBusiSV.getHyGo(hyGoOrder.getGoId());
+			if (hyGo == null) {
+				throw new BusinessException("GO_0001", "活动信息不存在");
+			}
+
+			goOrder = new GoOrder();
+			BeanUtils.copyProperties(goOrder, hyGoOrder);
+			goOrder.setTopic(hyGo.getTopic());
+			goOrder.setFixedPrice(hyGo.getFixedPrice());
+			goOrder.setOrderStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_ORDER.getValue(),
+					ParamCode.ORDER_STATUS.getValue(), hyGoOrder.getOrderStatus()));
+		}
+
+		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
+		GoOrderQueryResp resp = new GoOrderQueryResp();
+		resp.setGoOrder(goOrder);
+		resp.setResponseHeader(responseHeader);
+		return resp;
+	}
+
 }
