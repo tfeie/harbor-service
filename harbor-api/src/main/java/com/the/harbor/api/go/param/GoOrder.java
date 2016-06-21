@@ -54,6 +54,9 @@ public class GoOrder implements Serializable {
 	// 预约记录状态
 	private String orderStatusName;
 
+	// 活动发起者
+	private String publishUserId;
+
 	public String getOrderId() {
 		return orderId;
 	}
@@ -228,6 +231,14 @@ public class GoOrder implements Serializable {
 
 	public void setOrderStatusName(String orderStatusName) {
 		this.orderStatusName = orderStatusName;
+	}
+
+	public String getPublishUserId() {
+		return publishUserId;
+	}
+
+	public void setPublishUserId(String publishUserId) {
+		this.publishUserId = publishUserId;
 	}
 
 }

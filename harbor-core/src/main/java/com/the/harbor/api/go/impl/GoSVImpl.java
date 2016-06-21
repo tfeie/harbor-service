@@ -195,6 +195,7 @@ public class GoSVImpl implements IGoSV {
 		}
 		GoOrder goOrder = new GoOrder();
 		BeanUtils.copyProperties(hyGoOrder, goOrder);
+		goOrder.setPublishUserId(hyGo.getUserId());
 		goOrder.setTopic(hyGo.getTopic());
 		goOrder.setFixedPrice(hyGo.getFixedPrice());
 		goOrder.setOrderStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_ORDER.getValue(),
@@ -248,6 +249,7 @@ public class GoSVImpl implements IGoSV {
 
 			goOrder = new GoOrder();
 			BeanUtils.copyProperties(hyGoOrder, goOrder);
+			goOrder.setPublishUserId(hyGo.getUserId());
 			goOrder.setTopic(hyGo.getTopic());
 			goOrder.setFixedPrice(hyGo.getFixedPrice());
 			goOrder.setOrderStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_ORDER.getValue(),
