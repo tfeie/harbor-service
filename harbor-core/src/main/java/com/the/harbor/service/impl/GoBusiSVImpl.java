@@ -154,26 +154,32 @@ public class GoBusiSVImpl implements IGoBusiSV {
 	@Override
 	public String createGoPaymentOrder(CreateGoPaymentOrderReq createGoPaymentOrderReq) {
 		String goOrderId = createGoPaymentOrderReq.getGoOrderId();
+		String payOrderId = null;
 		// 判断此业务流水是否已经产生了交易流水
 		HyGoOrder goOrder = this.getHyGoOrder(goOrderId);
 		if (goOrder == null) {
 			throw new BusinessException("GO_0001", "产生支付交易流水失败:预约记录不存在");
 		}
 		if (!StringUtil.isBlank(goOrder.getPayOrderId())) {
-			throw new BusinessException("GO_0001", "此活动预约记录已经发起一笔支付交易[" + goOrder.getPayOrderId() + "]");
+			if (!OrderStatus.WAIT_PAY.equals(goOrder.getOrderStatus())
+					|| !OrderStatus.PAY_FAILURE.equals(goOrder.getOrderStatus())) {
+				throw new BusinessException("GO_0001", "此活动预约记录已经发起一笔支付交易[" + goOrder.getPayOrderId() + "]");
+			}
+			payOrderId = goOrder.getPayOrderId();
+		} else {
+			// 产生一笔支付交易流水
+			CreatePaymentOrderReq createPaymentOrderReq = new CreatePaymentOrderReq();
+			BeanUtils.copyProperties(createGoPaymentOrderReq, createPaymentOrderReq);
+			payOrderId = paymentBusiSV.createPaymentOrder(createPaymentOrderReq);
+			// 关联上活动预约业务流水
+			Timestamp sysdate = DateUtil.getSysDate();
+			HyGoOrder record = new HyGoOrder();
+			record.setOrderId(goOrderId);
+			record.setPayOrderId(payOrderId);
+			record.setStsDate(sysdate);
+			record.setPayStsDate(sysdate);
+			hyGoOrderMapper.updateByPrimaryKeySelective(record);
 		}
-		// 产生一笔支付交易流水
-		CreatePaymentOrderReq createPaymentOrderReq = new CreatePaymentOrderReq();
-		BeanUtils.copyProperties(createGoPaymentOrderReq, createPaymentOrderReq);
-		String payOrderId = paymentBusiSV.createPaymentOrder(createPaymentOrderReq);
-		// 关联上活动预约业务流水
-		Timestamp sysdate = DateUtil.getSysDate();
-		HyGoOrder record = new HyGoOrder();
-		record.setOrderId(goOrderId);
-		record.setPayOrderId(payOrderId);
-		record.setStsDate(sysdate);
-		record.setPayStsDate(sysdate);
-		hyGoOrderMapper.updateByPrimaryKeySelective(record);
 		return payOrderId;
 	}
 
