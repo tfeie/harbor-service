@@ -19,7 +19,7 @@ public class UserInfo implements Serializable {
 
 	private String sex;
 
-	private transient String wxOpenid;
+	private String wxOpenid;
 
 	private String wxHeadimg;
 
@@ -356,7 +356,5 @@ public class UserInfo implements Serializable {
 	public void setHomePageBg(String homePageBg) {
 		this.homePageBg = homePageBg;
 	}
-	
-	
 
 }
