@@ -194,7 +194,7 @@ public class GoSVImpl implements IGoSV {
 			throw new BusinessException("GO_0001", "活动信息不存在");
 		}
 		GoOrder goOrder = new GoOrder();
-		BeanUtils.copyProperties(goOrder, hyGoOrder);
+		BeanUtils.copyProperties(hyGoOrder, goOrder);
 		goOrder.setTopic(hyGo.getTopic());
 		goOrder.setFixedPrice(hyGo.getFixedPrice());
 		goOrder.setOrderStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_ORDER.getValue(),
@@ -225,7 +225,7 @@ public class GoSVImpl implements IGoSV {
 			throw new BusinessException("GO_0001", "活动信息不存在");
 		}
 		Go go = new Go();
-		BeanUtils.copyProperties(go, hyGo);
+		BeanUtils.copyProperties(hyGo, go);
 		go.setGoTypeName(
 				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.GO_TYPE.getValue(), hyGo.getGoType()));
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
@@ -247,7 +247,7 @@ public class GoSVImpl implements IGoSV {
 			}
 
 			goOrder = new GoOrder();
-			BeanUtils.copyProperties(goOrder, hyGoOrder);
+			BeanUtils.copyProperties(hyGoOrder, goOrder);
 			goOrder.setTopic(hyGo.getTopic());
 			goOrder.setFixedPrice(hyGo.getFixedPrice());
 			goOrder.setOrderStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_ORDER.getValue(),
