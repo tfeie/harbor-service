@@ -37,8 +37,6 @@
 		init-method="init">
 		<property name="ds" ref="dataSource" />
 	</bean>
-	
-	<bean id="SMSRecordListener" class="com.the.harbor.mnslistener.SMSRecordListener"></bean>
 
 	<!-- 配置myBatis的sqlSessionFactory -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
@@ -76,6 +74,9 @@
 	<!-- 使用annotation注解方式配置事务 -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
+	<!-- MNS消息队列监听 -->
+	<bean id="SMSRecordListener" class="com.the.harbor.mnslistener.SMSRecordListener" />
+	<bean id="BeIndexBuildListener" class="com.the.harbor.mnslistener.BeIndexBuildListener" />
 
 	<!-- 设定注解扫描基础包 -->
 	<context:component-scan base-package="com.the.harbor" />
