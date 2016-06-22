@@ -74,7 +74,8 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			for (BeDetail d : beCreateReq.getBeDetails()) {
 				HyBeDetail bd = new HyBeDetail();
 				BeanUtils.copyProperties(d, bd);
-				bd.setDetail(HarborSeqUtil.createBeDetailId());
+				bd.setId(HarborSeqUtil.createBeDetailId());
+				bd.setDetail(d.getDetail());
 				bd.setBeId(beId);
 				bd.setCreateDate(sysdate);
 				bd.setStatus(Status.VALID.getValue());

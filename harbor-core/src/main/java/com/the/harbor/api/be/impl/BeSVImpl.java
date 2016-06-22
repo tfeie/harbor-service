@@ -47,7 +47,7 @@ public class BeSVImpl implements IBeSV {
 		if (beCreateReq == null) {
 			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "参数为空");
 		}
-		if (!CollectionUtil.isEmpty(beCreateReq.getBeDetails())) {
+		if (CollectionUtil.isEmpty(beCreateReq.getBeDetails())) {
 			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "请填写要发布的文字或图片");
 		}
 
