@@ -37,6 +37,8 @@
 		init-method="init">
 		<property name="ds" ref="dataSource" />
 	</bean>
+	
+	<bean id="SMSRecordListener" class="com.the.harbor.mnslistener.SMSRecordListener"></bean>
 
 	<!-- 配置myBatis的sqlSessionFactory -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
