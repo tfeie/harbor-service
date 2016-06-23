@@ -26,18 +26,12 @@ import com.the.harbor.api.user.param.UserTagQueryResp;
 import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.api.user.param.UserViewResp;
 import com.the.harbor.base.constants.ExceptCodeConstants;
-import com.the.harbor.base.enumeration.dict.ParamCode;
-import com.the.harbor.base.enumeration.dict.TypeCode;
-import com.the.harbor.base.enumeration.hyuser.UserStatus;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.base.util.ResponseBuilder;
 import com.the.harbor.base.vo.Response;
 import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
-import com.the.harbor.commons.redisdata.util.HyCountryUtil;
-import com.the.harbor.commons.redisdata.util.HyDictUtil;
-import com.the.harbor.commons.redisdata.util.HyIndustryUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
@@ -231,39 +225,7 @@ public class UserSVImpl implements IUserSV {
 		if (StringUtil.isBlank(userId)) {
 			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "用户为空");
 		}
-		UserViewInfo userInfo = null;
-		HyUser hyUser = userManagerSV.getUserInfo(userId);
-		if (hyUser != null) {
-			userInfo = new UserViewInfo();
-			BeanUtils.copyProperties(hyUser, userInfo);
-			userInfo.setHomePageBg(StringUtil.isBlank(hyUser.getHomePageBg())
-					? GlobalSettings.getHarborUserDefaultHomePageBGURL() : hyUser.getHomePageBg());
-			userInfo.setWxHeadimg(StringUtil.isBlank(hyUser.getWxHeadimg())
-					? GlobalSettings.getHarborUserDefaultHeadICONURL() : hyUser.getWxHeadimg());
-
-			userInfo.setAbroadCountryName(HyCountryUtil.getHyCountryName(hyUser.getAbroadCountry()));
-
-			userInfo.setAtCityName(HyCountryUtil.getHyCountryName(hyUser.getAbroadCountry()));
-			userInfo.setIndustryName(HyIndustryUtil.getHyIndustryName(hyUser.getIndustry()));
-			userInfo.setUserTypeName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
-					ParamCode.USER_TYPE.getValue(), hyUser.getAbroadCountry()));
-			userInfo.setSexName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(), ParamCode.SEX.getValue(),
-					hyUser.getAbroadCountry()));
-			userInfo.setMaritalStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
-					ParamCode.MARITAL_STATUS.getValue(), hyUser.getAbroadCountry()));
-			userInfo.setConstellationName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
-					ParamCode.CONSTELLATION.getValue(), hyUser.getAbroadCountry()));
-			if (UserStatus.AUTHORIZED_SUCCESS.equals(hyUser.getUserStatus())) {
-				String userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
-						ParamCode.USER_STATUS.getValue(), hyUser.getUserStatus());
-				userInfo.setUserStatusName(userStatus);
-			} else {
-				String userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
-						ParamCode.USER_STATUS.getValue(), UserStatus.UNAUTHORIZED.getValue());
-				userInfo.setUserStatusName(userStatus);
-			}
-
-		}
+		UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(userId);
 		UserViewResp resp = new UserViewResp();
 		resp.setUserInfo(userInfo);
 		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("查询成功"));
@@ -275,39 +237,7 @@ public class UserSVImpl implements IUserSV {
 		if (StringUtil.isBlank(openId)) {
 			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "微信认证标识为空");
 		}
-		UserViewInfo userInfo = null;
-		HyUser hyUser = userManagerSV.getUserByWeixin(openId);
-		if (hyUser != null) {
-			userInfo = new UserViewInfo();
-			BeanUtils.copyProperties(hyUser, userInfo);
-			userInfo.setHomePageBg(StringUtil.isBlank(hyUser.getHomePageBg())
-					? GlobalSettings.getHarborUserDefaultHomePageBGURL() : hyUser.getHomePageBg());
-			userInfo.setWxHeadimg(StringUtil.isBlank(hyUser.getWxHeadimg())
-					? GlobalSettings.getHarborUserDefaultHeadICONURL() : hyUser.getWxHeadimg());
-
-			userInfo.setAbroadCountryName(HyCountryUtil.getHyCountryName(hyUser.getAbroadCountry()));
-
-			userInfo.setAtCityName(HyCountryUtil.getHyCountryName(hyUser.getAbroadCountry()));
-			userInfo.setIndustryName(HyIndustryUtil.getHyIndustryName(hyUser.getIndustry()));
-			userInfo.setUserTypeName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
-					ParamCode.USER_TYPE.getValue(), hyUser.getAbroadCountry()));
-			userInfo.setSexName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(), ParamCode.SEX.getValue(),
-					hyUser.getAbroadCountry()));
-			userInfo.setMaritalStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
-					ParamCode.MARITAL_STATUS.getValue(), hyUser.getAbroadCountry()));
-			userInfo.setConstellationName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
-					ParamCode.CONSTELLATION.getValue(), hyUser.getAbroadCountry()));
-			if (UserStatus.AUTHORIZED_SUCCESS.equals(hyUser.getUserStatus())) {
-				String userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
-						ParamCode.USER_STATUS.getValue(), hyUser.getUserStatus());
-				userInfo.setUserStatusName(userStatus);
-			} else {
-				String userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
-						ParamCode.USER_STATUS.getValue(), UserStatus.UNAUTHORIZED.getValue());
-				userInfo.setUserStatusName(userStatus);
-			}
-
-		}
+		UserViewInfo userInfo = userManagerSV.getUserViewInfoByOpenId(openId);
 		UserViewResp resp = new UserViewResp();
 		resp.setUserInfo(userInfo);
 		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("查询成功"));

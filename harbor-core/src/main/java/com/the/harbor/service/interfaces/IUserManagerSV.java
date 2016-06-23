@@ -13,6 +13,7 @@ import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserTag;
 import com.the.harbor.api.user.param.UserTagQueryReq;
 import com.the.harbor.api.user.param.UserTagQueryResp;
+import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.dao.mapper.bo.HyUser;
 
 public interface IUserManagerSV {
@@ -72,6 +73,10 @@ public interface IUserManagerSV {
 	 * @return
 	 */
 	HyUser getUserInfo(String userId);
+	
+	UserViewInfo getUserViewInfoByUserId(String userId);
+	
+	UserViewInfo getUserViewInfoByOpenId(String openId);
 
 	/**
 	 * 会员缴费续期

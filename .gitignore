@@ -1,4 +1,6 @@
 /bin/
+/harbor-core/logs/
+/logs/
 /.gradle/
 /.settings/
 /build/

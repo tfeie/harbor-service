@@ -23,6 +23,8 @@ import com.the.harbor.api.be.param.BeDetail;
 import com.the.harbor.api.be.param.BeTag;
 import com.the.harbor.api.be.param.QueryMyBeReq;
 import com.the.harbor.api.be.param.QueryMyBeResp;
+import com.the.harbor.api.be.param.QueryOneBeReq;
+import com.the.harbor.api.be.param.QueryOneBeResp;
 import com.the.harbor.base.constants.ExceptCodeConstants;
 import com.the.harbor.base.enumeration.hybe.BeDetailType;
 import com.the.harbor.base.enumeration.hygo.GoDetailType;
@@ -142,6 +144,22 @@ public class BeSVImpl implements IBeSV {
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		QueryMyBeResp resp = new QueryMyBeResp();
 		resp.setPagInfo(pageInfo);
+		resp.setResponseHeader(responseHeader);
+		return resp;
+	}
+
+	@Override
+	public QueryOneBeResp queryOneBe(QueryOneBeReq queryOneBeReq) throws BusinessException, SystemException {
+		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
+				.setTypes(HarborIndexType.HY_BE.getValue())
+				.setQuery(QueryBuilders.termQuery("_id", queryOneBeReq.getBeId())).execute().actionGet();
+		if (response.getHits().totalHits() == 0) {
+			return null;
+		}
+		Be be = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Be.class);
+		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
+		QueryOneBeResp resp = new QueryOneBeResp();
+		resp.setBe(be);
 		resp.setResponseHeader(responseHeader);
 		return resp;
 	}
