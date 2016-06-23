@@ -241,8 +241,7 @@ public class UserSVImpl implements IUserSV {
 			userInfo.setWxHeadimg(StringUtil.isBlank(hyUser.getWxHeadimg())
 					? GlobalSettings.getHarborUserDefaultHeadICONURL() : hyUser.getWxHeadimg());
 
-			userInfo.setAbroadCountryName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
-					ParamCode.ABROAD_COUNTRY.getValue(), hyUser.getAbroadCountry()));
+			userInfo.setAbroadCountryName(HyCountryUtil.getHyCountryName(hyUser.getAbroadCountry()));
 
 			userInfo.setAtCityName(HyCountryUtil.getHyCountryName(hyUser.getAbroadCountry()));
 			userInfo.setIndustryName(HyIndustryUtil.getHyIndustryName(hyUser.getIndustry()));
@@ -257,11 +256,11 @@ public class UserSVImpl implements IUserSV {
 			if (UserStatus.AUTHORIZED_SUCCESS.equals(hyUser.getUserStatus())) {
 				String userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
 						ParamCode.USER_STATUS.getValue(), hyUser.getUserStatus());
-				userInfo.setUserStatus(userStatus);
+				userInfo.setUserStatusName(userStatus);
 			} else {
 				String userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
 						ParamCode.USER_STATUS.getValue(), UserStatus.UNAUTHORIZED.getValue());
-				userInfo.setUserStatus(userStatus);
+				userInfo.setUserStatusName(userStatus);
 			}
 
 		}
@@ -301,11 +300,11 @@ public class UserSVImpl implements IUserSV {
 			if (UserStatus.AUTHORIZED_SUCCESS.equals(hyUser.getUserStatus())) {
 				String userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
 						ParamCode.USER_STATUS.getValue(), hyUser.getUserStatus());
-				userInfo.setUserStatus(userStatus);
+				userInfo.setUserStatusName(userStatus);
 			} else {
 				String userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
 						ParamCode.USER_STATUS.getValue(), UserStatus.UNAUTHORIZED.getValue());
-				userInfo.setUserStatus(userStatus);
+				userInfo.setUserStatusName(userStatus);
 			}
 
 		}
