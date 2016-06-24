@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.the.harbor.dao.mapper.interfaces.HyBeGiveHbMapper" >
+  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyBeGiveHb" >
+    <id column="GIVE_ID" property="giveId" jdbcType="VARCHAR" />
+    <result column="BE_ID" property="beId" jdbcType="VARCHAR" />
+    <result column="BUSI_TYPE" property="busiType" jdbcType="VARCHAR" />
+    <result column="PAY_USER_ID" property="payUserId" jdbcType="VARCHAR" />
+    <result column="TARGET_USER_ID" property="targetUserId" jdbcType="VARCHAR" />
+    <result column="AMOUNT" property="amount" jdbcType="BIGINT" />
+    <result column="TRADE_DATE" property="tradeDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    GIVE_ID, BE_ID, BUSI_TYPE, PAY_USER_ID, TARGET_USER_ID, AMOUNT, TRADE_DATE
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyBeGiveHbCriteria" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'false' as QUERYID,
+    <include refid="Base_Column_List" />
+    from hy_be_give_hb
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from hy_be_give_hb
+    where GIVE_ID = #{giveId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from hy_be_give_hb
+    where GIVE_ID = #{giveId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HyBeGiveHbCriteria" >
+    delete from hy_be_give_hb
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyBeGiveHb" >
+    insert into hy_be_give_hb (GIVE_ID, BE_ID, BUSI_TYPE, 
+      PAY_USER_ID, TARGET_USER_ID, AMOUNT, 
+      TRADE_DATE)
+    values (#{giveId,jdbcType=VARCHAR}, #{beId,jdbcType=VARCHAR}, #{busiType,jdbcType=VARCHAR}, 
+      #{payUserId,jdbcType=VARCHAR}, #{targetUserId,jdbcType=VARCHAR}, #{amount,jdbcType=BIGINT}, 
+      #{tradeDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyBeGiveHb" >
+    insert into hy_be_give_hb
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="giveId != null" >
+        GIVE_ID,
+      </if>
+      <if test="beId != null" >
+        BE_ID,
+      </if>
+      <if test="busiType != null" >
+        BUSI_TYPE,
+      </if>
+      <if test="payUserId != null" >
+        PAY_USER_ID,
+      </if>
+      <if test="targetUserId != null" >
+        TARGET_USER_ID,
+      </if>
+      AMOUNT,
+      <if test="tradeDate != null" >
+        TRADE_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="giveId != null" >
+        #{giveId,jdbcType=VARCHAR},
+      </if>
+      <if test="beId != null" >
+        #{beId,jdbcType=VARCHAR},
+      </if>
+      <if test="busiType != null" >
+        #{busiType,jdbcType=VARCHAR},
+      </if>
+      <if test="payUserId != null" >
+        #{payUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="targetUserId != null" >
+        #{targetUserId,jdbcType=VARCHAR},
+      </if>
+      #{amount,jdbcType=BIGINT},
+      <if test="tradeDate != null" >
+        #{tradeDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyBeGiveHbCriteria" resultType="java.lang.Integer" >
+    select count(*) from hy_be_give_hb
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hy_be_give_hb
+    <set >
+      <if test="record.giveId != null" >
+        GIVE_ID = #{record.giveId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.beId != null" >
+        BE_ID = #{record.beId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.busiType != null" >
+        BUSI_TYPE = #{record.busiType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.payUserId != null" >
+        PAY_USER_ID = #{record.payUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.targetUserId != null" >
+        TARGET_USER_ID = #{record.targetUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.amount != null" >
+        AMOUNT = #{record.amount,jdbcType=BIGINT},
+      </if>
+      <if test="record.tradeDate != null" >
+        TRADE_DATE = #{record.tradeDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hy_be_give_hb
+    set GIVE_ID = #{record.giveId,jdbcType=VARCHAR},
+      BE_ID = #{record.beId,jdbcType=VARCHAR},
+      BUSI_TYPE = #{record.busiType,jdbcType=VARCHAR},
+      PAY_USER_ID = #{record.payUserId,jdbcType=VARCHAR},
+      TARGET_USER_ID = #{record.targetUserId,jdbcType=VARCHAR},
+      AMOUNT = #{record.amount,jdbcType=BIGINT},
+      TRADE_DATE = #{record.tradeDate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HyBeGiveHb" >
+    update hy_be_give_hb
+    <set >
+      <if test="beId != null" >
+        BE_ID = #{beId,jdbcType=VARCHAR},
+      </if>
+      <if test="busiType != null" >
+        BUSI_TYPE = #{busiType,jdbcType=VARCHAR},
+      </if>
+      <if test="payUserId != null" >
+        PAY_USER_ID = #{payUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="targetUserId != null" >
+        TARGET_USER_ID = #{targetUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        AMOUNT = #{amount,jdbcType=BIGINT},
+      </if>
+      <if test="tradeDate != null" >
+        TRADE_DATE = #{tradeDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where GIVE_ID = #{giveId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyBeGiveHb" >
+    update hy_be_give_hb
+    set BE_ID = #{beId,jdbcType=VARCHAR},
+      BUSI_TYPE = #{busiType,jdbcType=VARCHAR},
+      PAY_USER_ID = #{payUserId,jdbcType=VARCHAR},
+      TARGET_USER_ID = #{targetUserId,jdbcType=VARCHAR},
+      AMOUNT = #{amount,jdbcType=BIGINT},
+      TRADE_DATE = #{tradeDate,jdbcType=TIMESTAMP}
+    where GIVE_ID = #{giveId,jdbcType=VARCHAR}
+  </update>
+</mapper>
