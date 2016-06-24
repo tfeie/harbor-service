@@ -1,6 +1,8 @@
 package com.the.harbor.service.interfaces;
 
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
+import com.the.harbor.api.go.param.DoGoFavorite;
+import com.the.harbor.api.go.param.DoGoView;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoOrderConfirmReq;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
@@ -34,5 +36,9 @@ public interface IGoBusiSV {
 	void confirmGoOrderMeetLocaltion(GoOrderMeetLocaltionConfirmReq goOrderMeetLocaltionConfirmReq);
 
 	void finishGoOrder(GoOrderFinishReq goOrderFinishReq);
+
+	void processDoGoFavoriteMQ(DoGoFavorite doGoFavorite);
+
+	void processDoGoView(DoGoView doGoView);
 
 }

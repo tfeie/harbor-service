@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
+import com.the.harbor.api.go.param.DoGoFavorite;
+import com.the.harbor.api.go.param.DoGoView;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoDetail;
 import com.the.harbor.api.go.param.GoOrderConfirmReq;
@@ -32,13 +34,18 @@ import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HyGo;
 import com.the.harbor.dao.mapper.bo.HyGoDetail;
+import com.the.harbor.dao.mapper.bo.HyGoFavorite;
+import com.the.harbor.dao.mapper.bo.HyGoFavoriteCriteria;
 import com.the.harbor.dao.mapper.bo.HyGoOrder;
 import com.the.harbor.dao.mapper.bo.HyGoOrderCriteria;
 import com.the.harbor.dao.mapper.bo.HyGoTags;
+import com.the.harbor.dao.mapper.bo.HyGoView;
 import com.the.harbor.dao.mapper.interfaces.HyGoDetailMapper;
+import com.the.harbor.dao.mapper.interfaces.HyGoFavoriteMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoOrderMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoTagsMapper;
+import com.the.harbor.dao.mapper.interfaces.HyGoViewMapper;
 import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IPaymentBusiSV;
 import com.the.harbor.util.HarborSeqUtil;
@@ -58,6 +65,12 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 	@Autowired
 	private transient HyGoOrderMapper hyGoOrderMapper;
+
+	@Autowired
+	private transient HyGoViewMapper hyGoViewMapper;
+
+	@Autowired
+	private transient HyGoFavoriteMapper hyGoFavoriteMapper;
 
 	@Autowired
 	private transient IPaymentBusiSV paymentBusiSV;
@@ -309,6 +322,37 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		o.setOrderStatus(OrderStatus.FINISH.getValue());
 		o.setStsDate(sysdate);
 		hyGoOrderMapper.updateByPrimaryKeySelective(o);
+	}
+
+	@Override
+	public void processDoGoFavoriteMQ(DoGoFavorite doGoFavorite) {
+		if (DoGoFavorite.HandleType.DO.equals(doGoFavorite.getHandleType())) {
+			// 如果是收藏，则记录
+			HyGoFavorite record = new HyGoFavorite();
+			record.setGoId(doGoFavorite.getGoId());
+			record.setCreateDate(doGoFavorite.getTime() == null ? DateUtil.getSysDate() : doGoFavorite.getTime());
+			record.setFavoriteId(HarborSeqUtil.createGoFavoriteId());
+			record.setUserId(doGoFavorite.getUserId());
+			hyGoFavoriteMapper.insert(record);
+		} else if (DoGoFavorite.HandleType.CANCEL.equals(doGoFavorite.getHandleType())) {
+			// 如果是取消收藏，则删除
+			if (!StringUtil.isBlank(doGoFavorite.getUserId()) && !StringUtil.isBlank(doGoFavorite.getGoId())) {
+				HyGoFavoriteCriteria sql = new HyGoFavoriteCriteria();
+				sql.or().andUserIdEqualTo(doGoFavorite.getUserId()).andGoIdEqualTo(doGoFavorite.getGoId());
+				hyGoFavoriteMapper.deleteByExample(sql);
+			}
+		}
+	}
+
+	@Override
+	public void processDoGoView(DoGoView doGoView) {
+		HyGoView record = new HyGoView();
+		record.setCreateDate(doGoView.getTime() == null ? DateUtil.getSysDate() : doGoView.getTime());
+		record.setViewId(HarborSeqUtil.createGoViewId());
+		record.setUserId(doGoView.getUserId());
+		record.setGoId(doGoView.getGoId());
+		hyGoViewMapper.insert(record);
+
 	}
 
 }

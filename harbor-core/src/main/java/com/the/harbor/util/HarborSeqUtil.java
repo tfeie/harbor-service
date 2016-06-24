@@ -68,12 +68,24 @@ public final class HarborSeqUtil {
 	public static String createGoOrderId() {
 		return UUIDUtil.genId32();
 	}
-	
+
 	public static String createBeId() {
 		return UUIDUtil.genId32();
 	}
 
 	public static String createBeDetailId() {
+		return UUIDUtil.genId32();
+	}
+
+	public static String createBeLikesId() {
+		return UUIDUtil.genId32();
+	}
+
+	public static String createGoFavoriteId() {
+		return UUIDUtil.genId32();
+	}
+
+	public static String createGoViewId() {
 		return UUIDUtil.genId32();
 	}
 

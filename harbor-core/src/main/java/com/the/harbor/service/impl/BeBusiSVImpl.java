@@ -19,6 +19,7 @@ import com.the.harbor.api.be.param.Be;
 import com.the.harbor.api.be.param.BeCreateReq;
 import com.the.harbor.api.be.param.BeDetail;
 import com.the.harbor.api.be.param.BeTag;
+import com.the.harbor.api.be.param.DoBeLikes;
 import com.the.harbor.base.enumeration.common.Status;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
@@ -28,8 +29,11 @@ import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HyBe;
 import com.the.harbor.dao.mapper.bo.HyBeDetail;
+import com.the.harbor.dao.mapper.bo.HyBeLikes;
+import com.the.harbor.dao.mapper.bo.HyBeLikesCriteria;
 import com.the.harbor.dao.mapper.bo.HyBeTags;
 import com.the.harbor.dao.mapper.interfaces.HyBeDetailMapper;
+import com.the.harbor.dao.mapper.interfaces.HyBeLikesMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeTagsMapper;
 import com.the.harbor.service.interfaces.IBeBusiSV;
@@ -49,6 +53,9 @@ public class BeBusiSVImpl implements IBeBusiSV {
 
 	@Autowired
 	private transient HyBeDetailMapper hyBeDetailMapper;
+
+	@Autowired
+	private transient HyBeLikesMapper hyBeLikesMapper;
 
 	@Override
 	public String createBe(BeCreateReq beCreateReq) {
@@ -135,6 +142,26 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		}
 		client.close();
 
+	}
+
+	@Override
+	public void processDoBeLikesMQ(DoBeLikes doBELikes) {
+		if (DoBeLikes.HandleType.ZAN.equals(doBELikes.getHandleType())) {
+			// 如果是点赞，则记录
+			HyBeLikes record = new HyBeLikes();
+			record.setBeId(doBELikes.getBeId());
+			record.setCreateDate(doBELikes.getTime() == null ? DateUtil.getSysDate() : doBELikes.getTime());
+			record.setLikesId(HarborSeqUtil.createBeLikesId());
+			record.setUserId(doBELikes.getUserId());
+			hyBeLikesMapper.insert(record);
+		} else if (DoBeLikes.HandleType.CANCEL.equals(doBELikes.getHandleType())) {
+			// 如果是取消赞，则删除
+			if (!StringUtil.isBlank(doBELikes.getUserId()) && !StringUtil.isBlank(doBELikes.getBeId())) {
+				HyBeLikesCriteria sql = new HyBeLikesCriteria();
+				sql.or().andUserIdEqualTo(doBELikes.getUserId()).andBeIdEqualTo(doBELikes.getBeId());
+				hyBeLikesMapper.deleteByExample(sql);
+			}
+		}
 	}
 
 }
