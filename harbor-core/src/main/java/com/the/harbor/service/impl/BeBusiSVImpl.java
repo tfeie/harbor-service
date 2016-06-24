@@ -146,7 +146,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 
 	@Override
 	public void processDoBeLikesMQ(DoBeLikes doBELikes) {
-		if (DoBeLikes.HandleType.ZAN.equals(doBELikes.getHandleType())) {
+		if (DoBeLikes.HandleType.ZAN.name().equals(doBELikes.getHandleType())) {
 			// 如果是点赞，则记录
 			HyBeLikes record = new HyBeLikes();
 			record.setBeId(doBELikes.getBeId());
@@ -154,7 +154,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			record.setLikesId(HarborSeqUtil.createBeLikesId());
 			record.setUserId(doBELikes.getUserId());
 			hyBeLikesMapper.insert(record);
-		} else if (DoBeLikes.HandleType.CANCEL.equals(doBELikes.getHandleType())) {
+		} else if (DoBeLikes.HandleType.CANCEL.name().equals(doBELikes.getHandleType())) {
 			// 如果是取消赞，则删除
 			if (!StringUtil.isBlank(doBELikes.getUserId()) && !StringUtil.isBlank(doBELikes.getBeId())) {
 				HyBeLikesCriteria sql = new HyBeLikesCriteria();

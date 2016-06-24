@@ -326,7 +326,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 	@Override
 	public void processDoGoFavoriteMQ(DoGoFavorite doGoFavorite) {
-		if (DoGoFavorite.HandleType.DO.equals(doGoFavorite.getHandleType())) {
+		if (DoGoFavorite.HandleType.DO.name().equals(doGoFavorite.getHandleType())) {
 			// 如果是收藏，则记录
 			HyGoFavorite record = new HyGoFavorite();
 			record.setGoId(doGoFavorite.getGoId());
@@ -334,7 +334,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			record.setFavoriteId(HarborSeqUtil.createGoFavoriteId());
 			record.setUserId(doGoFavorite.getUserId());
 			hyGoFavoriteMapper.insert(record);
-		} else if (DoGoFavorite.HandleType.CANCEL.equals(doGoFavorite.getHandleType())) {
+		} else if (DoGoFavorite.HandleType.CANCEL.name().equals(doGoFavorite.getHandleType())) {
 			// 如果是取消收藏，则删除
 			if (!StringUtil.isBlank(doGoFavorite.getUserId()) && !StringUtil.isBlank(doGoFavorite.getGoId())) {
 				HyGoFavoriteCriteria sql = new HyGoFavoriteCriteria();
