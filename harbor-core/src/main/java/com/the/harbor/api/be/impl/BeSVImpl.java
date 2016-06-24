@@ -39,6 +39,7 @@ import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
+import com.the.harbor.commons.redisdata.util.HyBeUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.service.interfaces.IBeBusiSV;
@@ -134,6 +135,7 @@ public class BeSVImpl implements IBeSV {
 		List<Be> result = new ArrayList<Be>();
 		for (SearchHit hit : hits) {
 			Be be = JSON.parseObject(hit.getSourceAsString(), Be.class);
+			be.setDianzan(HyBeUtil.getBeDianzanCount(be.getBeId()));
 			result.add(be);
 		}
 		PageInfo<Be> pageInfo = new PageInfo<Be>();
@@ -157,6 +159,7 @@ public class BeSVImpl implements IBeSV {
 			return null;
 		}
 		Be be = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Be.class);
+		be.setDianzan(HyBeUtil.getBeDianzanCount(be.getBeId()));
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		QueryOneBeResp resp = new QueryOneBeResp();
 		resp.setBe(be);

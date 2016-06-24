@@ -21,6 +21,9 @@ public class Be implements Serializable {
 	private List<BeDetail> beDetails;
 
 	private List<BeTag> beTags;
+	
+	//点赞数量
+	private long dianzan;
 
 	public String getBeId() {
 		return beId;
@@ -77,5 +80,15 @@ public class Be implements Serializable {
 	public void setBeTags(List<BeTag> beTags) {
 		this.beTags = beTags;
 	}
+
+	public long getDianzan() {
+		return dianzan;
+	}
+
+	public void setDianzan(long dianzan) {
+		this.dianzan = dianzan;
+	}
+	
+	
 
 }
