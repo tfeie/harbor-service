@@ -5,11 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alibaba.fastjson.JSONObject;
 import com.aliyun.mns.client.CloudAccount;
 import com.aliyun.mns.client.MNSClient;
 import com.aliyun.mns.model.Message;
-import com.the.harbor.base.vo.MNSMQ;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSSettings;
 import com.the.harbor.commons.components.aliyuncs.mns.MessageReceiver;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
@@ -95,8 +93,7 @@ public class UserInteractionListener implements InitializingBean {
 			boolean success = false;
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
-					MNSMQ mnsMQ = JSONObject.parseObject(message.getMessageBody(), MNSMQ.class);
-					userInterfactionSV.process(mnsMQ);
+					userInterfactionSV.process(message.getMessageBody());
 				}
 				success = true;
 			} catch (Exception ex) {
