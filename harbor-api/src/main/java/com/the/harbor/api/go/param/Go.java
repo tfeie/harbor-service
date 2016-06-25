@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 
-import com.the.harbor.api.user.param.UserViewInfo;
-
 public class Go implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -56,7 +54,19 @@ public class Go implements Serializable {
 	private List<GoTag> goTags;
 
 	// 发布用户信息
-	private UserViewInfo createUserInfo;
+	private String abroadCountryName;
+
+	private String atCityName;
+
+	private String industryName;
+
+	private String userStatusName;
+
+	private String title;
+
+	private String wxHeadimg;
+
+	private String enName;
 
 	// 浏览总数
 	private long viewCount;
@@ -273,12 +283,60 @@ public class Go implements Serializable {
 		this.createTimeInterval = createTimeInterval;
 	}
 
-	public UserViewInfo getCreateUserInfo() {
-		return createUserInfo;
+	public String getAbroadCountryName() {
+		return abroadCountryName;
 	}
 
-	public void setCreateUserInfo(UserViewInfo createUserInfo) {
-		this.createUserInfo = createUserInfo;
+	public void setAbroadCountryName(String abroadCountryName) {
+		this.abroadCountryName = abroadCountryName;
+	}
+
+	public String getAtCityName() {
+		return atCityName;
+	}
+
+	public void setAtCityName(String atCityName) {
+		this.atCityName = atCityName;
+	}
+
+	public String getIndustryName() {
+		return industryName;
+	}
+
+	public void setIndustryName(String industryName) {
+		this.industryName = industryName;
+	}
+
+	public String getUserStatusName() {
+		return userStatusName;
+	}
+
+	public void setUserStatusName(String userStatusName) {
+		this.userStatusName = userStatusName;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getWxHeadimg() {
+		return wxHeadimg;
+	}
+
+	public void setWxHeadimg(String wxHeadimg) {
+		this.wxHeadimg = wxHeadimg;
+	}
+
+	public String getEnName() {
+		return enName;
+	}
+
+	public void setEnName(String enName) {
+		this.enName = enName;
 	}
 
 }
