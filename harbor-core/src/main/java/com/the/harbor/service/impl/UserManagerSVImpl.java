@@ -465,7 +465,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 
 			userInfo.setAbroadCountryName(HyCountryUtil.getHyCountryName(hyUser.getAbroadCountry()));
 
-			userInfo.setAtCityName(HyCountryUtil.getHyCountryName(hyUser.getAbroadCountry()));
+			userInfo.setAtCityName(hyUser.getAtCity());
 			userInfo.setIndustryName(HyIndustryUtil.getHyIndustryName(hyUser.getIndustry()));
 			userInfo.setUserTypeName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
 					ParamCode.USER_TYPE.getValue(), hyUser.getAbroadCountry()));
