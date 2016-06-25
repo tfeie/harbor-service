@@ -362,10 +362,10 @@ public class GoSVImpl implements IGoSV {
 		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
 		builder.must(QueryBuilders.termQuery("goType", queryGoReq.getGoType()));
-		if(!StringUtil.isBlank(queryGoReq.getGoTag())){
+		if (!StringUtil.isBlank(queryGoReq.getGoTag())) {
 			builder.must(QueryBuilders.termQuery("tagId", queryGoReq.getGoTag()));
 		}
-		if(!StringUtil.isBlank(queryGoReq.getSearchKey())){
+		if (!StringUtil.isBlank(queryGoReq.getSearchKey())) {
 			builder.must(QueryBuilders.queryStringQuery(queryGoReq.getSearchKey()));
 		}
 		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_GO_DB.getValue())
@@ -405,7 +405,14 @@ public class GoSVImpl implements IGoSV {
 				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.ORG_MODE.getValue(), go.getOrgMode()));
 		// 发布用户信息
 		UserViewInfo createUserInfo = this.getUserViewInfoByUserId(go.getUserId());
-		go.setCreateUserInfo(createUserInfo);
+		go.setAtCityName(createUserInfo.getAtCityName());
+		go.setEnName(createUserInfo.getEnName());
+		go.setIndustryName(createUserInfo.getIndustryName());
+		go.setTitle(createUserInfo.getTitle());
+		go.setWxHeadimg(createUserInfo.getWxHeadimg());
+		go.setUserStatusName(createUserInfo.getUserStatusName());
+		go.setAbroadCountryName(createUserInfo.getAbroadCountryName());
+
 		go.setFavorCount(0);
 		go.setViewCount(0);
 		go.setJoinCount(0);
