@@ -19,19 +19,23 @@ import com.the.harbor.api.be.param.Be;
 import com.the.harbor.api.be.param.BeCreateReq;
 import com.the.harbor.api.be.param.BeDetail;
 import com.the.harbor.api.be.param.BeTag;
+import com.the.harbor.api.be.param.DoBeComment;
 import com.the.harbor.api.be.param.DoBeLikes;
 import com.the.harbor.base.enumeration.common.Status;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
+import com.the.harbor.commons.redisdata.util.HyBeUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HyBe;
+import com.the.harbor.dao.mapper.bo.HyBeComments;
 import com.the.harbor.dao.mapper.bo.HyBeDetail;
 import com.the.harbor.dao.mapper.bo.HyBeLikes;
 import com.the.harbor.dao.mapper.bo.HyBeLikesCriteria;
 import com.the.harbor.dao.mapper.bo.HyBeTags;
+import com.the.harbor.dao.mapper.interfaces.HyBeCommentsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeDetailMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeLikesMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeMapper;
@@ -56,6 +60,9 @@ public class BeBusiSVImpl implements IBeBusiSV {
 
 	@Autowired
 	private transient HyBeLikesMapper hyBeLikesMapper;
+
+	@Autowired
+	private transient HyBeCommentsMapper hyBeCommentsMapper;
 
 	@Override
 	public String createBe(BeCreateReq beCreateReq) {
@@ -162,6 +169,38 @@ public class BeBusiSVImpl implements IBeBusiSV {
 				hyBeLikesMapper.deleteByExample(sql);
 			}
 		}
+	}
+
+	@Override
+	public void processDoBeComment(DoBeComment doBeComment) {
+		if (DoBeComment.HandleType.PUBLISH.name().equals(doBeComment.getHandleType())) {
+			// 如果是点赞，则记录
+			HyBeComments record = new HyBeComments();
+			record.setBeId(doBeComment.getBeId());
+			record.setCreateDate(doBeComment.getSysdate() == null ? DateUtil.getSysDate() : doBeComment.getSysdate());
+			record.setCommentId(HarborSeqUtil.createBeCommentsId());
+			record.setContent(doBeComment.getContent());
+			record.setParentCommentId(doBeComment.getParentCommentId());
+			record.setParentUserId(doBeComment.getParentUserId());
+			record.setUserId(doBeComment.getUserId());
+			hyBeCommentsMapper.insert(record);
+
+			// 写入REDIS关系
+			HyBeUtil.recordBeCommentId(record.getBeId(), record.getCommentId());
+			HyBeUtil.recordBeComment(record.getCommentId(), JSON.toJSONString(record));
+		} else if (DoBeComment.HandleType.CANCEL.name().equals(doBeComment.getHandleType())) {
+			// 如果是取消赞，则删除
+			if (!StringUtil.isBlank(doBeComment.getCommentId())) {
+				HyBeComments record = hyBeCommentsMapper.selectByPrimaryKey(doBeComment.getCommentId());
+				if (record != null) {
+					hyBeCommentsMapper.deleteByPrimaryKey(doBeComment.getCommentId());
+					// 从REDIS中删除
+					HyBeUtil.deleteBeCommentId(record.getBeId(), record.getCommentId());
+					HyBeUtil.deleteBeComment(record.getCommentId());
+				}
+			}
+		}
+
 	}
 
 }

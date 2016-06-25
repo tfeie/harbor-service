@@ -7,13 +7,15 @@ public class HyBeComments {
 
     private String beId;
 
-    private String publishUserId;
+    private String userId;
 
     private String content;
 
     private Timestamp createDate;
 
     private String parentCommentId;
+
+    private String parentUserId;
 
     public String getCommentId() {
         return commentId;
@@ -31,12 +33,12 @@ public class HyBeComments {
         this.beId = beId == null ? null : beId.trim();
     }
 
-    public String getPublishUserId() {
-        return publishUserId;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setPublishUserId(String publishUserId) {
-        this.publishUserId = publishUserId == null ? null : publishUserId.trim();
+    public void setUserId(String userId) {
+        this.userId = userId == null ? null : userId.trim();
     }
 
     public String getContent() {
@@ -61,5 +63,13 @@ public class HyBeComments {
 
     public void setParentCommentId(String parentCommentId) {
         this.parentCommentId = parentCommentId == null ? null : parentCommentId.trim();
+    }
+
+    public String getParentUserId() {
+        return parentUserId;
+    }
+
+    public void setParentUserId(String parentUserId) {
+        this.parentUserId = parentUserId == null ? null : parentUserId.trim();
     }
 }

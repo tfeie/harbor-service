@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
+import com.the.harbor.api.be.param.DoBeComment;
 import com.the.harbor.api.be.param.DoBeLikes;
 import com.the.harbor.api.go.param.DoGoFavorite;
 import com.the.harbor.api.go.param.DoGoView;
@@ -46,6 +47,12 @@ public class UserInterfactionSVImpl implements IUserInterfactionSV {
 			DoGoView doGoView = JSONObject.parseObject(mnsBody, DoGoView.class);
 			goBusiSV.processDoGoView(doGoView);
 
+		} else if (MQType.MQ_HY_BE_COMMENT.getValue().equals(mqType)) {
+			// BE评论
+			DoBeComment doBeComment = JSONObject.parseObject(mnsBody, DoBeComment.class);
+			beBusiSV.processDoBeComment(doBeComment);
+		} else if (MQType.MQ_HY_GO_COMMENT.getValue().equals(mqType)) {
+			// BE评论
 		}
 
 	}

@@ -81,6 +81,14 @@ public final class HarborSeqUtil {
 		return UUIDUtil.genId32();
 	}
 
+	public static String createBeCommentsId() {
+		return UUIDUtil.genId32();
+	}
+	
+	public static String createGoCommentsId() {
+		return UUIDUtil.genId32();
+	}
+	
 	public static String createGoFavoriteId() {
 		return UUIDUtil.genId32();
 	}

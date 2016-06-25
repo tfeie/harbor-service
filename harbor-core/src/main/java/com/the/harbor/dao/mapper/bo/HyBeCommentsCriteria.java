@@ -265,73 +265,73 @@ public class HyBeCommentsCriteria {
             return (Criteria) this;
         }
 
-        public Criteria andPublishUserIdIsNull() {
-            addCriterion("PUBLISH_USER_ID is null");
+        public Criteria andUserIdIsNull() {
+            addCriterion("USER_ID is null");
             return (Criteria) this;
         }
 
-        public Criteria andPublishUserIdIsNotNull() {
-            addCriterion("PUBLISH_USER_ID is not null");
+        public Criteria andUserIdIsNotNull() {
+            addCriterion("USER_ID is not null");
             return (Criteria) this;
         }
 
-        public Criteria andPublishUserIdEqualTo(String value) {
-            addCriterion("PUBLISH_USER_ID =", value, "publishUserId");
+        public Criteria andUserIdEqualTo(String value) {
+            addCriterion("USER_ID =", value, "userId");
             return (Criteria) this;
         }
 
-        public Criteria andPublishUserIdNotEqualTo(String value) {
-            addCriterion("PUBLISH_USER_ID <>", value, "publishUserId");
+        public Criteria andUserIdNotEqualTo(String value) {
+            addCriterion("USER_ID <>", value, "userId");
             return (Criteria) this;
         }
 
-        public Criteria andPublishUserIdGreaterThan(String value) {
-            addCriterion("PUBLISH_USER_ID >", value, "publishUserId");
+        public Criteria andUserIdGreaterThan(String value) {
+            addCriterion("USER_ID >", value, "userId");
             return (Criteria) this;
         }
 
-        public Criteria andPublishUserIdGreaterThanOrEqualTo(String value) {
-            addCriterion("PUBLISH_USER_ID >=", value, "publishUserId");
+        public Criteria andUserIdGreaterThanOrEqualTo(String value) {
+            addCriterion("USER_ID >=", value, "userId");
             return (Criteria) this;
         }
 
-        public Criteria andPublishUserIdLessThan(String value) {
-            addCriterion("PUBLISH_USER_ID <", value, "publishUserId");
+        public Criteria andUserIdLessThan(String value) {
+            addCriterion("USER_ID <", value, "userId");
             return (Criteria) this;
         }
 
-        public Criteria andPublishUserIdLessThanOrEqualTo(String value) {
-            addCriterion("PUBLISH_USER_ID <=", value, "publishUserId");
+        public Criteria andUserIdLessThanOrEqualTo(String value) {
+            addCriterion("USER_ID <=", value, "userId");
             return (Criteria) this;
         }
 
-        public Criteria andPublishUserIdLike(String value) {
-            addCriterion("PUBLISH_USER_ID like", value, "publishUserId");
+        public Criteria andUserIdLike(String value) {
+            addCriterion("USER_ID like", value, "userId");
             return (Criteria) this;
         }
 
-        public Criteria andPublishUserIdNotLike(String value) {
-            addCriterion("PUBLISH_USER_ID not like", value, "publishUserId");
+        public Criteria andUserIdNotLike(String value) {
+            addCriterion("USER_ID not like", value, "userId");
             return (Criteria) this;
         }
 
-        public Criteria andPublishUserIdIn(List<String> values) {
-            addCriterion("PUBLISH_USER_ID in", values, "publishUserId");
+        public Criteria andUserIdIn(List<String> values) {
+            addCriterion("USER_ID in", values, "userId");
             return (Criteria) this;
         }
 
-        public Criteria andPublishUserIdNotIn(List<String> values) {
-            addCriterion("PUBLISH_USER_ID not in", values, "publishUserId");
+        public Criteria andUserIdNotIn(List<String> values) {
+            addCriterion("USER_ID not in", values, "userId");
             return (Criteria) this;
         }
 
-        public Criteria andPublishUserIdBetween(String value1, String value2) {
-            addCriterion("PUBLISH_USER_ID between", value1, value2, "publishUserId");
+        public Criteria andUserIdBetween(String value1, String value2) {
+            addCriterion("USER_ID between", value1, value2, "userId");
             return (Criteria) this;
         }
 
-        public Criteria andPublishUserIdNotBetween(String value1, String value2) {
-            addCriterion("PUBLISH_USER_ID not between", value1, value2, "publishUserId");
+        public Criteria andUserIdNotBetween(String value1, String value2) {
+            addCriterion("USER_ID not between", value1, value2, "userId");
             return (Criteria) this;
         }
 
@@ -532,6 +532,76 @@ public class HyBeCommentsCriteria {
 
         public Criteria andParentCommentIdNotBetween(String value1, String value2) {
             addCriterion("PARENT_COMMENT_ID not between", value1, value2, "parentCommentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentUserIdIsNull() {
+            addCriterion("PARENT_USER_ID is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentUserIdIsNotNull() {
+            addCriterion("PARENT_USER_ID is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentUserIdEqualTo(String value) {
+            addCriterion("PARENT_USER_ID =", value, "parentUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentUserIdNotEqualTo(String value) {
+            addCriterion("PARENT_USER_ID <>", value, "parentUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentUserIdGreaterThan(String value) {
+            addCriterion("PARENT_USER_ID >", value, "parentUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentUserIdGreaterThanOrEqualTo(String value) {
+            addCriterion("PARENT_USER_ID >=", value, "parentUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentUserIdLessThan(String value) {
+            addCriterion("PARENT_USER_ID <", value, "parentUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentUserIdLessThanOrEqualTo(String value) {
+            addCriterion("PARENT_USER_ID <=", value, "parentUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentUserIdLike(String value) {
+            addCriterion("PARENT_USER_ID like", value, "parentUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentUserIdNotLike(String value) {
+            addCriterion("PARENT_USER_ID not like", value, "parentUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentUserIdIn(List<String> values) {
+            addCriterion("PARENT_USER_ID in", values, "parentUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentUserIdNotIn(List<String> values) {
+            addCriterion("PARENT_USER_ID not in", values, "parentUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentUserIdBetween(String value1, String value2) {
+            addCriterion("PARENT_USER_ID between", value1, value2, "parentUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andParentUserIdNotBetween(String value1, String value2) {
+            addCriterion("PARENT_USER_ID not between", value1, value2, "parentUserId");
             return (Criteria) this;
         }
     }
