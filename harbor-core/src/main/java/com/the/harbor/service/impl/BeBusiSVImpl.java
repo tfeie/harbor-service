@@ -16,6 +16,7 @@ import com.aliyun.mns.common.ClientException;
 import com.aliyun.mns.common.ServiceException;
 import com.aliyun.mns.model.Message;
 import com.the.harbor.api.be.param.Be;
+import com.the.harbor.api.be.param.BeComment;
 import com.the.harbor.api.be.param.BeCreateReq;
 import com.the.harbor.api.be.param.BeDetail;
 import com.the.harbor.api.be.param.BeTag;
@@ -178,7 +179,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			HyBeComments record = new HyBeComments();
 			record.setBeId(doBeComment.getBeId());
 			record.setCreateDate(doBeComment.getSysdate() == null ? DateUtil.getSysDate() : doBeComment.getSysdate());
-			record.setCommentId(HarborSeqUtil.createBeCommentsId());
+			record.setCommentId(doBeComment.getCommentId());
 			record.setContent(doBeComment.getContent());
 			record.setParentCommentId(doBeComment.getParentCommentId());
 			record.setParentUserId(doBeComment.getParentUserId());
@@ -186,8 +187,10 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			hyBeCommentsMapper.insert(record);
 
 			// 写入REDIS关系
+			BeComment b = new BeComment();
+			BeanUtils.copyProperties(record, b);
 			HyBeUtil.recordBeCommentId(record.getBeId(), record.getCommentId());
-			HyBeUtil.recordBeComment(record.getCommentId(), JSON.toJSONString(record));
+			HyBeUtil.recordBeComment(record.getCommentId(), JSON.toJSONString(b));
 		} else if (DoBeComment.HandleType.CANCEL.name().equals(doBeComment.getHandleType())) {
 			// 如果是取消赞，则删除
 			if (!StringUtil.isBlank(doBeComment.getCommentId())) {
