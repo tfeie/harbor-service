@@ -16,6 +16,10 @@ import com.the.harbor.api.go.param.GoOrderQueryReq;
 import com.the.harbor.api.go.param.GoOrderQueryResp;
 import com.the.harbor.api.go.param.GoQueryReq;
 import com.the.harbor.api.go.param.GoQueryResp;
+import com.the.harbor.api.go.param.QueryGoReq;
+import com.the.harbor.api.go.param.QueryGoResp;
+import com.the.harbor.api.go.param.QueryMyGoReq;
+import com.the.harbor.api.go.param.QueryMyGoResp;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
@@ -64,6 +68,14 @@ public interface IGoSV {
 	}
 
 	@interface FinishGoOrder {
+
+	}
+
+	@interface QueryMyGoes {
+
+	}
+
+	@interface QueryGoes {
 
 	}
 
@@ -187,5 +199,25 @@ public interface IGoSV {
 	 */
 	Response finishGoOrder(@NotNull(message = "参数为空") GoOrderFinishReq goOrderFinishReq)
 			throws BusinessException, SystemException;
+
+	/**
+	 * 查询我发表的GO
+	 * 
+	 * @param queryMyGoReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	QueryMyGoResp queryMyGoes(@NotNull(message = "参数为空") QueryMyGoReq queryMyGoReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 查询活动信息
+	 * @param queryGoReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	QueryGoResp queryGoes(@NotNull(message = "参数为空") QueryGoReq queryGoReq) throws BusinessException, SystemException;
 
 }

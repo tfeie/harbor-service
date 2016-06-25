@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 
+import com.the.harbor.api.user.param.UserViewInfo;
+
 public class Go implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -54,13 +56,7 @@ public class Go implements Serializable {
 	private List<GoTag> goTags;
 
 	// 发布用户信息
-	private String userStatusName;
-
-	private String abroadCountryName;
-
-	private String wxHeadimg;
-
-	private String enName;
+	private UserViewInfo createUserInfo;
 
 	// 浏览总数
 	private long viewCount;
@@ -70,6 +66,12 @@ public class Go implements Serializable {
 
 	// GROUP参加人数
 	private long joinCount;
+
+	// 创建时间格式显示
+	private String createTimeStr;
+
+	// 创建时间时间差
+	private String createTimeInterval;
 
 	public String getGoId() {
 		return goId;
@@ -231,38 +233,6 @@ public class Go implements Serializable {
 		this.orgModeName = orgModeName;
 	}
 
-	public String getUserStatusName() {
-		return userStatusName;
-	}
-
-	public void setUserStatusName(String userStatusName) {
-		this.userStatusName = userStatusName;
-	}
-
-	public String getAbroadCountryName() {
-		return abroadCountryName;
-	}
-
-	public void setAbroadCountryName(String abroadCountryName) {
-		this.abroadCountryName = abroadCountryName;
-	}
-
-	public String getWxHeadimg() {
-		return wxHeadimg;
-	}
-
-	public void setWxHeadimg(String wxHeadimg) {
-		this.wxHeadimg = wxHeadimg;
-	}
-
-	public String getEnName() {
-		return enName;
-	}
-
-	public void setEnName(String enName) {
-		this.enName = enName;
-	}
-
 	public long getViewCount() {
 		return viewCount;
 	}
@@ -285,6 +255,30 @@ public class Go implements Serializable {
 
 	public void setJoinCount(long joinCount) {
 		this.joinCount = joinCount;
+	}
+
+	public String getCreateTimeStr() {
+		return createTimeStr;
+	}
+
+	public void setCreateTimeStr(String createTimeStr) {
+		this.createTimeStr = createTimeStr;
+	}
+
+	public String getCreateTimeInterval() {
+		return createTimeInterval;
+	}
+
+	public void setCreateTimeInterval(String createTimeInterval) {
+		this.createTimeInterval = createTimeInterval;
+	}
+
+	public UserViewInfo getCreateUserInfo() {
+		return createUserInfo;
+	}
+
+	public void setCreateUserInfo(UserViewInfo createUserInfo) {
+		this.createUserInfo = createUserInfo;
 	}
 
 }

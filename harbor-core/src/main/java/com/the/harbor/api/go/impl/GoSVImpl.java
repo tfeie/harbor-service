@@ -1,9 +1,22 @@
 package com.the.harbor.api.go.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.the.harbor.api.go.IGoSV;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderResp;
@@ -23,7 +36,12 @@ import com.the.harbor.api.go.param.GoOrderQueryResp;
 import com.the.harbor.api.go.param.GoQueryReq;
 import com.the.harbor.api.go.param.GoQueryResp;
 import com.the.harbor.api.go.param.GoTag;
+import com.the.harbor.api.go.param.QueryGoReq;
+import com.the.harbor.api.go.param.QueryGoResp;
+import com.the.harbor.api.go.param.QueryMyGoReq;
+import com.the.harbor.api.go.param.QueryMyGoResp;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
+import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.base.constants.ExceptCodeConstants;
 import com.the.harbor.base.enumeration.dict.ParamCode;
 import com.the.harbor.base.enumeration.dict.TypeCode;
@@ -37,10 +55,16 @@ import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.base.util.ResponseBuilder;
 import com.the.harbor.base.util.ValidatorUtil;
+import com.the.harbor.base.vo.PageInfo;
 import com.the.harbor.base.vo.Response;
 import com.the.harbor.base.vo.ResponseHeader;
+import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
+import com.the.harbor.commons.indices.def.HarborIndex;
+import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
+import com.the.harbor.commons.redisdata.util.HyUserUtil;
 import com.the.harbor.commons.util.CollectionUtil;
+import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HyGo;
 import com.the.harbor.dao.mapper.bo.HyGoOrder;
@@ -298,6 +322,117 @@ public class GoSVImpl implements IGoSV {
 	public Response finishGoOrder(GoOrderFinishReq goOrderFinishReq) throws BusinessException, SystemException {
 		goBusiSV.finishGoOrder(goOrderFinishReq);
 		return ResponseBuilder.buildSuccessResponse("确认成功");
+	}
+
+	@Override
+	public QueryMyGoResp queryMyGoes(QueryMyGoReq queryMyGoReq) throws BusinessException, SystemException {
+		int start = (queryMyGoReq.getPageNo() - 1) * queryMyGoReq.getPageSize();
+		int end = queryMyGoReq.getPageNo() * queryMyGoReq.getPageSize();
+		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
+		BoolQueryBuilder builder = QueryBuilders.boolQuery();
+		builder.must(QueryBuilders.termQuery("userId", queryMyGoReq.getUserId()))
+				.must(QueryBuilders.termQuery("goType", queryMyGoReq.getGoType()));
+		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_GO_DB.getValue())
+				.setTypes(HarborIndexType.HY_GO.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
+				.addSort(sortBuilder).execute().actionGet();
+		SearchHits hits = response.getHits();
+		long total = hits.getTotalHits();
+		List<Go> result = new ArrayList<Go>();
+		for (SearchHit hit : hits) {
+			Go go = JSON.parseObject(hit.getSourceAsString(), Go.class);
+			this.fillGoInfo(go);
+			result.add(go);
+		}
+		PageInfo<Go> pageInfo = new PageInfo<Go>();
+		pageInfo.setCount(Integer.parseInt(total + ""));
+		pageInfo.setPageNo(queryMyGoReq.getPageNo());
+		pageInfo.setPageSize(queryMyGoReq.getPageSize());
+		pageInfo.setResult(result);
+		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
+		QueryMyGoResp resp = new QueryMyGoResp();
+		resp.setPagInfo(pageInfo);
+		resp.setResponseHeader(responseHeader);
+		return resp;
+	}
+
+	@Override
+	public QueryGoResp queryGoes(QueryGoReq queryGoReq) throws BusinessException, SystemException {
+		int start = (queryGoReq.getPageNo() - 1) * queryGoReq.getPageSize();
+		int end = queryGoReq.getPageNo() * queryGoReq.getPageSize();
+		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
+		BoolQueryBuilder builder = QueryBuilders.boolQuery();
+		builder.must(QueryBuilders.termQuery("goType", queryGoReq.getGoType()));
+		if(!StringUtil.isBlank(queryGoReq.getGoTag())){
+			builder.must(QueryBuilders.termQuery("tagId", queryGoReq.getGoTag()));
+		}
+		if(!StringUtil.isBlank(queryGoReq.getSearchKey())){
+			builder.must(QueryBuilders.queryStringQuery(queryGoReq.getSearchKey()));
+		}
+		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_GO_DB.getValue())
+				.setTypes(HarborIndexType.HY_GO.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
+				.addSort(sortBuilder).execute().actionGet();
+		SearchHits hits = response.getHits();
+		long total = hits.getTotalHits();
+		List<Go> result = new ArrayList<Go>();
+		for (SearchHit hit : hits) {
+			Go go = JSON.parseObject(hit.getSourceAsString(), Go.class);
+			this.fillGoInfo(go);
+			result.add(go);
+		}
+		PageInfo<Go> pageInfo = new PageInfo<Go>();
+		pageInfo.setCount(Integer.parseInt(total + ""));
+		pageInfo.setPageNo(queryGoReq.getPageNo());
+		pageInfo.setPageSize(queryGoReq.getPageSize());
+		pageInfo.setResult(result);
+		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
+		QueryGoResp resp = new QueryGoResp();
+		resp.setPagInfo(pageInfo);
+		resp.setResponseHeader(responseHeader);
+		return resp;
+	}
+
+	/**
+	 * 完善GO信息
+	 * 
+	 * @param go
+	 */
+	private void fillGoInfo(Go go) {
+		go.setGoTypeName(
+				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.GO_TYPE.getValue(), go.getGoType()));
+		go.setPayModeName(
+				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.PAY_MODE.getValue(), go.getPayMode()));
+		go.setOrgModeName(
+				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.ORG_MODE.getValue(), go.getOrgMode()));
+		// 发布用户信息
+		UserViewInfo createUserInfo = this.getUserViewInfoByUserId(go.getUserId());
+		go.setCreateUserInfo(createUserInfo);
+		go.setFavorCount(0);
+		go.setViewCount(0);
+		go.setJoinCount(0);
+		go.setCreateTimeStr(DateUtil.getDateString(go.getCreateDate(), DateUtil.DATE_FORMAT));
+		go.setCreateTimeInterval(DateUtil.getInterval(go.getCreateDate()));
+	}
+
+	/**
+	 * 获取用户信息
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	private UserViewInfo getUserViewInfoByUserId(String userId) {
+		UserViewInfo userInfo = null;
+		// 从REDIS中读取用户信息
+		String userData = HyUserUtil.getUserInfoFromRedis(userId);
+		if (StringUtil.isBlank(userData)) {
+			// 如果换成没有用户信息，则查询库
+			userInfo = userManagerSV.getUserViewInfoByUserId(userId);
+			if (userInfo == null) {
+				HyUserUtil.storeUserInfo2Redis(userId, JSON.toJSONString(userInfo));
+			}
+		} else {
+			userInfo = JSONObject.parseObject(userData, UserViewInfo.class);
+		}
+		return userInfo;
 	}
 
 }
