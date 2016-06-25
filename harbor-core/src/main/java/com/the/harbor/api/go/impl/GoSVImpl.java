@@ -63,6 +63,7 @@ import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
 import com.the.harbor.commons.redisdata.util.HyUserUtil;
+import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
@@ -397,6 +398,17 @@ public class GoSVImpl implements IGoSV {
 	 * @param go
 	 */
 	private void fillGoInfo(Go go) {
+		String contentSummary = null;
+		if (!CollectionUtil.isEmpty(go.getGoDetails())) {
+			for (GoDetail detail : go.getGoDetails()) {
+				if (GoDetailType.TEXT.getValue().equals(detail.getType())) {
+					contentSummary = detail.getDetail();
+					break;
+				}
+			}
+		}
+		go.setContentSummary(contentSummary);
+		go.setFixPriceYuan(AmountUtils.changeF2Y(go.getFixedPrice()));
 		go.setGoTypeName(
 				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.GO_TYPE.getValue(), go.getGoType()));
 		go.setPayModeName(

@@ -41,6 +41,12 @@ public class Go implements Serializable {
 	// 活动类型
 	private String goTypeName;
 
+	// 内容摘要
+	private String contentSummary;
+
+	// 固定金额元
+	private String fixPriceYuan;
+
 	// 支付方式类型
 	private String payModeName;
 
@@ -337,6 +343,22 @@ public class Go implements Serializable {
 
 	public void setEnName(String enName) {
 		this.enName = enName;
+	}
+
+	public String getContentSummary() {
+		return contentSummary;
+	}
+
+	public void setContentSummary(String contentSummary) {
+		this.contentSummary = contentSummary;
+	}
+
+	public String getFixPriceYuan() {
+		return fixPriceYuan;
+	}
+
+	public void setFixPriceYuan(String fixPriceYuan) {
+		this.fixPriceYuan = fixPriceYuan;
 	}
 
 }
