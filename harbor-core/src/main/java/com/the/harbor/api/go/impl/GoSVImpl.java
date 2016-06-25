@@ -428,7 +428,7 @@ public class GoSVImpl implements IGoSV {
 		go.setFavorCount(0);
 		go.setViewCount(0);
 		go.setJoinCount(0);
-		go.setCreateTimeStr(DateUtil.getDateString(go.getCreateDate(), DateUtil.DATE_FORMAT));
+		go.setCreateTimeStr(DateUtil.getDateString(go.getCreateDate(), "MM月dd"));
 		go.setCreateTimeInterval(DateUtil.getInterval(go.getCreateDate()));
 	}
 
