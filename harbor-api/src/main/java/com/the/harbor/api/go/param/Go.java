@@ -41,11 +41,35 @@ public class Go implements Serializable {
 	// 活动类型
 	private String goTypeName;
 
+	// 支付方式类型
+	private String payModeName;
+
+	// 组织形式
+	private String orgModeName;
+
 	// 活动明细
 	private List<GoDetail> goDetails;
 
 	// 活动标签
 	private List<GoTag> goTags;
+
+	// 发布用户信息
+	private String userStatusName;
+
+	private String abroadCountryName;
+
+	private String wxHeadimg;
+
+	private String enName;
+
+	// 浏览总数
+	private long viewCount;
+
+	// 收藏记录总数
+	private long favorCount;
+
+	// GROUP参加人数
+	private long joinCount;
 
 	public String getGoId() {
 		return goId;
@@ -189,6 +213,78 @@ public class Go implements Serializable {
 
 	public void setGoTags(List<GoTag> goTags) {
 		this.goTags = goTags;
+	}
+
+	public String getPayModeName() {
+		return payModeName;
+	}
+
+	public void setPayModeName(String payModeName) {
+		this.payModeName = payModeName;
+	}
+
+	public String getOrgModeName() {
+		return orgModeName;
+	}
+
+	public void setOrgModeName(String orgModeName) {
+		this.orgModeName = orgModeName;
+	}
+
+	public String getUserStatusName() {
+		return userStatusName;
+	}
+
+	public void setUserStatusName(String userStatusName) {
+		this.userStatusName = userStatusName;
+	}
+
+	public String getAbroadCountryName() {
+		return abroadCountryName;
+	}
+
+	public void setAbroadCountryName(String abroadCountryName) {
+		this.abroadCountryName = abroadCountryName;
+	}
+
+	public String getWxHeadimg() {
+		return wxHeadimg;
+	}
+
+	public void setWxHeadimg(String wxHeadimg) {
+		this.wxHeadimg = wxHeadimg;
+	}
+
+	public String getEnName() {
+		return enName;
+	}
+
+	public void setEnName(String enName) {
+		this.enName = enName;
+	}
+
+	public long getViewCount() {
+		return viewCount;
+	}
+
+	public void setViewCount(long viewCount) {
+		this.viewCount = viewCount;
+	}
+
+	public long getFavorCount() {
+		return favorCount;
+	}
+
+	public void setFavorCount(long favorCount) {
+		this.favorCount = favorCount;
+	}
+
+	public long getJoinCount() {
+		return joinCount;
+	}
+
+	public void setJoinCount(long joinCount) {
+		this.joinCount = joinCount;
 	}
 
 }
