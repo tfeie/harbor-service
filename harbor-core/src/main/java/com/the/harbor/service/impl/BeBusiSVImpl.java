@@ -144,7 +144,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			} else if (se.getErrorCode().equals("TimeExpired")) {
 				LOG.error("The request is time expired. Please check your local machine timeclock", se);
 			}
-			LOG.error("SMS  message put in Queue error", se);
+			LOG.error("BE index build  message put in Queue error", se);
 		} catch (Exception e) {
 			LOG.error("Unknown exception happened!", e);
 		}

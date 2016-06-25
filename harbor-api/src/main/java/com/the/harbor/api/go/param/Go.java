@@ -2,6 +2,7 @@ package com.the.harbor.api.go.param;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 public class Go implements Serializable {
 
@@ -39,6 +40,12 @@ public class Go implements Serializable {
 
 	// 活动类型
 	private String goTypeName;
+
+	// 活动明细
+	private List<GoDetail> goDetails;
+
+	// 活动标签
+	private List<GoTag> goTags;
 
 	public String getGoId() {
 		return goId;
@@ -166,6 +173,22 @@ public class Go implements Serializable {
 
 	public void setGoTypeName(String goTypeName) {
 		this.goTypeName = goTypeName;
+	}
+
+	public List<GoDetail> getGoDetails() {
+		return goDetails;
+	}
+
+	public void setGoDetails(List<GoDetail> goDetails) {
+		this.goDetails = goDetails;
+	}
+
+	public List<GoTag> getGoTags() {
+		return goTags;
+	}
+
+	public void setGoTags(List<GoTag> goTags) {
+		this.goTags = goTags;
 	}
 
 }

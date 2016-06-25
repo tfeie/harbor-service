@@ -3,14 +3,23 @@ package com.the.harbor.service.impl;
 import java.sql.Timestamp;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
+import com.aliyun.mns.client.CloudQueue;
+import com.aliyun.mns.client.MNSClient;
+import com.aliyun.mns.common.ClientException;
+import com.aliyun.mns.common.ServiceException;
+import com.aliyun.mns.model.Message;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.DoGoFavorite;
 import com.the.harbor.api.go.param.DoGoView;
+import com.the.harbor.api.go.param.Go;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoDetail;
 import com.the.harbor.api.go.param.GoOrderConfirmReq;
@@ -28,6 +37,8 @@ import com.the.harbor.base.enumeration.hygo.Status;
 import com.the.harbor.base.enumeration.hygoorder.OrderStatus;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.exception.BusinessException;
+import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
+import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
@@ -54,6 +65,8 @@ import com.the.harbor.util.HarborSeqUtil;
 @Transactional
 public class GoBusiSVImpl implements IGoBusiSV {
 
+	private static final Logger LOG = LoggerFactory.getLogger(GoBusiSVImpl.class);
+
 	@Autowired
 	private transient HyGoDetailMapper hyGoDetailMapper;
 
@@ -79,6 +92,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 	public String createGo(GoCreateReq goCreateReq) {
 		String goId = HarborSeqUtil.createGoId();
 		Timestamp sysdate = DateUtil.getSysDate();
+		Go bgo = new Go();
 		/* 1.活动主表 */
 		HyGo go = new HyGo();
 		go.setGoId(goId);
@@ -100,9 +114,14 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		go.setMyStory(GoType.ONE_ON_ONE.getValue().equals(goCreateReq.getGoType()) ? goCreateReq.getMyStory() : null);
 		go.setCreateDate(sysdate);
 		go.setStatus(Status.ING.getValue());
+		// 复制内容
+		BeanUtils.copyProperties(go, bgo);
+		// 写表
 		hyGoMapper.insert(go);
 		/* 2.活动明细 */
 		if (!CollectionUtil.isEmpty(goCreateReq.getGoDetails())) {
+			// 复制内容
+			bgo.setGoDetails(goCreateReq.getGoDetails());
 			for (GoDetail d : goCreateReq.getGoDetails()) {
 				HyGoDetail gd = new HyGoDetail();
 				BeanUtils.copyProperties(d, gd);
@@ -116,6 +135,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		/* 3.活动标签 */
 		if (!CollectionUtil.isEmpty(goCreateReq.getGoTags())) {
 			int sortId = 0;
+			// 复制内容
+			bgo.setGoTags(goCreateReq.getGoTags());
 			for (GoTag d : goCreateReq.getGoTags()) {
 				HyGoTags record = new HyGoTags();
 				BeanUtils.copyProperties(d, record);
@@ -129,8 +150,38 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				hyGoTagsMapper.insert(record);
 			}
 		}
-
+		// 将GO的数据发送给MNS处理
+		this.buildGoIndexBuildMQ(bgo);
 		return goId;
+	}
+
+	/**
+	 * 产生一个GO索引构建消息
+	 * 
+	 * @param go
+	 */
+	private void buildGoIndexBuildMQ(Go go) {
+		MNSClient client = MNSFactory.getMNSClient();
+		try {
+			CloudQueue queue = client.getQueueRef(GlobalSettings.getGoIndexBuildQueueName());
+			Message message = new Message();
+			message.setMessageBody(JSON.toJSONString(go));
+			queue.putMessage(message);
+		} catch (ClientException ce) {
+			LOG.error("Something wrong with the network connection between client and MNS service."
+					+ "Please check your network and DNS availablity.", ce);
+		} catch (ServiceException se) {
+			if (se.getErrorCode().equals("QueueNotExist")) {
+				LOG.error("Queue is not exist.Please create before use", se);
+			} else if (se.getErrorCode().equals("TimeExpired")) {
+				LOG.error("The request is time expired. Please check your local machine timeclock", se);
+			}
+			LOG.error("Go index build message put in Queue error", se);
+		} catch (Exception e) {
+			LOG.error("Unknown exception happened!", e);
+		}
+		client.close();
+
 	}
 
 	@Override
