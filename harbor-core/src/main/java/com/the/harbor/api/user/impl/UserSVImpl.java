@@ -7,6 +7,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.the.harbor.api.user.IUserSV;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
@@ -32,6 +33,7 @@ import com.the.harbor.base.util.ResponseBuilder;
 import com.the.harbor.base.vo.Response;
 import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
+import com.the.harbor.commons.redisdata.util.HyUserUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
@@ -50,7 +52,8 @@ public class UserSVImpl implements IUserSV {
 
 	@Override
 	public Response userRegister(UserRegReq userRegReq) throws BusinessException, SystemException {
-		userManagerSV.userRegister(userRegReq);
+		String userId = userManagerSV.userRegister(userRegReq);
+		this.storeUserInfo2Redis(userId);
 		return ResponseBuilder.buildSuccessResponse("用户注册成功");
 	}
 
@@ -156,6 +159,8 @@ public class UserSVImpl implements IUserSV {
 		// 执行续期动作
 		UserMemberRenewalResp resp = userManagerSV.userMemberRenewal(userMemberRenewalReq);
 		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("会员续期成功"));
+
+		this.storeUserInfo2Redis(userMemberRenewalReq.getUserId());
 		return resp;
 	}
 
@@ -206,6 +211,9 @@ public class UserSVImpl implements IUserSV {
 			throw new BusinessException("USER-0003", "您最多只能选择5个技能标签");
 		}
 		userManagerSV.userEdit(userEditReq);
+
+		// 存储数据
+		this.storeUserInfo2Redis(userEditReq.getUserId());
 		return ResponseBuilder.buildSuccessResponse("用户资料编辑成功");
 	}
 
@@ -242,6 +250,17 @@ public class UserSVImpl implements IUserSV {
 		resp.setUserInfo(userInfo);
 		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("查询成功"));
 		return resp;
+	}
+
+	private void storeUserInfo2Redis(String userId) {
+		try {
+			UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(userId);
+			if (userInfo != null) {
+				HyUserUtil.storeUserInfo2Redis(userId, JSON.toJSONString(userInfo));
+			}
+		} catch (Exception ex) {
+
+		}
 	}
 
 }
