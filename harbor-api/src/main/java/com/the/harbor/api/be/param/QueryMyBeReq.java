@@ -13,9 +13,6 @@ public class QueryMyBeReq implements Serializable {
 	@NotNull(message = "用户为空", groups = { IBeSV.QueryMyBe.class })
 	private String userId;
 
-	@NotNull(message = "微信识别码为空", groups = { IBeSV.QueryMyBe.class })
-	private String openId;
-
 	private Integer pageNo;
 
 	private Integer pageSize;
@@ -26,14 +23,6 @@ public class QueryMyBeReq implements Serializable {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
-	}
-
-	public String getOpenId() {
-		return openId;
-	}
-
-	public void setOpenId(String openId) {
-		this.openId = openId;
 	}
 
 	public Integer getPageNo() {
