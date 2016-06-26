@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
@@ -37,6 +39,7 @@ import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.redisdata.util.HyCountryUtil;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
 import com.the.harbor.commons.redisdata.util.HyIndustryUtil;
+import com.the.harbor.commons.redisdata.util.HyUserUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
@@ -95,8 +98,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		return user.getUserId();
 	}
 
-	@Override
-	public HyUser getUserByWeixin(String wxOpenId) {
+	private HyUser getUserByWeixin(String wxOpenId) {
 		if (StringUtil.isBlank(wxOpenId)) {
 			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "微信OPEN_ID不能为空");
 		}
@@ -106,7 +108,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		return CollectionUtil.isEmpty(users) ? null : users.get(0);
 	}
 
-	public HyUser getUserInfo(String userId) {
+	private HyUser getUserInfo(String userId) {
 		HyUser user = hyUserMapper.selectByPrimaryKey(userId);
 		return user;
 	}
@@ -443,14 +445,12 @@ public class UserManagerSVImpl implements IUserManagerSV {
 
 	@Override
 	public UserViewInfo getUserViewInfoByUserId(String userId) {
-		HyUser hyUser = this.getUserInfo(userId);
-		return this.convert(hyUser);
+		return this.getUserViewInfoFromCacheByUserId(userId);
 	}
 
 	@Override
 	public UserViewInfo getUserViewInfoByOpenId(String openId) {
-		HyUser hyUser = this.getUserByWeixin(openId);
-		return this.convert(hyUser);
+		return this.getUserViewInfoFromCacheByOpenId(openId);
 	}
 
 	private UserViewInfo convert(HyUser hyUser) {
@@ -485,6 +485,41 @@ public class UserManagerSVImpl implements IUserManagerSV {
 				userInfo.setUserStatusName(userStatus);
 			}
 
+		}
+		return userInfo;
+	}
+
+	private UserViewInfo getUserViewInfoFromCacheByUserId(String userId) {
+		UserViewInfo userInfo = null;
+		// 从REDIS中读取用户信息
+		String userData = HyUserUtil.getUserInfoFromRedis(userId);
+		if (StringUtil.isBlank(userData)) {
+			// 如果换成没有用户信息，则查询库
+			HyUser hyUser = this.getUserInfo(userId);
+			userInfo = this.convert(hyUser);
+			if (userInfo == null) {
+				HyUserUtil.storeUserInfo2Redis(userId, JSON.toJSONString(userInfo));
+			}
+		} else {
+			userInfo = JSONObject.parseObject(userData, UserViewInfo.class);
+		}
+		return userInfo;
+	}
+
+	private UserViewInfo getUserViewInfoFromCacheByOpenId(String openId) {
+		HyUser hyUser = getUserByWeixin(openId);
+		if (hyUser == null) {
+			return null;
+		}
+		UserViewInfo userInfo = null;
+		String userData = HyUserUtil.getUserInfoFromRedis(hyUser.getUserId());
+		if (StringUtil.isBlank(userData)) {
+			userInfo = this.convert(hyUser);
+			if (userInfo == null) {
+				HyUserUtil.storeUserInfo2Redis(hyUser.getUserId(), JSON.toJSONString(userInfo));
+			}
+		} else {
+			userInfo = JSONObject.parseObject(userData, UserViewInfo.class);
 		}
 		return userInfo;
 	}

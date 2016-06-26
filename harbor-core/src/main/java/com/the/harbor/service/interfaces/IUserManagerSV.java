@@ -14,7 +14,6 @@ import com.the.harbor.api.user.param.UserTag;
 import com.the.harbor.api.user.param.UserTagQueryReq;
 import com.the.harbor.api.user.param.UserTagQueryResp;
 import com.the.harbor.api.user.param.UserViewInfo;
-import com.the.harbor.dao.mapper.bo.HyUser;
 
 public interface IUserManagerSV {
 
@@ -26,15 +25,6 @@ public interface IUserManagerSV {
 	 * @author zhangchao
 	 */
 	String userRegister(UserRegReq userRegReq);
-
-	/**
-	 * 根据微信号获取已经注册用户资料
-	 * 
-	 * @param weixin
-	 * @return
-	 * @author zhangchao
-	 */
-	HyUser getUserByWeixin(String wxOpenId);
 
 	/**
 	 * 提交认证材料
@@ -66,16 +56,8 @@ public interface IUserManagerSV {
 	 */
 	UserMemberInfo queryUserMemberInfo(String userId);
 
-	/**
-	 * 获取用户信息
-	 * 
-	 * @param userId
-	 * @return
-	 */
-	HyUser getUserInfo(String userId);
-	
 	UserViewInfo getUserViewInfoByUserId(String userId);
-	
+
 	UserViewInfo getUserViewInfoByOpenId(String openId);
 
 	/**

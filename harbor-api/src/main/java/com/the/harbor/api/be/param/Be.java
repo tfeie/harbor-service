@@ -21,9 +21,45 @@ public class Be implements Serializable {
 	private List<BeDetail> beDetails;
 
 	private List<BeTag> beTags;
+
+	// 发布用户信息
+	private String abroadCountryName;
+
+	private String atCityName;
+
+	private String industryName;
+
+	private String userStatusName;
+
+	private String title;
+
+	private String wxHeadimg;
+
+	private String enName;
+
+	// 创建时间时间差
+	private String createTimeInterval;
+
+	// 点赞数量
+	private long dianzanCount;
+
+	// 评论数量
+	private long commentCount;
+
+	// 打赏海贝数量
+	private long giveHaibeiCount;
+
+	//首个文本内容摘要
+	private String contentSummary;
 	
-	//点赞数量
-	private long dianzan;
+	//首个图片地址
+	private String imageURL;
+
+	// 是否发表了文本
+	private boolean hastext;
+
+	// 是否发表了图片
+	private boolean hasimg;
 
 	public String getBeId() {
 		return beId;
@@ -81,12 +117,124 @@ public class Be implements Serializable {
 		this.beTags = beTags;
 	}
 
-	public long getDianzan() {
-		return dianzan;
+	public String getAbroadCountryName() {
+		return abroadCountryName;
 	}
 
-	public void setDianzan(long dianzan) {
-		this.dianzan = dianzan;
+	public void setAbroadCountryName(String abroadCountryName) {
+		this.abroadCountryName = abroadCountryName;
+	}
+
+	public String getAtCityName() {
+		return atCityName;
+	}
+
+	public void setAtCityName(String atCityName) {
+		this.atCityName = atCityName;
+	}
+
+	public String getIndustryName() {
+		return industryName;
+	}
+
+	public void setIndustryName(String industryName) {
+		this.industryName = industryName;
+	}
+
+	public String getUserStatusName() {
+		return userStatusName;
+	}
+
+	public void setUserStatusName(String userStatusName) {
+		this.userStatusName = userStatusName;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getWxHeadimg() {
+		return wxHeadimg;
+	}
+
+	public void setWxHeadimg(String wxHeadimg) {
+		this.wxHeadimg = wxHeadimg;
+	}
+
+	public String getEnName() {
+		return enName;
+	}
+
+	public void setEnName(String enName) {
+		this.enName = enName;
+	}
+
+	public String getCreateTimeInterval() {
+		return createTimeInterval;
+	}
+
+	public void setCreateTimeInterval(String createTimeInterval) {
+		this.createTimeInterval = createTimeInterval;
+	}
+
+	public long getDianzanCount() {
+		return dianzanCount;
+	}
+
+	public void setDianzanCount(long dianzanCount) {
+		this.dianzanCount = dianzanCount;
+	}
+
+	public long getCommentCount() {
+		return commentCount;
+	}
+
+	public void setCommentCount(long commentCount) {
+		this.commentCount = commentCount;
+	}
+
+	public long getGiveHaibeiCount() {
+		return giveHaibeiCount;
+	}
+
+	public void setGiveHaibeiCount(long giveHaibeiCount) {
+		this.giveHaibeiCount = giveHaibeiCount;
+	}
+
+	public String getContentSummary() {
+		return contentSummary;
+	}
+
+	public void setContentSummary(String contentSummary) {
+		this.contentSummary = contentSummary;
+	}
+
+	public boolean isHastext() {
+		return hastext;
+	}
+
+	public void setHastext(boolean hastext) {
+		this.hastext = hastext;
+	}
+
+	public boolean isHasimg() {
+		return hasimg;
+	}
+
+	public void setHasimg(boolean hasimg) {
+		this.hasimg = hasimg;
+	}
+
+	public String getImageURL() {
+		return imageURL;
+	}
+
+	public void setImageURL(String imageURL) {
+		this.imageURL = imageURL;
 	}
 	
 	

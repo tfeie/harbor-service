@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.the.harbor.api.go.IGoSV;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderResp;
@@ -62,14 +61,12 @@ import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
-import com.the.harbor.commons.redisdata.util.HyUserUtil;
 import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HyGo;
 import com.the.harbor.dao.mapper.bo.HyGoOrder;
-import com.the.harbor.dao.mapper.bo.HyUser;
 import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 
@@ -198,7 +195,7 @@ public class GoSVImpl implements IGoSV {
 	public CreateGoPaymentOrderResp createGoPaymentOrder(CreateGoPaymentOrderReq createGoPaymentOrderReq)
 			throws BusinessException, SystemException {
 		// 校验用户编码是否正确
-		HyUser user = userManagerSV.getUserInfo(createGoPaymentOrderReq.getUserId());
+		UserViewInfo user = userManagerSV.getUserViewInfoByUserId(createGoPaymentOrderReq.getUserId());
 		if (user == null) {
 			throw new BusinessException("USER_0001", "支付订单创建失败,用户没有注册绑定");
 		}
@@ -416,7 +413,7 @@ public class GoSVImpl implements IGoSV {
 		go.setOrgModeName(
 				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.ORG_MODE.getValue(), go.getOrgMode()));
 		// 发布用户信息
-		UserViewInfo createUserInfo = this.getUserViewInfoByUserId(go.getUserId());
+		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(go.getUserId());
 		go.setAtCityName(createUserInfo.getAtCityName());
 		go.setEnName(createUserInfo.getEnName());
 		go.setIndustryName(createUserInfo.getIndustryName());
@@ -430,28 +427,6 @@ public class GoSVImpl implements IGoSV {
 		go.setJoinCount(0);
 		go.setCreateTimeStr(DateUtil.getDateString(go.getCreateDate(), "MM月dd"));
 		go.setCreateTimeInterval(DateUtil.getInterval(go.getCreateDate()));
-	}
-
-	/**
-	 * 获取用户信息
-	 * 
-	 * @param userId
-	 * @return
-	 */
-	private UserViewInfo getUserViewInfoByUserId(String userId) {
-		UserViewInfo userInfo = null;
-		// 从REDIS中读取用户信息
-		String userData = HyUserUtil.getUserInfoFromRedis(userId);
-		if (StringUtil.isBlank(userData)) {
-			// 如果换成没有用户信息，则查询库
-			userInfo = userManagerSV.getUserViewInfoByUserId(userId);
-			if (userInfo == null) {
-				HyUserUtil.storeUserInfo2Redis(userId, JSON.toJSONString(userInfo));
-			}
-		} else {
-			userInfo = JSONObject.parseObject(userData, UserViewInfo.class);
-		}
-		return userInfo;
 	}
 
 }

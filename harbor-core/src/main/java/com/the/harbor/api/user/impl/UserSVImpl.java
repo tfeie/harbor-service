@@ -127,7 +127,7 @@ public class UserSVImpl implements IUserSV {
 			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "用户微信openId为空");
 		}
 		UserInfo userInfo = null;
-		HyUser hyUser = userManagerSV.getUserByWeixin(openId);
+		UserViewInfo hyUser = userManagerSV.getUserViewInfoByOpenId(openId);
 		if (hyUser != null) {
 			userInfo = new UserInfo();
 			BeanUtils.copyProperties(hyUser, userInfo);
@@ -170,7 +170,7 @@ public class UserSVImpl implements IUserSV {
 			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "用户标识为空");
 		}
 		UserInfo userInfo = null;
-		HyUser hyUser = userManagerSV.getUserInfo(userId);
+		UserViewInfo hyUser = userManagerSV.getUserViewInfoByUserId(userId);
 		if (hyUser != null) {
 			userInfo = new UserInfo();
 			BeanUtils.copyProperties(hyUser, userInfo);

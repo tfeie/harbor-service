@@ -50,6 +50,7 @@ public class HyDictsCacheImpl extends AbstractCache {
 		}
 		for (String key : m.keySet()) {
 			List<HyDictsVo> dicts = m.get(key);
+			client.hdel(RedisDataKey.KEY_ALL_DICTS.getKey(), key);
 			client.hset(RedisDataKey.KEY_ALL_DICTS.getKey(), key, JSON.toJSONString(dicts));
 		}
 	}

@@ -25,6 +25,7 @@ import com.the.harbor.api.be.param.QueryMyBeReq;
 import com.the.harbor.api.be.param.QueryMyBeResp;
 import com.the.harbor.api.be.param.QueryOneBeReq;
 import com.the.harbor.api.be.param.QueryOneBeResp;
+import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.base.constants.ExceptCodeConstants;
 import com.the.harbor.base.enumeration.hybe.BeDetailType;
 import com.the.harbor.base.enumeration.hygo.GoDetailType;
@@ -41,6 +42,7 @@ import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.util.HyBeUtil;
 import com.the.harbor.commons.util.CollectionUtil;
+import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.service.interfaces.IBeBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
@@ -135,7 +137,7 @@ public class BeSVImpl implements IBeSV {
 		List<Be> result = new ArrayList<Be>();
 		for (SearchHit hit : hits) {
 			Be be = JSON.parseObject(hit.getSourceAsString(), Be.class);
-			be.setDianzan(HyBeUtil.getBeDianzanCount(be.getBeId()));
+			this.fillBeInfo(be);
 			result.add(be);
 		}
 		PageInfo<Be> pageInfo = new PageInfo<Be>();
@@ -159,12 +161,57 @@ public class BeSVImpl implements IBeSV {
 			return null;
 		}
 		Be be = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Be.class);
-		be.setDianzan(HyBeUtil.getBeDianzanCount(be.getBeId()));
+		this.fillBeInfo(be);
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		QueryOneBeResp resp = new QueryOneBeResp();
 		resp.setBe(be);
 		resp.setResponseHeader(responseHeader);
 		return resp;
+	}
+
+	/**
+	 * 完善BE信息
+	 * 
+	 * @param be
+	 */
+	private void fillBeInfo(Be be) {
+		boolean hastext = false;
+		boolean hasimg = false;
+		String contentSummary = null;
+		String imageURL = null;
+		if (!CollectionUtil.isEmpty(be.getBeDetails())) {
+			for (BeDetail detail : be.getBeDetails()) {
+				if (BeDetailType.TEXT.getValue().equals(detail.getType())) {
+					if (!hastext) {
+						contentSummary = detail.getDetail();
+						hastext = true;
+					}
+				} else if (BeDetailType.IMAGE.getValue().equals(detail.getType())) {
+					if (!hasimg) {
+						imageURL = detail.getImageUrl();
+						hasimg = true;
+					}
+				}
+			}
+		}
+		be.setContentSummary(contentSummary);
+		be.setImageURL(imageURL);
+		be.setHasimg(hasimg);
+		be.setHastext(hastext);
+		be.setCreateTimeInterval(DateUtil.getInterval(be.getCreateDate()));
+		// 发布用户信息
+		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(be.getUserId());
+		be.setAtCityName(createUserInfo.getAtCityName());
+		be.setEnName(createUserInfo.getEnName());
+		be.setIndustryName(createUserInfo.getIndustryName());
+		be.setTitle(createUserInfo.getTitle());
+		be.setWxHeadimg(createUserInfo.getWxHeadimg());
+		be.setUserStatusName(createUserInfo.getUserStatusName());
+		be.setAbroadCountryName(createUserInfo.getAbroadCountryName());
+
+		be.setCommentCount(HyBeUtil.getBeCommentsCount(be.getBeId()));
+		be.setDianzanCount(HyBeUtil.getBeDianzanCount(be.getBeId()));
+		be.setGiveHaibeiCount(0);
 	}
 
 }
