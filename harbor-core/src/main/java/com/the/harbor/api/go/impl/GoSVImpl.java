@@ -361,7 +361,7 @@ public class GoSVImpl implements IGoSV {
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
 		builder.must(QueryBuilders.termQuery("goType", queryGoReq.getGoType()));
 		if (!StringUtil.isBlank(queryGoReq.getGoTag())) {
-			builder.must(QueryBuilders.termQuery("tagId", queryGoReq.getGoTag()));
+			builder.must(QueryBuilders.termQuery("goTags.tagId", queryGoReq.getGoTag()));
 		}
 		if (!StringUtil.isBlank(queryGoReq.getSearchKey())) {
 			builder.must(QueryBuilders.queryStringQuery(queryGoReq.getSearchKey()));

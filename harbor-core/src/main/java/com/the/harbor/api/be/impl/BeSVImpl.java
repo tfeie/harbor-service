@@ -20,6 +20,8 @@ import com.the.harbor.api.be.param.Be;
 import com.the.harbor.api.be.param.BeCreateReq;
 import com.the.harbor.api.be.param.BeCreateResp;
 import com.the.harbor.api.be.param.BeDetail;
+import com.the.harbor.api.be.param.BeQueryReq;
+import com.the.harbor.api.be.param.BeQueryResp;
 import com.the.harbor.api.be.param.BeTag;
 import com.the.harbor.api.be.param.QueryMyBeReq;
 import com.the.harbor.api.be.param.QueryMyBeResp;
@@ -212,6 +214,41 @@ public class BeSVImpl implements IBeSV {
 		be.setCommentCount(HyBeUtil.getBeCommentsCount(be.getBeId()));
 		be.setDianzanCount(HyBeUtil.getBeDianzanCount(be.getBeId()));
 		be.setGiveHaibeiCount(0);
+	}
+
+	@Override
+	public BeQueryResp queryBes(BeQueryReq beQueryReq) throws BusinessException, SystemException {
+		int start = (beQueryReq.getPageNo() - 1) * beQueryReq.getPageSize();
+		int end = beQueryReq.getPageNo() * beQueryReq.getPageSize();
+		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
+		BoolQueryBuilder builder = QueryBuilders.boolQuery();
+		if (!StringUtil.isBlank(beQueryReq.getBeTag())) {
+			builder.must(QueryBuilders.termQuery("beTags.tagId", beQueryReq.getBeTag()));
+		}
+		if (!StringUtil.isBlank(beQueryReq.getSearchKey())) {
+			builder.must(QueryBuilders.queryStringQuery(beQueryReq.getSearchKey()));
+		}
+		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
+				.setTypes(HarborIndexType.HY_BE.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
+				.addSort(sortBuilder).execute().actionGet();
+		SearchHits hits = response.getHits();
+		long total = hits.getTotalHits();
+		List<Be> result = new ArrayList<Be>();
+		for (SearchHit hit : hits) {
+			Be be = JSON.parseObject(hit.getSourceAsString(), Be.class);
+			this.fillBeInfo(be);
+			result.add(be);
+		}
+		PageInfo<Be> pageInfo = new PageInfo<Be>();
+		pageInfo.setCount(Integer.parseInt(total + ""));
+		pageInfo.setPageNo(beQueryReq.getPageNo());
+		pageInfo.setPageSize(beQueryReq.getPageSize());
+		pageInfo.setResult(result);
+		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
+		BeQueryResp resp = new BeQueryResp();
+		resp.setPagInfo(pageInfo);
+		resp.setResponseHeader(responseHeader);
+		return resp;
 	}
 
 }

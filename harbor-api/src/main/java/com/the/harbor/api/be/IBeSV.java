@@ -4,6 +4,8 @@ import javax.validation.constraints.NotNull;
 
 import com.the.harbor.api.be.param.BeCreateReq;
 import com.the.harbor.api.be.param.BeCreateResp;
+import com.the.harbor.api.be.param.BeQueryReq;
+import com.the.harbor.api.be.param.BeQueryResp;
 import com.the.harbor.api.be.param.QueryMyBeReq;
 import com.the.harbor.api.be.param.QueryMyBeResp;
 import com.the.harbor.api.be.param.QueryOneBeReq;
@@ -48,6 +50,7 @@ public interface IBeSV {
 
 	/**
 	 * 查询一个BE
+	 * 
 	 * @param queryOneBeReq
 	 * @return
 	 * @throws BusinessException
@@ -55,5 +58,15 @@ public interface IBeSV {
 	 */
 	QueryOneBeResp queryOneBe(@NotNull(message = "参数为空") QueryOneBeReq queryOneBeReq)
 			throws BusinessException, SystemException;
+
+	/**
+	 * 查询BE列表
+	 * 
+	 * @param beQueryReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	BeQueryResp queryBes(@NotNull(message = "参数为空") BeQueryReq beQueryReq) throws BusinessException, SystemException;
 
 }

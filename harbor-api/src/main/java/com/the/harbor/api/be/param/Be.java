@@ -49,10 +49,10 @@ public class Be implements Serializable {
 	// 打赏海贝数量
 	private long giveHaibeiCount;
 
-	//首个文本内容摘要
+	// 首个文本内容摘要
 	private String contentSummary;
-	
-	//首个图片地址
+
+	// 首个图片地址
 	private String imageURL;
 
 	// 是否发表了文本
@@ -60,6 +60,12 @@ public class Be implements Serializable {
 
 	// 是否发表了图片
 	private boolean hasimg;
+
+	// 是否显示发表日期DD/MM
+	private boolean showMMdd;
+
+	// 发表日期的dd/mm
+	private String mmdd;
 
 	public String getBeId() {
 		return beId;
@@ -236,7 +242,21 @@ public class Be implements Serializable {
 	public void setImageURL(String imageURL) {
 		this.imageURL = imageURL;
 	}
-	
-	
+
+	public boolean isShowMMdd() {
+		return showMMdd;
+	}
+
+	public void setShowMMdd(boolean showMMdd) {
+		this.showMMdd = showMMdd;
+	}
+
+	public String getMmdd() {
+		return mmdd;
+	}
+
+	public void setMmdd(String mmdd) {
+		this.mmdd = mmdd;
+	}
 
 }
