@@ -544,7 +544,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			record.setCreateDate(doUserFans.getTime() == null ? DateUtil.getSysDate() : doUserFans.getTime());
 			HyUserFansMapper.insert(record);
 			// 写入REDIS记录
-			HyUserUtil.userAGuanzhuUserB(doUserFans.getFansUserId(), doUserFans.getUserId());
+			HyUserUtil.userAGuanzhuUserB(doUserFans.getUserId(),doUserFans.getFansUserId());
 		} else if (DoUserFans.HandleType.CANCEL.name().equals(doUserFans.getHandleType())) {
 			// 记录用户取消关注行为
 			if (!StringUtil.isBlank(doUserFans.getUserId()) && !StringUtil.isBlank(doUserFans.getFansUserId())) {
@@ -555,7 +555,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 				record.setStsChgDate(DateUtil.getSysDate());
 				HyUserFansMapper.updateByExampleSelective(record, sql);
 				// 写入REDIS记录
-				HyUserUtil.userACancelGuanzhuUserB(doUserFans.getFansUserId(), doUserFans.getUserId());
+				HyUserUtil.userACancelGuanzhuUserB(doUserFans.getUserId(),doUserFans.getFansUserId());
 			}
 		}
 	}
