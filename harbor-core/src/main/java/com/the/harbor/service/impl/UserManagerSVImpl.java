@@ -3,6 +3,7 @@ package com.the.harbor.service.impl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -534,6 +535,10 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	@Override
 	public void processDoUserFans(DoUserFans doUserFans) {
 		if (DoUserFans.HandleType.GUANZHU.name().equals(doUserFans.getHandleType())) {
+			Set<String> set = HyUserUtil.getUserGuanzhuUsers(doUserFans.getUserId());
+			if (set.contains(doUserFans.getFansUserId())) {
+				return;
+			}
 			// 记录用户关注行为
 			HyUserFans record = new HyUserFans();
 			record.setFansId(HarborSeqUtil.createUserFansId());
@@ -544,7 +549,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			record.setCreateDate(doUserFans.getTime() == null ? DateUtil.getSysDate() : doUserFans.getTime());
 			HyUserFansMapper.insert(record);
 			// 写入REDIS记录
-			HyUserUtil.userAGuanzhuUserB(doUserFans.getUserId(),doUserFans.getFansUserId());
+			HyUserUtil.userAGuanzhuUserB(doUserFans.getUserId(), doUserFans.getFansUserId());
 		} else if (DoUserFans.HandleType.CANCEL.name().equals(doUserFans.getHandleType())) {
 			// 记录用户取消关注行为
 			if (!StringUtil.isBlank(doUserFans.getUserId()) && !StringUtil.isBlank(doUserFans.getFansUserId())) {
@@ -555,7 +560,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 				record.setStsChgDate(DateUtil.getSysDate());
 				HyUserFansMapper.updateByExampleSelective(record, sql);
 				// 写入REDIS记录
-				HyUserUtil.userACancelGuanzhuUserB(doUserFans.getUserId(),doUserFans.getFansUserId());
+				HyUserUtil.userACancelGuanzhuUserB(doUserFans.getUserId(), doUserFans.getFansUserId());
 			}
 		}
 	}
