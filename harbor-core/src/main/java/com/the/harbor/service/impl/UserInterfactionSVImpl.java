@@ -11,11 +11,13 @@ import com.the.harbor.api.be.param.DoBeComment;
 import com.the.harbor.api.be.param.DoBeLikes;
 import com.the.harbor.api.go.param.DoGoFavorite;
 import com.the.harbor.api.go.param.DoGoView;
+import com.the.harbor.api.user.param.DoUserFans;
 import com.the.harbor.base.enumeration.mns.MQType;
 import com.the.harbor.base.vo.MNSBody;
 import com.the.harbor.service.interfaces.IBeBusiSV;
 import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IUserInterfactionSV;
+import com.the.harbor.service.interfaces.IUserManagerSV;
 
 @Component
 @Transactional
@@ -28,6 +30,9 @@ public class UserInterfactionSVImpl implements IUserInterfactionSV {
 
 	@Autowired
 	private transient IGoBusiSV goBusiSV;
+
+	@Autowired
+	private transient IUserManagerSV userManagerSV;
 
 	@Override
 	public void process(String mnsBody) {
@@ -53,6 +58,10 @@ public class UserInterfactionSVImpl implements IUserInterfactionSV {
 			beBusiSV.processDoBeComment(doBeComment);
 		} else if (MQType.MQ_HY_GO_COMMENT.getValue().equals(mqType)) {
 			// BE评论
+		} else if (MQType.MQ_HY_USER_FANS.getValue().equals(mqType)) {
+			// 粉丝互动
+			DoUserFans doUserFans = JSONObject.parseObject(mnsBody, DoUserFans.class);
+			userManagerSV.processDoUserFans(doUserFans);
 		}
 
 	}

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.the.harbor.api.user.param.DoUserFans;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
@@ -46,8 +47,11 @@ import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.constants.HarborErrorCodeConstants;
 import com.the.harbor.dao.mapper.bo.HyUser;
 import com.the.harbor.dao.mapper.bo.HyUserCriteria;
+import com.the.harbor.dao.mapper.bo.HyUserFans;
+import com.the.harbor.dao.mapper.bo.HyUserFansCriteria;
 import com.the.harbor.dao.mapper.bo.HyUserTags;
 import com.the.harbor.dao.mapper.bo.HyUserTagsCriteria;
+import com.the.harbor.dao.mapper.interfaces.HyUserFansMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserTagsMapper;
 import com.the.harbor.service.interfaces.IUserManagerSV;
@@ -62,6 +66,9 @@ public class UserManagerSVImpl implements IUserManagerSV {
 
 	@Autowired
 	private transient HyUserTagsMapper hyUserTagsMapper;
+
+	@Autowired
+	private transient HyUserFansMapper HyUserFansMapper;
 
 	@Override
 	public String userRegister(UserRegReq userRegReq) {
@@ -522,6 +529,35 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			userInfo = JSONObject.parseObject(userData, UserViewInfo.class);
 		}
 		return userInfo;
+	}
+
+	@Override
+	public void processDoUserFans(DoUserFans doUserFans) {
+		if (DoUserFans.HandleType.GUANZHU.name().equals(doUserFans.getHandleType())) {
+			// 记录用户关注行为
+			HyUserFans record = new HyUserFans();
+			record.setFansId(HarborSeqUtil.createUserFansId());
+			record.setFansUserId(doUserFans.getFansUserId());
+			record.setStatus(com.the.harbor.base.enumeration.hyuserfans.Status.FANS.getValue());
+			record.setStsChgDate(DateUtil.getSysDate());
+			record.setUserId(doUserFans.getUserId());
+			record.setCreateDate(doUserFans.getTime() == null ? DateUtil.getSysDate() : doUserFans.getTime());
+			HyUserFansMapper.insert(record);
+			// 写入REDIS记录
+			HyUserUtil.userAGuanzhuUserB(doUserFans.getFansUserId(), doUserFans.getUserId());
+		} else if (DoUserFans.HandleType.CANCEL.name().equals(doUserFans.getHandleType())) {
+			// 记录用户取消关注行为
+			if (!StringUtil.isBlank(doUserFans.getUserId()) && !StringUtil.isBlank(doUserFans.getFansUserId())) {
+				HyUserFansCriteria sql = new HyUserFansCriteria();
+				sql.or().andUserIdEqualTo(doUserFans.getUserId()).andFansUserIdEqualTo(doUserFans.getFansUserId());
+				HyUserFans record = new HyUserFans();
+				record.setStatus(com.the.harbor.base.enumeration.hyuserfans.Status.CANCEL.getValue());
+				record.setStsChgDate(DateUtil.getSysDate());
+				HyUserFansMapper.updateByExampleSelective(record, sql);
+				// 写入REDIS记录
+				HyUserUtil.userACancelGuanzhuUserB(doUserFans.getFansUserId(), doUserFans.getUserId());
+			}
+		}
 	}
 
 }

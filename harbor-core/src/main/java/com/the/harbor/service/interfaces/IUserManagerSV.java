@@ -2,6 +2,7 @@ package com.the.harbor.service.interfaces;
 
 import java.util.List;
 
+import com.the.harbor.api.user.param.DoUserFans;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
@@ -82,5 +83,12 @@ public interface IUserManagerSV {
 	 * @return
 	 */
 	UserTagQueryResp queryUserTags(UserTagQueryReq userTagQueryReq);
+
+	/**
+	 * 用户互粉处理
+	 * 
+	 * @param doUserFans
+	 */
+	void processDoUserFans(DoUserFans doUserFans);
 
 }
