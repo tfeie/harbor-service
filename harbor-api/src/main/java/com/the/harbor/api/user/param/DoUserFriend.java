@@ -10,7 +10,7 @@ public class DoUserFriend extends MNSBody {
 	private static final long serialVersionUID = 1L;
 
 	public enum HandleType implements Serializable {
-		APPLY, REJECT, CANCEL;
+		APPLY, REJECT, AGREE, CANCEL;
 	}
 
 	private String handleType;
@@ -29,6 +29,11 @@ public class DoUserFriend extends MNSBody {
 	 * 操作时间
 	 */
 	private Timestamp time;
+
+	/**
+	 * 申请消息
+	 */
+	private String applyMq;
 
 	public String getUserId() {
 		return userId;
@@ -60,6 +65,14 @@ public class DoUserFriend extends MNSBody {
 
 	public void setFriendUserId(String friendUserId) {
 		this.friendUserId = friendUserId;
+	}
+
+	public String getApplyMq() {
+		return applyMq;
+	}
+
+	public void setApplyMq(String applyMq) {
+		this.applyMq = applyMq;
 	}
 
 }

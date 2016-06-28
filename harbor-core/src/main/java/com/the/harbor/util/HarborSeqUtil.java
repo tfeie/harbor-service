@@ -100,5 +100,9 @@ public final class HarborSeqUtil {
 	public static String createUserFansId() {
 		return UUIDUtil.genId32();
 	}
+	
+	public static String createUserFriendId() {
+		return UUIDUtil.genId32();
+	}
 
 }

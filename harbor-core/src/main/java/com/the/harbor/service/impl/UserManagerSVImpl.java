@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.the.harbor.api.user.param.DoUserFans;
+import com.the.harbor.api.user.param.DoUserFriend;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
@@ -50,9 +51,12 @@ import com.the.harbor.dao.mapper.bo.HyUser;
 import com.the.harbor.dao.mapper.bo.HyUserCriteria;
 import com.the.harbor.dao.mapper.bo.HyUserFans;
 import com.the.harbor.dao.mapper.bo.HyUserFansCriteria;
+import com.the.harbor.dao.mapper.bo.HyUserFriend;
+import com.the.harbor.dao.mapper.bo.HyUserFriendCriteria;
 import com.the.harbor.dao.mapper.bo.HyUserTags;
 import com.the.harbor.dao.mapper.bo.HyUserTagsCriteria;
 import com.the.harbor.dao.mapper.interfaces.HyUserFansMapper;
+import com.the.harbor.dao.mapper.interfaces.HyUserFriendMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserTagsMapper;
 import com.the.harbor.service.interfaces.IUserManagerSV;
@@ -70,6 +74,9 @@ public class UserManagerSVImpl implements IUserManagerSV {
 
 	@Autowired
 	private transient HyUserFansMapper HyUserFansMapper;
+
+	@Autowired
+	private transient HyUserFriendMapper hyUserFriendMapper;
 
 	@Override
 	public String userRegister(UserRegReq userRegReq) {
@@ -554,7 +561,8 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			// 记录用户取消关注行为
 			if (!StringUtil.isBlank(doUserFans.getUserId()) && !StringUtil.isBlank(doUserFans.getFansUserId())) {
 				HyUserFansCriteria sql = new HyUserFansCriteria();
-				sql.or().andUserIdEqualTo(doUserFans.getUserId()).andFansUserIdEqualTo(doUserFans.getFansUserId());
+				sql.or().andUserIdEqualTo(doUserFans.getUserId()).andFansUserIdEqualTo(doUserFans.getFansUserId())
+						.andStatusEqualTo(com.the.harbor.base.enumeration.hyuserfans.Status.FANS.getValue());
 				HyUserFans record = new HyUserFans();
 				record.setStatus(com.the.harbor.base.enumeration.hyuserfans.Status.CANCEL.getValue());
 				record.setStsChgDate(DateUtil.getSysDate());
@@ -563,6 +571,74 @@ public class UserManagerSVImpl implements IUserManagerSV {
 				HyUserUtil.userACancelGuanzhuUserB(doUserFans.getUserId(), doUserFans.getFansUserId());
 			}
 		}
+	}
+
+	@Override
+	public void processDoUserFriend(DoUserFriend doUserFriend) {
+		if (DoUserFriend.HandleType.APPLY.name().equals(doUserFriend.getHandleType())) {
+			// 判断是否已经申请或者是否已经是好友
+			Set<String> appSet = HyUserUtil.getUserFriendApplies(doUserFriend.getUserId());
+			if (appSet.contains(doUserFriend.getFriendUserId())) {
+				return;
+			}
+			Set<String> friSet = HyUserUtil.getUserFriends(doUserFriend.getUserId());
+			if (friSet.contains(doUserFriend.getFriendUserId())) {
+				return;
+			}
+			// 记录好友申请
+			HyUserFriend record = new HyUserFriend();
+			record.setRecordId(HarborSeqUtil.createUserFriendId());
+			record.setUserId(doUserFriend.getUserId());
+			record.setFriendId(doUserFriend.getFriendUserId());
+			record.setStatus(com.the.harbor.base.enumeration.hyuserfriend.Status.APPLY.getValue());
+			record.setCreateDate(doUserFriend.getTime() == null ? DateUtil.getSysDate() : doUserFriend.getTime());
+			record.setApplyMq(doUserFriend.getApplyMq());
+			record.setStsDate(DateUtil.getSysDate());
+			hyUserFriendMapper.insert(record);
+
+			// 写入好友申请记录到REDIS
+			HyUserUtil.userAAgreeApplyFriendofUserB(doUserFriend.getUserId(), doUserFriend.getFriendUserId());
+		} else if (DoUserFriend.HandleType.CANCEL.name().equals(doUserFriend.getHandleType())) {
+			// 取消成为好友
+			if (!StringUtil.isBlank(doUserFriend.getUserId()) && !StringUtil.isBlank(doUserFriend.getFriendUserId())) {
+				HyUserFriendCriteria sql = new HyUserFriendCriteria();
+				sql.or().andUserIdEqualTo(doUserFriend.getUserId()).andFriendIdEqualTo(doUserFriend.getFriendUserId())
+						.andStatusEqualTo(com.the.harbor.base.enumeration.hyuserfriend.Status.AGREE.getValue());
+				HyUserFriend record = new HyUserFriend();
+				record.setStatus(com.the.harbor.base.enumeration.hyuserfriend.Status.CANCEL.getValue());
+				record.setStsDate(DateUtil.getSysDate());
+				hyUserFriendMapper.updateByExampleSelective(record, sql);
+				// 从好友列表中删除
+				HyUserUtil.userARemoveFriendUserB(doUserFriend.getUserId(), doUserFriend.getFriendUserId());
+			}
+		} else if (DoUserFriend.HandleType.REJECT.name().equals(doUserFriend.getHandleType())) {
+			// 拒绝好友申请
+			if (!StringUtil.isBlank(doUserFriend.getUserId()) && !StringUtil.isBlank(doUserFriend.getFriendUserId())) {
+				HyUserFriendCriteria sql = new HyUserFriendCriteria();
+				sql.or().andUserIdEqualTo(doUserFriend.getUserId()).andFriendIdEqualTo(doUserFriend.getFriendUserId())
+						.andStatusEqualTo(com.the.harbor.base.enumeration.hyuserfriend.Status.APPLY.getValue());
+				HyUserFriend record = new HyUserFriend();
+				record.setStatus(com.the.harbor.base.enumeration.hyuserfriend.Status.REJECT.getValue());
+				record.setStsDate(DateUtil.getSysDate());
+				hyUserFriendMapper.updateByExampleSelective(record, sql);
+				// 从好友申请记录中移除
+				HyUserUtil.userARejectApplyFriendofUserB(doUserFriend.getUserId(), doUserFriend.getFriendUserId());
+			}
+		} else if (DoUserFriend.HandleType.AGREE.name().equals(doUserFriend.getHandleType())) {
+			// 同意好友申请
+			if (!StringUtil.isBlank(doUserFriend.getUserId()) && !StringUtil.isBlank(doUserFriend.getFriendUserId())) {
+				HyUserFriendCriteria sql = new HyUserFriendCriteria();
+				sql.or().andUserIdEqualTo(doUserFriend.getUserId()).andFriendIdEqualTo(doUserFriend.getFriendUserId())
+						.andStatusEqualTo(com.the.harbor.base.enumeration.hyuserfriend.Status.APPLY.getValue());
+				HyUserFriend record = new HyUserFriend();
+				record.setStatus(com.the.harbor.base.enumeration.hyuserfriend.Status.AGREE.getValue());
+				record.setStsDate(DateUtil.getSysDate());
+				hyUserFriendMapper.updateByExampleSelective(record, sql);
+				// 同意好友申请
+				HyUserUtil.userAAgreeApplyFriendofUserB(doUserFriend.getUserId(), doUserFriend.getFriendUserId());
+			}
+		}
+
 	}
 
 }

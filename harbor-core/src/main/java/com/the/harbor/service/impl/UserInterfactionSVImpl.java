@@ -12,6 +12,7 @@ import com.the.harbor.api.be.param.DoBeLikes;
 import com.the.harbor.api.go.param.DoGoFavorite;
 import com.the.harbor.api.go.param.DoGoView;
 import com.the.harbor.api.user.param.DoUserFans;
+import com.the.harbor.api.user.param.DoUserFriend;
 import com.the.harbor.base.enumeration.mns.MQType;
 import com.the.harbor.base.vo.MNSBody;
 import com.the.harbor.service.interfaces.IBeBusiSV;
@@ -62,6 +63,10 @@ public class UserInterfactionSVImpl implements IUserInterfactionSV {
 			// 粉丝互动
 			DoUserFans doUserFans = JSONObject.parseObject(mnsBody, DoUserFans.class);
 			userManagerSV.processDoUserFans(doUserFans);
+		} else if (MQType.MQ_HY_USER_FANS.getValue().equals(mqType)) {
+			// 加好友
+			DoUserFriend doUserFriend = JSONObject.parseObject(mnsBody, DoUserFriend.class);
+			userManagerSV.processDoUserFriend(doUserFriend);
 		}
 
 	}
