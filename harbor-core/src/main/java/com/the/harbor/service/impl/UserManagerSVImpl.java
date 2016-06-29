@@ -623,6 +623,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 				record.setFriendId(doUserFriend.getFriendUserId());
 				record.setStatus(com.the.harbor.base.enumeration.hyuserfriend.Status.AGREE.getValue());
 				record.setStsDate(DateUtil.getSysDate());
+				record.setCreateDate(DateUtil.getSysDate());
 				hyUserFriendMapper.insert(record);
 				// 同意好友申请
 				HyUserUtil.userAAgreeApplyFriendofUserB(doUserFriend.getUserId(), doUserFriend.getFriendUserId());
