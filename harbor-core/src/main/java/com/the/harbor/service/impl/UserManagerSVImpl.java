@@ -576,30 +576,20 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	@Override
 	public void processDoUserFriend(DoUserFriend doUserFriend) {
 		if (DoUserFriend.HandleType.APPLY.name().equals(doUserFriend.getHandleType())) {
-			// 判断是否已经申请或者是否已经是好友
-			Set<String> appSet = HyUserUtil.getUserFriendApplies(doUserFriend.getUserId());
-			if (appSet.contains(doUserFriend.getFriendUserId())) {
+			// 申请信息是记录在对方的，判断对方申请列表中是否有发起者
+			Set<String> appSet = HyUserUtil.getUserFriendApplies(doUserFriend.getFriendUserId());
+			if (appSet.contains(doUserFriend.getUserId())) {
 				return;
 			}
+			// 判断我的好友中是否有对方
 			Set<String> friSet = HyUserUtil.getUserFriends(doUserFriend.getUserId());
 			if (friSet.contains(doUserFriend.getFriendUserId())) {
 				return;
 			}
-			// 记录好友申请
-			HyUserFriend record = new HyUserFriend();
-			record.setRecordId(HarborSeqUtil.createUserFriendId());
-			record.setUserId(doUserFriend.getUserId());
-			record.setFriendId(doUserFriend.getFriendUserId());
-			record.setStatus(com.the.harbor.base.enumeration.hyuserfriend.Status.APPLY.getValue());
-			record.setCreateDate(doUserFriend.getTime() == null ? DateUtil.getSysDate() : doUserFriend.getTime());
-			record.setApplyMq(doUserFriend.getApplyMq());
-			record.setStsDate(DateUtil.getSysDate());
-			hyUserFriendMapper.insert(record);
-
 			// 写入好友申请记录到REDIS
-			HyUserUtil.userAAgreeApplyFriendofUserB(doUserFriend.getUserId(), doUserFriend.getFriendUserId());
+			HyUserUtil.userAApplyFriendToUserB(doUserFriend.getUserId(), doUserFriend.getFriendUserId());
 		} else if (DoUserFriend.HandleType.CANCEL.name().equals(doUserFriend.getHandleType())) {
-			// 取消成为好友
+			// 取消成为好友,删除双向好友关系
 			if (!StringUtil.isBlank(doUserFriend.getUserId()) && !StringUtil.isBlank(doUserFriend.getFriendUserId())) {
 				HyUserFriendCriteria sql = new HyUserFriendCriteria();
 				sql.or().andUserIdEqualTo(doUserFriend.getUserId()).andFriendIdEqualTo(doUserFriend.getFriendUserId())
@@ -608,32 +598,32 @@ public class UserManagerSVImpl implements IUserManagerSV {
 				record.setStatus(com.the.harbor.base.enumeration.hyuserfriend.Status.CANCEL.getValue());
 				record.setStsDate(DateUtil.getSysDate());
 				hyUserFriendMapper.updateByExampleSelective(record, sql);
+
+				sql = new HyUserFriendCriteria();
+				sql.or().andUserIdEqualTo(doUserFriend.getFriendUserId()).andFriendIdEqualTo(doUserFriend.getUserId())
+						.andStatusEqualTo(com.the.harbor.base.enumeration.hyuserfriend.Status.AGREE.getValue());
+				record = new HyUserFriend();
+				record.setStatus(com.the.harbor.base.enumeration.hyuserfriend.Status.CANCEL.getValue());
+				record.setStsDate(DateUtil.getSysDate());
+				hyUserFriendMapper.updateByExampleSelective(record, sql);
 				// 从好友列表中删除
 				HyUserUtil.userARemoveFriendUserB(doUserFriend.getUserId(), doUserFriend.getFriendUserId());
 			}
 		} else if (DoUserFriend.HandleType.REJECT.name().equals(doUserFriend.getHandleType())) {
-			// 拒绝好友申请
+			// 拒绝好友申请,从发起方好友申请列表中移除对方
 			if (!StringUtil.isBlank(doUserFriend.getUserId()) && !StringUtil.isBlank(doUserFriend.getFriendUserId())) {
-				HyUserFriendCriteria sql = new HyUserFriendCriteria();
-				sql.or().andUserIdEqualTo(doUserFriend.getUserId()).andFriendIdEqualTo(doUserFriend.getFriendUserId())
-						.andStatusEqualTo(com.the.harbor.base.enumeration.hyuserfriend.Status.APPLY.getValue());
-				HyUserFriend record = new HyUserFriend();
-				record.setStatus(com.the.harbor.base.enumeration.hyuserfriend.Status.REJECT.getValue());
-				record.setStsDate(DateUtil.getSysDate());
-				hyUserFriendMapper.updateByExampleSelective(record, sql);
-				// 从好友申请记录中移除
 				HyUserUtil.userARejectApplyFriendofUserB(doUserFriend.getUserId(), doUserFriend.getFriendUserId());
 			}
 		} else if (DoUserFriend.HandleType.AGREE.name().equals(doUserFriend.getHandleType())) {
-			// 同意好友申请
+			// 同意好友申请.互为好友
 			if (!StringUtil.isBlank(doUserFriend.getUserId()) && !StringUtil.isBlank(doUserFriend.getFriendUserId())) {
-				HyUserFriendCriteria sql = new HyUserFriendCriteria();
-				sql.or().andUserIdEqualTo(doUserFriend.getUserId()).andFriendIdEqualTo(doUserFriend.getFriendUserId())
-						.andStatusEqualTo(com.the.harbor.base.enumeration.hyuserfriend.Status.APPLY.getValue());
 				HyUserFriend record = new HyUserFriend();
+				record.setRecordId(HarborSeqUtil.createUserFriendId());
+				record.setUserId(doUserFriend.getUserId());
+				record.setFriendId(doUserFriend.getFriendUserId());
 				record.setStatus(com.the.harbor.base.enumeration.hyuserfriend.Status.AGREE.getValue());
 				record.setStsDate(DateUtil.getSysDate());
-				hyUserFriendMapper.updateByExampleSelective(record, sql);
+				hyUserFriendMapper.insert(record);
 				// 同意好友申请
 				HyUserUtil.userAAgreeApplyFriendofUserB(doUserFriend.getUserId(), doUserFriend.getFriendUserId());
 			}

@@ -7,17 +7,22 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.mns.client.CloudAccount;
 import com.aliyun.mns.client.CloudQueue;
 import com.aliyun.mns.client.MNSClient;
 import com.aliyun.mns.common.ClientException;
 import com.aliyun.mns.common.ServiceException;
 import com.aliyun.mns.model.Message;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
+import com.the.harbor.commons.components.aliyuncs.mns.MNSSettings;
+import com.the.harbor.commons.components.aliyuncs.mns.MessageReceiver;
 import com.the.harbor.commons.components.aliyuncs.sms.param.SMSSendResponse;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.util.BeanUtils;
+import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HySmsSend;
 import com.the.harbor.service.interfaces.ISmsSendRecordSV;
+import com.the.harbor.service.interfaces.IUserInterfactionSV;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({ "/context/core-context.xml" })
@@ -25,41 +30,33 @@ public class ReceiveSMSSendTest {
 
 	@Autowired
 	ISmsSendRecordSV builder;
+	
+	@Autowired
+	IUserInterfactionSV userInterfactionSV;
 
 	@Test
 	public void smsRecord() {
-		MNSClient client = MNSFactory.getMNSClient();
+		CloudAccount account = new CloudAccount(MNSSettings.getMNSAccessKeyId(), MNSSettings.getMNSAccessKeySecret(),
+				MNSSettings.getMNSAccountEndpoint());
+		MNSClient sMNSClient = account.getMNSClient();
+		MessageReceiver receiver = new MessageReceiver(1, sMNSClient,
+				GlobalSettings.getUserInteractionQueueName());
 		while (true) {
-			HySmsSend record = null;
+			Message message = receiver.receiveMessage();
+			boolean success = false;
 			try {
-				CloudQueue queue = client.getQueueRef(GlobalSettings.getSMSRecordQueueName());
-				Message popMsg = queue.popMessage();
-				String message = popMsg.getMessageBody();
-				SMSSendResponse resp = JSONObject.parseObject(message, SMSSendResponse.class);
-				record = new HySmsSend();
-				BeanUtils.copyProperties(record, resp);
-				queue.deleteMessage(popMsg.getReceiptHandle());
-				System.out.println("delete message successfully.\n");
-			} catch (ClientException ce) {
-				System.out.println("Something wrong with the network connection between client and MNS service."
-						+ "Please check your network and DNS availablity.");
-				ce.printStackTrace();
-			} catch (ServiceException se) {
-				if (se.getErrorCode().equals("QueueNotExist")) {
-					System.out.println("Queue is not exist.Please create queue before use");
-				} else if (se.getErrorCode().equals("TimeExpired")) {
-					System.out.println("The request is time expired. Please check your local machine timeclock");
+				if (!StringUtil.isBlank(message.getMessageBody())) {
+					userInterfactionSV.process(message.getMessageBody());
 				}
-				se.printStackTrace();
-			} catch (Exception e) {
-				System.out.println("Unknown exception happened!");
-				e.printStackTrace();
+				success = true;
+			} catch (Exception ex) {
+				success = false;
 			}
-
-			// client.close();
-			// 写表
-			if (record != null)
-				builder.saveSmsSendRecord(record);
+			if (success) {
+				// 如果记录入库成功，则需要从MNS删除消息
+				sMNSClient.getQueueRef(GlobalSettings.getUserInteractionQueueName())
+						.deleteMessage(message.getReceiptHandle());
+			}
 		}
 
 	}

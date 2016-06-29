@@ -63,7 +63,7 @@ public class UserInterfactionSVImpl implements IUserInterfactionSV {
 			// 粉丝互动
 			DoUserFans doUserFans = JSONObject.parseObject(mnsBody, DoUserFans.class);
 			userManagerSV.processDoUserFans(doUserFans);
-		} else if (MQType.MQ_HY_USER_FANS.getValue().equals(mqType)) {
+		} else if (MQType.MQ_HY_USER_FRIEND.getValue().equals(mqType)) {
 			// 加好友
 			DoUserFriend doUserFriend = JSONObject.parseObject(mnsBody, DoUserFriend.class);
 			userManagerSV.processDoUserFriend(doUserFriend);
