@@ -74,6 +74,8 @@ public class Go implements Serializable {
 
 	private String enName;
 
+	private String homePageBg;
+
 	// 浏览总数
 	private long viewCount;
 
@@ -359,6 +361,14 @@ public class Go implements Serializable {
 
 	public void setFixPriceYuan(String fixPriceYuan) {
 		this.fixPriceYuan = fixPriceYuan;
+	}
+
+	public String getHomePageBg() {
+		return homePageBg;
+	}
+
+	public void setHomePageBg(String homePageBg) {
+		this.homePageBg = homePageBg;
 	}
 
 }

@@ -215,15 +215,12 @@ public class GoSVImpl implements IGoSV {
 			throw new BusinessException("GO_0001", "预约记录不存在");
 		}
 		// 获取活动信息
-		HyGo hyGo = goBusiSV.getHyGo(hyGoOrder.getGoId());
-		if (hyGo == null) {
-			throw new BusinessException("GO_0001", "活动信息不存在");
-		}
+		Go go = this.getGoInfo(hyGoOrder.getGoId());
 		GoOrder goOrder = new GoOrder();
 		BeanUtils.copyProperties(hyGoOrder, goOrder);
-		goOrder.setPublishUserId(hyGo.getUserId());
-		goOrder.setTopic(hyGo.getTopic());
-		goOrder.setFixedPrice(hyGo.getFixedPrice());
+		goOrder.setPublishUserId(go.getUserId());
+		goOrder.setTopic(go.getTopic());
+		goOrder.setFixedPrice(go.getFixedPrice());
 		goOrder.setOrderStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_ORDER.getValue(),
 				ParamCode.ORDER_STATUS.getValue(), hyGoOrder.getOrderStatus()));
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
@@ -246,15 +243,7 @@ public class GoSVImpl implements IGoSV {
 
 	@Override
 	public GoQueryResp queryGo(GoQueryReq goQueryReq) throws BusinessException, SystemException {
-		// 获取活动信息
-		HyGo hyGo = goBusiSV.getHyGo(goQueryReq.getGoId());
-		if (hyGo == null) {
-			throw new BusinessException("GO_0001", "活动信息不存在");
-		}
-		Go go = new Go();
-		BeanUtils.copyProperties(hyGo, go);
-		go.setGoTypeName(
-				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.GO_TYPE.getValue(), hyGo.getGoType()));
+		Go go = this.getGoInfo(goQueryReq.getGoId());
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		GoQueryResp resp = new GoQueryResp();
 		resp.setGo(go);
@@ -427,6 +416,24 @@ public class GoSVImpl implements IGoSV {
 		go.setJoinCount(0);
 		go.setCreateTimeStr(DateUtil.getDateString(go.getCreateDate(), "MM月dd"));
 		go.setCreateTimeInterval(DateUtil.getInterval(go.getCreateDate()));
+	}
+
+	/**
+	 * 获取GO信息
+	 * 
+	 * @param goId
+	 * @return
+	 */
+	private Go getGoInfo(String goId) {
+		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_GO_DB.getValue())
+				.setTypes(HarborIndexType.HY_GO.getValue()).setQuery(QueryBuilders.termQuery("_id", goId)).execute()
+				.actionGet();
+		if (response.getHits().totalHits() == 0) {
+			return null;
+		}
+		Go go = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Go.class);
+		this.fillGoInfo(go);
+		return go;
 	}
 
 }
