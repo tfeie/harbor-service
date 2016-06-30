@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.the.harbor.dao.mapper.interfaces.HyGoCommentsMapper" >
+  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyGoComments" >
+    <id column="COMMENT_ID" property="commentId" jdbcType="VARCHAR" />
+    <result column="GO_ID" property="goId" jdbcType="VARCHAR" />
+    <result column="ORDER_ID" property="orderId" jdbcType="VARCHAR" />
+    <result column="PUBLISH_USER_ID" property="publishUserId" jdbcType="VARCHAR" />
+    <result column="CONTENT" property="content" jdbcType="VARCHAR" />
+    <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="PARENT_COMMENT_ID" property="parentCommentId" jdbcType="VARCHAR" />
+    <result column="PARENT_USER_ID" property="parentUserId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    COMMENT_ID, GO_ID, ORDER_ID, PUBLISH_USER_ID, CONTENT, CREATE_DATE, PARENT_COMMENT_ID, 
+    PARENT_USER_ID
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyGoCommentsCriteria" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'false' as QUERYID,
+    <include refid="Base_Column_List" />
+    from hy_go_comments
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from hy_go_comments
+    where COMMENT_ID = #{commentId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from hy_go_comments
+    where COMMENT_ID = #{commentId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HyGoCommentsCriteria" >
+    delete from hy_go_comments
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyGoComments" >
+    insert into hy_go_comments (COMMENT_ID, GO_ID, ORDER_ID, 
+      PUBLISH_USER_ID, CONTENT, CREATE_DATE, 
+      PARENT_COMMENT_ID, PARENT_USER_ID)
+    values (#{commentId,jdbcType=VARCHAR}, #{goId,jdbcType=VARCHAR}, #{orderId,jdbcType=VARCHAR}, 
+      #{publishUserId,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, 
+      #{parentCommentId,jdbcType=VARCHAR}, #{parentUserId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyGoComments" >
+    insert into hy_go_comments
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="commentId != null" >
+        COMMENT_ID,
+      </if>
+      <if test="goId != null" >
+        GO_ID,
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID,
+      </if>
+      <if test="publishUserId != null" >
+        PUBLISH_USER_ID,
+      </if>
+      <if test="content != null" >
+        CONTENT,
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE,
+      </if>
+      <if test="parentCommentId != null" >
+        PARENT_COMMENT_ID,
+      </if>
+      <if test="parentUserId != null" >
+        PARENT_USER_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="commentId != null" >
+        #{commentId,jdbcType=VARCHAR},
+      </if>
+      <if test="goId != null" >
+        #{goId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="publishUserId != null" >
+        #{publishUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="parentCommentId != null" >
+        #{parentCommentId,jdbcType=VARCHAR},
+      </if>
+      <if test="parentUserId != null" >
+        #{parentUserId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyGoCommentsCriteria" resultType="java.lang.Integer" >
+    select count(*) from hy_go_comments
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hy_go_comments
+    <set >
+      <if test="record.commentId != null" >
+        COMMENT_ID = #{record.commentId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goId != null" >
+        GO_ID = #{record.goId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.orderId != null" >
+        ORDER_ID = #{record.orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.publishUserId != null" >
+        PUBLISH_USER_ID = #{record.publishUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.content != null" >
+        CONTENT = #{record.content,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDate != null" >
+        CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.parentCommentId != null" >
+        PARENT_COMMENT_ID = #{record.parentCommentId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.parentUserId != null" >
+        PARENT_USER_ID = #{record.parentUserId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hy_go_comments
+    set COMMENT_ID = #{record.commentId,jdbcType=VARCHAR},
+      GO_ID = #{record.goId,jdbcType=VARCHAR},
+      ORDER_ID = #{record.orderId,jdbcType=VARCHAR},
+      PUBLISH_USER_ID = #{record.publishUserId,jdbcType=VARCHAR},
+      CONTENT = #{record.content,jdbcType=VARCHAR},
+      CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
+      PARENT_COMMENT_ID = #{record.parentCommentId,jdbcType=VARCHAR},
+      PARENT_USER_ID = #{record.parentUserId,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HyGoComments" >
+    update hy_go_comments
+    <set >
+      <if test="goId != null" >
+        GO_ID = #{goId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="publishUserId != null" >
+        PUBLISH_USER_ID = #{publishUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        CONTENT = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="parentCommentId != null" >
+        PARENT_COMMENT_ID = #{parentCommentId,jdbcType=VARCHAR},
+      </if>
+      <if test="parentUserId != null" >
+        PARENT_USER_ID = #{parentUserId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where COMMENT_ID = #{commentId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyGoComments" >
+    update hy_go_comments
+    set GO_ID = #{goId,jdbcType=VARCHAR},
+      ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      PUBLISH_USER_ID = #{publishUserId,jdbcType=VARCHAR},
+      CONTENT = #{content,jdbcType=VARCHAR},
+      CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      PARENT_COMMENT_ID = #{parentCommentId,jdbcType=VARCHAR},
+      PARENT_USER_ID = #{parentUserId,jdbcType=VARCHAR}
+    where COMMENT_ID = #{commentId,jdbcType=VARCHAR}
+  </update>
+</mapper>

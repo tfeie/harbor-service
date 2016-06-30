@@ -410,7 +410,7 @@ public class GoSVImpl implements IGoSV {
 		go.setWxHeadimg(createUserInfo.getWxHeadimg());
 		go.setUserStatusName(createUserInfo.getUserStatusName());
 		go.setAbroadCountryName(createUserInfo.getAbroadCountryName());
-
+		go.setHomePageBg(createUserInfo.getHomePageBg());
 		go.setFavorCount(0);
 		go.setViewCount(0);
 		go.setJoinCount(0);
