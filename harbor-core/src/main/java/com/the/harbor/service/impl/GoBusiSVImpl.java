@@ -304,6 +304,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				// 给海牛通知
 				UserViewInfo orderUser = userManagerSV.getUserViewInfoByUserId(goOrder.getUserId());
 				DoNotify body = new DoNotify();
+				body.setHandleType(DoNotify.HandleType.PUBLISH.name());
 				body.setSenderType(SenderType.USER.getValue());
 				body.setSenderId(goOrder.getUserId());
 				body.setAccepterType(AccepterType.USER.getValue());
