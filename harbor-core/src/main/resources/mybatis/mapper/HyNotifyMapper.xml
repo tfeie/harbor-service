@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.the.harbor.dao.mapper.interfaces.HyNotifyMapper" >
+  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyNotify" >
+    <id column="NOTIFY_ID" property="notifyId" jdbcType="VARCHAR" />
+    <result column="NOTIFY_TYPE" property="notifyType" jdbcType="VARCHAR" />
+    <result column="SENDER_TYPE" property="senderType" jdbcType="VARCHAR" />
+    <result column="SENDER_ID" property="senderId" jdbcType="VARCHAR" />
+    <result column="ACCEPTER_TYPE" property="accepterType" jdbcType="VARCHAR" />
+    <result column="ACCEPTER_ID" property="accepterId" jdbcType="VARCHAR" />
+    <result column="TITLE" property="title" jdbcType="VARCHAR" />
+    <result column="CONTENT" property="content" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="LINK" property="link" jdbcType="VARCHAR" />
+    <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="STS_DATE" property="stsDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    NOTIFY_ID, NOTIFY_TYPE, SENDER_TYPE, SENDER_ID, ACCEPTER_TYPE, ACCEPTER_ID, TITLE, 
+    CONTENT, STATUS, LINK, CREATE_DATE, STS_DATE
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyNotifyCriteria" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'false' as QUERYID,
+    <include refid="Base_Column_List" />
+    from hy_notify
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from hy_notify
+    where NOTIFY_ID = #{notifyId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from hy_notify
+    where NOTIFY_ID = #{notifyId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HyNotifyCriteria" >
+    delete from hy_notify
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyNotify" >
+    insert into hy_notify (NOTIFY_ID, NOTIFY_TYPE, SENDER_TYPE, 
+      SENDER_ID, ACCEPTER_TYPE, ACCEPTER_ID, 
+      TITLE, CONTENT, STATUS, 
+      LINK, CREATE_DATE, STS_DATE
+      )
+    values (#{notifyId,jdbcType=VARCHAR}, #{notifyType,jdbcType=VARCHAR}, #{senderType,jdbcType=VARCHAR}, 
+      #{senderId,jdbcType=VARCHAR}, #{accepterType,jdbcType=VARCHAR}, #{accepterId,jdbcType=VARCHAR}, 
+      #{title,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
+      #{link,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{stsDate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyNotify" >
+    insert into hy_notify
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="notifyId != null" >
+        NOTIFY_ID,
+      </if>
+      <if test="notifyType != null" >
+        NOTIFY_TYPE,
+      </if>
+      <if test="senderType != null" >
+        SENDER_TYPE,
+      </if>
+      <if test="senderId != null" >
+        SENDER_ID,
+      </if>
+      <if test="accepterType != null" >
+        ACCEPTER_TYPE,
+      </if>
+      <if test="accepterId != null" >
+        ACCEPTER_ID,
+      </if>
+      <if test="title != null" >
+        TITLE,
+      </if>
+      <if test="content != null" >
+        CONTENT,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+      <if test="link != null" >
+        LINK,
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE,
+      </if>
+      <if test="stsDate != null" >
+        STS_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="notifyId != null" >
+        #{notifyId,jdbcType=VARCHAR},
+      </if>
+      <if test="notifyType != null" >
+        #{notifyType,jdbcType=VARCHAR},
+      </if>
+      <if test="senderType != null" >
+        #{senderType,jdbcType=VARCHAR},
+      </if>
+      <if test="senderId != null" >
+        #{senderId,jdbcType=VARCHAR},
+      </if>
+      <if test="accepterType != null" >
+        #{accepterType,jdbcType=VARCHAR},
+      </if>
+      <if test="accepterId != null" >
+        #{accepterId,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="link != null" >
+        #{link,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="stsDate != null" >
+        #{stsDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyNotifyCriteria" resultType="java.lang.Integer" >
+    select count(*) from hy_notify
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hy_notify
+    <set >
+      <if test="record.notifyId != null" >
+        NOTIFY_ID = #{record.notifyId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.notifyType != null" >
+        NOTIFY_TYPE = #{record.notifyType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.senderType != null" >
+        SENDER_TYPE = #{record.senderType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.senderId != null" >
+        SENDER_ID = #{record.senderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.accepterType != null" >
+        ACCEPTER_TYPE = #{record.accepterType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.accepterId != null" >
+        ACCEPTER_ID = #{record.accepterId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.title != null" >
+        TITLE = #{record.title,jdbcType=VARCHAR},
+      </if>
+      <if test="record.content != null" >
+        CONTENT = #{record.content,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        STATUS = #{record.status,jdbcType=VARCHAR},
+      </if>
+      <if test="record.link != null" >
+        LINK = #{record.link,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDate != null" >
+        CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.stsDate != null" >
+        STS_DATE = #{record.stsDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hy_notify
+    set NOTIFY_ID = #{record.notifyId,jdbcType=VARCHAR},
+      NOTIFY_TYPE = #{record.notifyType,jdbcType=VARCHAR},
+      SENDER_TYPE = #{record.senderType,jdbcType=VARCHAR},
+      SENDER_ID = #{record.senderId,jdbcType=VARCHAR},
+      ACCEPTER_TYPE = #{record.accepterType,jdbcType=VARCHAR},
+      ACCEPTER_ID = #{record.accepterId,jdbcType=VARCHAR},
+      TITLE = #{record.title,jdbcType=VARCHAR},
+      CONTENT = #{record.content,jdbcType=VARCHAR},
+      STATUS = #{record.status,jdbcType=VARCHAR},
+      LINK = #{record.link,jdbcType=VARCHAR},
+      CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
+      STS_DATE = #{record.stsDate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HyNotify" >
+    update hy_notify
+    <set >
+      <if test="notifyType != null" >
+        NOTIFY_TYPE = #{notifyType,jdbcType=VARCHAR},
+      </if>
+      <if test="senderType != null" >
+        SENDER_TYPE = #{senderType,jdbcType=VARCHAR},
+      </if>
+      <if test="senderId != null" >
+        SENDER_ID = #{senderId,jdbcType=VARCHAR},
+      </if>
+      <if test="accepterType != null" >
+        ACCEPTER_TYPE = #{accepterType,jdbcType=VARCHAR},
+      </if>
+      <if test="accepterId != null" >
+        ACCEPTER_ID = #{accepterId,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        CONTENT = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="link != null" >
+        LINK = #{link,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="stsDate != null" >
+        STS_DATE = #{stsDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where NOTIFY_ID = #{notifyId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyNotify" >
+    update hy_notify
+    set NOTIFY_TYPE = #{notifyType,jdbcType=VARCHAR},
+      SENDER_TYPE = #{senderType,jdbcType=VARCHAR},
+      SENDER_ID = #{senderId,jdbcType=VARCHAR},
+      ACCEPTER_TYPE = #{accepterType,jdbcType=VARCHAR},
+      ACCEPTER_ID = #{accepterId,jdbcType=VARCHAR},
+      TITLE = #{title,jdbcType=VARCHAR},
+      CONTENT = #{content,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=VARCHAR},
+      LINK = #{link,jdbcType=VARCHAR},
+      CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      STS_DATE = #{stsDate,jdbcType=TIMESTAMP}
+    where NOTIFY_ID = #{notifyId,jdbcType=VARCHAR}
+  </update>
+</mapper>
