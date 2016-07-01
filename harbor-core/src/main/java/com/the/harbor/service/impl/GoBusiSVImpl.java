@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.mns.client.CloudQueue;
 import com.aliyun.mns.client.MNSClient;
 import com.aliyun.mns.common.ClientException;
@@ -30,15 +31,19 @@ import com.the.harbor.api.go.param.GoOrderMeetLocaltionReq;
 import com.the.harbor.api.go.param.GoTag;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.api.pay.param.CreatePaymentOrderReq;
+import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.base.enumeration.hygo.GoType;
 import com.the.harbor.base.enumeration.hygo.OrgMode;
 import com.the.harbor.base.enumeration.hygo.PayMode;
 import com.the.harbor.base.enumeration.hygo.Status;
 import com.the.harbor.base.enumeration.hygoorder.OrderStatus;
+import com.the.harbor.base.enumeration.hynotify.AccepterType;
+import com.the.harbor.base.enumeration.hynotify.SenderType;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
+import com.the.harbor.commons.redisdata.def.DoNotify;
 import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
@@ -59,6 +64,7 @@ import com.the.harbor.dao.mapper.interfaces.HyGoTagsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoViewMapper;
 import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IPaymentBusiSV;
+import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.HarborSeqUtil;
 
 @Component
@@ -87,6 +93,9 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 	@Autowired
 	private transient IPaymentBusiSV paymentBusiSV;
+
+	@Autowired
+	private transient IUserManagerSV userManagerSV;
 
 	@Override
 	public String createGo(GoCreateReq goCreateReq) {
@@ -270,6 +279,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		if (!updateGoOrderPayReq.getPayOrderId().equals(goOrder.getPayOrderId())) {
 			throw new BusinessException("GO_0001", "更新活动支付状态失败:支付流水不正确");
 		}
+		HyGo hyGo = this.getHyGo(goOrder.getGoId());
+		if (hyGo == null) {
+			throw new BusinessException("GO_0001", "更新活动支付状态失败:活动不存在");
+		}
 		if (OrderStatus.WAIT_PAY.getValue().equals(goOrder.getOrderStatus())) {
 			// 如果原来是待支付状态，支付成功则更改成 待海牛确认；支付失败 更改成支付失败
 			String orderStatus = null;
@@ -285,6 +298,21 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			o.setStsDate(sysdate);
 			o.setPayStsDate(sysdate);
 			hyGoOrderMapper.updateByPrimaryKeySelective(o);
+
+			// 如果支付成功，则发送确认信息给海牛
+			if ("SUCCESS".equals(updateGoOrderPayReq.getPayStatus())) {
+				// 给海牛通知
+				UserViewInfo orderUser = userManagerSV.getUserViewInfoByUserId(goOrder.getUserId());
+				DoNotify body = new DoNotify();
+				body.setSenderType(SenderType.USER.getValue());
+				body.setSenderId(goOrder.getUserId());
+				body.setAccepterType(AccepterType.USER.getValue());
+				body.setAccepterId(hyGo.getUserId());
+				body.setTitle("活动预约确认");
+				body.setContent("[" + orderUser.getEnName() + "]预约并支付了您发布的一对一活动[" + hyGo.getTopic() + "],请您确认~");
+				body.setLink("../go/toHainiuConfirm.html?goOrderId=" + goOrder.getOrderId());
+				this.sendNotifyMQ(body);
+			}
 		}
 	}
 
@@ -404,6 +432,29 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		record.setGoId(doGoView.getGoId());
 		hyGoViewMapper.insert(record);
 
+	}
+
+	private void sendNotifyMQ(DoNotify body) {
+		MNSClient client = MNSFactory.getMNSClient();
+		try {
+			CloudQueue queue = client.getQueueRef(GlobalSettings.getNotifyQueueName());
+			Message message = new Message();
+			message.setMessageBody(JSONObject.toJSONString(body));
+			queue.putMessage(message);
+		} catch (ClientException ce) {
+			LOG.error("Something wrong with the network connection between client and MNS service."
+					+ "Please check your network and DNS availablity.", ce);
+		} catch (ServiceException se) {
+			if (se.getErrorCode().equals("QueueNotExist")) {
+				LOG.error("Queue is not exist.Please create before use", se);
+			} else if (se.getErrorCode().equals("TimeExpired")) {
+				LOG.error("The request is time expired. Please check your local machine timeclock", se);
+			}
+			LOG.error("notify message put in Queue error", se);
+		} catch (Exception e) {
+			LOG.error("Unknown exception happened!", e);
+		}
+		client.close();
 	}
 
 }
