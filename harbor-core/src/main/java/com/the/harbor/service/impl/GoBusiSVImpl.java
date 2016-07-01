@@ -38,6 +38,7 @@ import com.the.harbor.base.enumeration.hygo.PayMode;
 import com.the.harbor.base.enumeration.hygo.Status;
 import com.the.harbor.base.enumeration.hygoorder.OrderStatus;
 import com.the.harbor.base.enumeration.hynotify.AccepterType;
+import com.the.harbor.base.enumeration.hynotify.NotifyType;
 import com.the.harbor.base.enumeration.hynotify.SenderType;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.exception.BusinessException;
@@ -305,6 +306,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				UserViewInfo orderUser = userManagerSV.getUserViewInfoByUserId(goOrder.getUserId());
 				DoNotify body = new DoNotify();
 				body.setHandleType(DoNotify.HandleType.PUBLISH.name());
+				body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
 				body.setSenderType(SenderType.USER.getValue());
 				body.setSenderId(goOrder.getUserId());
 				body.setAccepterType(AccepterType.USER.getValue());
