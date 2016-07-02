@@ -18,9 +18,11 @@ import com.aliyun.mns.common.ClientException;
 import com.aliyun.mns.common.ServiceException;
 import com.aliyun.mns.model.Message;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
+import com.the.harbor.api.go.param.DoGoComment;
 import com.the.harbor.api.go.param.DoGoFavorite;
 import com.the.harbor.api.go.param.DoGoView;
 import com.the.harbor.api.go.param.Go;
+import com.the.harbor.api.go.param.GoComment;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoDetail;
 import com.the.harbor.api.go.param.GoOrderConfirmReq;
@@ -45,11 +47,13 @@ import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.redisdata.def.DoNotify;
+import com.the.harbor.commons.redisdata.util.HyGoUtil;
 import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HyGo;
+import com.the.harbor.dao.mapper.bo.HyGoComments;
 import com.the.harbor.dao.mapper.bo.HyGoDetail;
 import com.the.harbor.dao.mapper.bo.HyGoFavorite;
 import com.the.harbor.dao.mapper.bo.HyGoFavoriteCriteria;
@@ -57,6 +61,7 @@ import com.the.harbor.dao.mapper.bo.HyGoOrder;
 import com.the.harbor.dao.mapper.bo.HyGoOrderCriteria;
 import com.the.harbor.dao.mapper.bo.HyGoTags;
 import com.the.harbor.dao.mapper.bo.HyGoView;
+import com.the.harbor.dao.mapper.interfaces.HyGoCommentsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoDetailMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoFavoriteMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoMapper;
@@ -97,6 +102,9 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 	@Autowired
 	private transient IUserManagerSV userManagerSV;
+
+	@Autowired
+	private transient HyGoCommentsMapper hyGoCommentsMapper;
 
 	@Override
 	public String createGo(GoCreateReq goCreateReq) {
@@ -403,7 +411,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			throw new BusinessException("您不是活动发起方，无法结束服务");
 		}
 		if (StringUtil.isBlank(hyGoOrder.getConfirmLocation())) {
-			throw new BusinessException("小白可能没有确认约见地点，暂时不能结束服务");
+			throw new BusinessException("小白可能没有确认约见，暂时不能结束服务");
 		}
 		HyGoOrder o = new HyGoOrder();
 		o.setOrderId(hyGoOrder.getOrderId());
@@ -465,6 +473,35 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			LOG.error("Unknown exception happened!", e);
 		}
 		client.close();
+	}
+
+	@Override
+	public void processDoGoComment(DoGoComment doGoComment) {
+		if (DoGoComment.HandleType.PUBLISH.name().equals(doGoComment.getHandleType())) {
+			// 如果是点赞，则记录
+			HyGoComments record = new HyGoComments();
+			BeanUtils.copyProperties(doGoComment, record);
+			record.setCreateDate(doGoComment.getSysdate() == null ? DateUtil.getSysDate() : doGoComment.getSysdate());
+			hyGoCommentsMapper.insert(record);
+
+			// 写入REDIS关系
+			GoComment b = new GoComment();
+			BeanUtils.copyProperties(record, b);
+			HyGoUtil.recordGoCommentId(record.getGoId(), record.getCommentId());
+			HyGoUtil.recordGoComment(record.getCommentId(), JSON.toJSONString(b));
+		} else if (DoGoComment.HandleType.CANCEL.name().equals(doGoComment.getHandleType())) {
+			// 如果是取消赞，则删除
+			if (!StringUtil.isBlank(doGoComment.getCommentId())) {
+				HyGoComments record = hyGoCommentsMapper.selectByPrimaryKey(doGoComment.getCommentId());
+				if (record != null) {
+					hyGoCommentsMapper.deleteByPrimaryKey(doGoComment.getCommentId());
+					// 从REDIS中删除
+					HyGoUtil.deleteGoCommentId(record.getGoId(), record.getCommentId());
+					HyGoUtil.deleteGoComment(record.getCommentId());
+				}
+			}
+		}
+
 	}
 
 }

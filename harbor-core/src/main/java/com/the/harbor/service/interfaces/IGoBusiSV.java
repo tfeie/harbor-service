@@ -1,6 +1,7 @@
 package com.the.harbor.service.interfaces;
 
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
+import com.the.harbor.api.go.param.DoGoComment;
 import com.the.harbor.api.go.param.DoGoFavorite;
 import com.the.harbor.api.go.param.DoGoView;
 import com.the.harbor.api.go.param.GoCreateReq;
@@ -40,5 +41,7 @@ public interface IGoBusiSV {
 	void processDoGoFavoriteMQ(DoGoFavorite doGoFavorite);
 
 	void processDoGoView(DoGoView doGoView);
+
+	void processDoGoComment(DoGoComment doGoComment);
 
 }

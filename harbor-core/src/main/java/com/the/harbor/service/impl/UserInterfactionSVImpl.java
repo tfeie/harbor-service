@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSONObject;
 import com.the.harbor.api.be.param.DoBeComment;
 import com.the.harbor.api.be.param.DoBeLikes;
+import com.the.harbor.api.go.param.DoGoComment;
 import com.the.harbor.api.go.param.DoGoFavorite;
 import com.the.harbor.api.go.param.DoGoView;
 import com.the.harbor.api.user.param.DoUserFans;
@@ -58,7 +59,9 @@ public class UserInterfactionSVImpl implements IUserInterfactionSV {
 			DoBeComment doBeComment = JSONObject.parseObject(mnsBody, DoBeComment.class);
 			beBusiSV.processDoBeComment(doBeComment);
 		} else if (MQType.MQ_HY_GO_COMMENT.getValue().equals(mqType)) {
-			// BE评论
+			// GO评论
+			DoGoComment doGoComment = JSONObject.parseObject(mnsBody, DoGoComment.class);
+			goBusiSV.processDoGoComment(doGoComment);
 		} else if (MQType.MQ_HY_USER_FANS.getValue().equals(mqType)) {
 			// 粉丝互动
 			DoUserFans doUserFans = JSONObject.parseObject(mnsBody, DoUserFans.class);

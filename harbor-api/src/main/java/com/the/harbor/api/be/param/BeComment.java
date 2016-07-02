@@ -41,6 +41,9 @@ public class BeComment implements Serializable {
 	private String pwxHeadimg;
 
 	private String penName;
+	
+	//是否是回复的评论
+	private boolean isreply;
 
 	public String getCommentId() {
 		return commentId;
@@ -169,5 +172,15 @@ public class BeComment implements Serializable {
 	public void setPenName(String penName) {
 		this.penName = penName;
 	}
+
+	public boolean isIsreply() {
+		return isreply;
+	}
+
+	public void setIsreply(boolean isreply) {
+		this.isreply = isreply;
+	}
+	
+	
 
 }

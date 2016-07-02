@@ -44,6 +44,9 @@ public class GoComment implements Serializable {
 
 	private String penName;
 
+	// 是否是回复的评论
+	private boolean isreply;
+
 	public String getCommentId() {
 		return commentId;
 	}
@@ -178,6 +181,14 @@ public class GoComment implements Serializable {
 
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
+	}
+
+	public boolean isIsreply() {
+		return isreply;
+	}
+
+	public void setIsreply(boolean isreply) {
+		this.isreply = isreply;
 	}
 
 }
