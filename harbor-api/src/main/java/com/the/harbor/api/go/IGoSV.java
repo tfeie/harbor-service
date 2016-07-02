@@ -190,7 +190,7 @@ public interface IGoSV {
 			throws BusinessException, SystemException;
 
 	/**
-	 * 小白确认活动结束
+	 * 海牛确认活动结束
 	 * 
 	 * @param goOrderMeetLocaltionConfirmReq
 	 * @return

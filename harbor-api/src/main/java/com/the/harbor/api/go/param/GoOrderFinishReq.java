@@ -19,7 +19,7 @@ public class GoOrderFinishReq implements Serializable {
 	@NotNull(message = "活动预约流水为空", groups = { IGoSV.FinishGoOrder.class })
 	private String goOrderId;
 
-	@NotNull(message = "活动预约者为空", groups = { IGoSV.FinishGoOrder.class })
+	@NotNull(message = "活动发起者为空", groups = { IGoSV.FinishGoOrder.class })
 	private String userId;
 
 	public String getGoOrderId() {

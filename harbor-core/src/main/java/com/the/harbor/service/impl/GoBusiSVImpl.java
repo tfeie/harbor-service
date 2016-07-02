@@ -393,10 +393,17 @@ public class GoBusiSVImpl implements IGoBusiSV {
 	public void finishGoOrder(GoOrderFinishReq goOrderFinishReq) {
 		HyGoOrder hyGoOrder = this.getHyGoOrder(goOrderFinishReq.getGoOrderId());
 		if (hyGoOrder == null) {
-			throw new BusinessException("GO_0001", "活动预约信息不存在");
+			throw new BusinessException("活动预约信息不存在");
 		}
-		if (!hyGoOrder.getUserId().equals(goOrderFinishReq.getUserId())) {
-			throw new BusinessException("操作无效:您不是活动预约者");
+		HyGo hyGo = this.getHyGo(hyGoOrder.getGoId());
+		if (hyGo == null) {
+			throw new BusinessException("活动信息不存在");
+		}
+		if (!hyGo.getUserId().equals(goOrderFinishReq.getUserId())) {
+			throw new BusinessException("您不是活动发起方，无法结束服务");
+		}
+		if (StringUtil.isBlank(hyGoOrder.getConfirmLocation())) {
+			throw new BusinessException("小白可能没有确认约见地点，暂时不能结束服务");
 		}
 		HyGoOrder o = new HyGoOrder();
 		o.setOrderId(hyGoOrder.getOrderId());
