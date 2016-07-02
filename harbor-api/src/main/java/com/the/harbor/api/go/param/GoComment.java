@@ -13,7 +13,7 @@ public class GoComment implements Serializable {
 
 	private String orderId;
 
-	private String userId;
+	private String publishUserId;
 
 	private String content;
 
@@ -53,14 +53,6 @@ public class GoComment implements Serializable {
 
 	public void setCommentId(String commentId) {
 		this.commentId = commentId == null ? null : commentId.trim();
-	}
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId == null ? null : userId.trim();
 	}
 
 	public String getContent() {
@@ -189,6 +181,14 @@ public class GoComment implements Serializable {
 
 	public void setIsreply(boolean isreply) {
 		this.isreply = isreply;
+	}
+
+	public String getPublishUserId() {
+		return publishUserId;
+	}
+
+	public void setPublishUserId(String publishUserId) {
+		this.publishUserId = publishUserId;
 	}
 
 }
