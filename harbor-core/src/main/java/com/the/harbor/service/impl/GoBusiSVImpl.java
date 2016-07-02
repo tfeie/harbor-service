@@ -504,4 +504,17 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 	}
 
+	@Override
+	public int getOrderCount(String goId, String goType) {
+		int orderCount = 0;
+		if (GoType.ONE_ON_ONE.getValue().equals(goType)) {
+			HyGoOrderCriteria sql = new HyGoOrderCriteria();
+			sql.or().andGoIdEqualTo(goId).andOrderStatusEqualTo(OrderStatus.FINISH.getValue());
+			orderCount = hyGoOrderMapper.countByExample(sql);
+		} else if (GoType.GROUP.getValue().equals(goType)) {
+
+		}
+		return orderCount;
+	}
+
 }

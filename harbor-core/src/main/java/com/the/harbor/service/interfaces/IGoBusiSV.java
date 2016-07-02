@@ -44,4 +44,6 @@ public interface IGoBusiSV {
 
 	void processDoGoComment(DoGoComment doGoComment);
 
+	int getOrderCount(String goId, String goType);
+
 }

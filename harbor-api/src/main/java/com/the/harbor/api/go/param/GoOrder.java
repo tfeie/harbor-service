@@ -57,6 +57,12 @@ public class GoOrder implements Serializable {
 	// 活动发起者
 	private String publishUserId;
 
+	// 组织形式
+	private String orgModeName;
+
+	// 多少人见过
+	private int orderCount;
+
 	public String getOrderId() {
 		return orderId;
 	}
@@ -239,6 +245,22 @@ public class GoOrder implements Serializable {
 
 	public void setPublishUserId(String publishUserId) {
 		this.publishUserId = publishUserId;
+	}
+
+	public String getOrgModeName() {
+		return orgModeName;
+	}
+
+	public void setOrgModeName(String orgModeName) {
+		this.orgModeName = orgModeName;
+	}
+
+	public int getOrderCount() {
+		return orderCount;
+	}
+
+	public void setOrderCount(int orderCount) {
+		this.orderCount = orderCount;
 	}
 
 }
