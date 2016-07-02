@@ -105,7 +105,6 @@ public class NotifySVImpl implements INotifySV {
 	private HyNotifyVo convert(HyNotify record) {
 		HyNotifyVo notify = new HyNotifyVo();
 		BeanUtils.copyProperties(record, notify);
-		notify.setTimeInterval(DateUtil.getInterval(record.getCreateDate()));
 		return notify;
 	}
 
