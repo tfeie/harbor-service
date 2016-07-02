@@ -487,7 +487,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			// 写入REDIS关系
 			GoComment b = new GoComment();
 			BeanUtils.copyProperties(record, b);
-			HyGoUtil.recordGoCommentId(record.getGoId(), record.getCommentId());
+			HyGoUtil.recordGoOrderCommentId(record.getGoId(), record.getOrderId(), record.getCommentId());
 			HyGoUtil.recordGoComment(record.getCommentId(), JSON.toJSONString(b));
 		} else if (DoGoComment.HandleType.CANCEL.name().equals(doGoComment.getHandleType())) {
 			// 如果是取消赞，则删除
@@ -496,7 +496,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				if (record != null) {
 					hyGoCommentsMapper.deleteByPrimaryKey(doGoComment.getCommentId());
 					// 从REDIS中删除
-					HyGoUtil.deleteGoCommentId(record.getGoId(), record.getCommentId());
+					HyGoUtil.deleteGoOrderCommentId(record.getGoId(), record.getOrderId(), record.getCommentId());
 					HyGoUtil.deleteGoComment(record.getCommentId());
 				}
 			}
