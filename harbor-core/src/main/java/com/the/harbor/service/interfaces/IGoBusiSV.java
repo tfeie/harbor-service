@@ -10,6 +10,9 @@ import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.GoOrderFinishReq;
 import com.the.harbor.api.go.param.GoOrderMeetLocaltionConfirmReq;
 import com.the.harbor.api.go.param.GoOrderMeetLocaltionReq;
+import com.the.harbor.api.go.param.GroupApplyReq;
+import com.the.harbor.api.go.param.GroupApplyResp;
+import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.dao.mapper.bo.HyGo;
 import com.the.harbor.dao.mapper.bo.HyGoOrder;
@@ -45,5 +48,9 @@ public interface IGoBusiSV {
 	void processDoGoComment(DoGoComment doGoComment);
 
 	int getOrderCount(String goId, String goType);
+
+	GroupApplyResp applyGroup(GroupApplyReq groupApplyReq);
+
+	void updateGoJoinPay(UpdateGoJoinPayReq updateGoJoinPayReq);
 
 }

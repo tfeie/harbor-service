@@ -30,6 +30,9 @@ import com.the.harbor.api.go.param.GoOrderFinishReq;
 import com.the.harbor.api.go.param.GoOrderMeetLocaltionConfirmReq;
 import com.the.harbor.api.go.param.GoOrderMeetLocaltionReq;
 import com.the.harbor.api.go.param.GoTag;
+import com.the.harbor.api.go.param.GroupApplyReq;
+import com.the.harbor.api.go.param.GroupApplyResp;
+import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.api.pay.param.CreatePaymentOrderReq;
 import com.the.harbor.api.user.param.UserViewInfo;
@@ -41,6 +44,9 @@ import com.the.harbor.base.enumeration.hygoorder.OrderStatus;
 import com.the.harbor.base.enumeration.hynotify.AccepterType;
 import com.the.harbor.base.enumeration.hynotify.NotifyType;
 import com.the.harbor.base.enumeration.hynotify.SenderType;
+import com.the.harbor.base.enumeration.hypaymentorder.BusiType;
+import com.the.harbor.base.enumeration.hypaymentorder.PayStatus;
+import com.the.harbor.base.enumeration.hypaymentorder.PayType;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
@@ -51,18 +57,23 @@ import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
+import com.the.harbor.commons.util.UUIDUtil;
 import com.the.harbor.dao.mapper.bo.HyGo;
 import com.the.harbor.dao.mapper.bo.HyGoComments;
 import com.the.harbor.dao.mapper.bo.HyGoDetail;
 import com.the.harbor.dao.mapper.bo.HyGoFavorite;
 import com.the.harbor.dao.mapper.bo.HyGoFavoriteCriteria;
+import com.the.harbor.dao.mapper.bo.HyGoJoin;
+import com.the.harbor.dao.mapper.bo.HyGoJoinCriteria;
 import com.the.harbor.dao.mapper.bo.HyGoOrder;
 import com.the.harbor.dao.mapper.bo.HyGoOrderCriteria;
 import com.the.harbor.dao.mapper.bo.HyGoTags;
 import com.the.harbor.dao.mapper.bo.HyGoView;
+import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
 import com.the.harbor.dao.mapper.interfaces.HyGoCommentsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoDetailMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoFavoriteMapper;
+import com.the.harbor.dao.mapper.interfaces.HyGoJoinMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoOrderMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoTagsMapper;
@@ -105,6 +116,9 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 	@Autowired
 	private transient HyGoCommentsMapper hyGoCommentsMapper;
+
+	@Autowired
+	private transient HyGoJoinMapper hyGoJoinMapper;
 
 	@Override
 	public String createGo(GoCreateReq goCreateReq) {
@@ -571,6 +585,157 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 		}
 		return orderCount;
+	}
+
+	@Override
+	public GroupApplyResp applyGroup(GroupApplyReq groupApplyReq) {
+		String userId = groupApplyReq.getUserId();
+		String goId = groupApplyReq.getGoId();
+		/* 判断用户是否已经报名成功此活动 */
+		boolean joint = HyGoUtil.checkUserHadJointGroup(goId, userId);
+		if (joint) {
+			throw new BusinessException("您已经报名参加此活动了，不能重复报名哦~");
+		}
+		HyGo hyGo = this.getHyGo(goId);
+		if (hyGo == null) {
+			throw new BusinessException("活动信息不存在");
+		}
+		if (!GoType.GROUP.getValue().equals(hyGo.getGoType())) {
+			throw new BusinessException("您申请的活动不是Group活动");
+		}
+		// 判断是否需要支付
+		boolean needPay = false;
+		String payAmount = "0.00";
+		String payOrderId = null;
+		String orderId = null;
+		if (!PayMode.MY_TREAT.getValue().equals(hyGo.getPayMode())) {
+			needPay = true;
+			payAmount = AmountUtils.changeF2Y(hyGo.getFixedPrice());
+		}
+		/* 判断用户是否已经申请了此活动 */
+		boolean applied = HyGoUtil.checkUserHadAppliedGroup(goId, userId);
+		if (applied) {
+			// 如果已经申请过了，获取申请信息
+			HyGoJoin hyGoJoin = this.getApplyHyGoJoin(goId, userId);
+			if (hyGoJoin == null) {
+				throw new BusinessException("申请参加活动状态异常");
+			}
+			orderId = hyGoJoin.getOrderId();
+			if (needPay) {
+				// 如果需要支付,判断是否需要申请新的支付订单信息
+				boolean newPayOrderFlag = false;
+				payOrderId = hyGoJoin.getPayOrderId();
+				if (!StringUtil.isBlank(payOrderId)) {
+					// 如果存在支付订单，判断支付订单的状态是否是待支付的
+					HyPaymentOrder paymentOrder = paymentBusiSV.getHyPaymentOrder(payOrderId);
+					if (paymentOrder == null) {
+						newPayOrderFlag = true;
+					} else {
+						if (!PayStatus.NO_PAY.getValue().equals(paymentOrder.getPayStatus())) {
+							newPayOrderFlag = true;
+						}
+					}
+				} else {
+					newPayOrderFlag = true;
+				}
+				if (newPayOrderFlag) {
+					// 产生一个新的支付流水
+					CreatePaymentOrderReq createPaymentOrderReq = new CreatePaymentOrderReq();
+					createPaymentOrderReq.setBusiType(BusiType.PAY_FOR_GO.getValue());
+					createPaymentOrderReq.setPayAmount(hyGo.getFixedPrice());
+					createPaymentOrderReq.setPayType(PayType.WEIXIN.getValue());
+					createPaymentOrderReq.setSummary("GROUP活动[" + hyGo.getGoId() + "]报名缴费");
+					createPaymentOrderReq.setUserId(hyGo.getUserId());
+					payOrderId = paymentBusiSV.createPaymentOrder(createPaymentOrderReq);
+
+					// 更新到预约订单记录中
+					HyGoJoin record = new HyGoJoin();
+					record.setPayOrderId(payOrderId);
+					record.setOrderId(hyGoJoin.getOrderId());
+					hyGoJoinMapper.updateByPrimaryKeySelective(record);
+				}
+			}
+		} else {
+			// 如果没有申请过，则提交一个新的申请
+			// 产生一个新的支付流水
+			CreatePaymentOrderReq createPaymentOrderReq = new CreatePaymentOrderReq();
+			createPaymentOrderReq.setBusiType(BusiType.PAY_FOR_GO.getValue());
+			createPaymentOrderReq.setPayAmount(hyGo.getFixedPrice());
+			createPaymentOrderReq.setPayType(PayType.WEIXIN.getValue());
+			createPaymentOrderReq.setSummary("GROUP活动[" + hyGo.getGoId() + "]报名缴费");
+			createPaymentOrderReq.setUserId(hyGo.getUserId());
+			payOrderId = paymentBusiSV.createPaymentOrder(createPaymentOrderReq);
+			// 产生一个申请
+			orderId = UUIDUtil.genId32();
+			Timestamp sysdate = DateUtil.getSysDate();
+			HyGoJoin record = new HyGoJoin();
+			record.setGoId(goId);
+			record.setCreateDate(sysdate);
+			record.setGoType(hyGo.getGoType());
+			record.setOrderId(orderId);
+			record.setOrderStatus(com.the.harbor.base.enumeration.hygojoin.OrderStatus.APPLIED.getValue());
+			record.setPayOrderId(payOrderId);
+			record.setStsDate(sysdate);
+			record.setUserId(userId);
+		}
+		GroupApplyResp resp = new GroupApplyResp();
+		resp.setNeedPay(needPay);
+		resp.setOrderId(orderId);
+		resp.setPayAmount(payAmount);
+		resp.setPayOrderId(payOrderId);
+		return resp;
+	}
+
+	private HyGoJoin getApplyHyGoJoin(String goId, String userId) {
+		HyGoJoinCriteria sql = new HyGoJoinCriteria();
+		sql.or().andGoIdEqualTo(goId).andUserIdEqualTo(userId)
+				.andOrderStatusEqualTo(com.the.harbor.base.enumeration.hygojoin.OrderStatus.APPLIED.getValue());
+		List<HyGoJoin> list = hyGoJoinMapper.selectByExample(sql);
+		return CollectionUtil.isEmpty(list) ? null : list.get(0);
+	}
+
+	@Override
+	public void updateGoJoinPay(UpdateGoJoinPayReq updateGoJoinPayReq) {
+		HyGoJoin goJoin = hyGoJoinMapper.selectByPrimaryKey(updateGoJoinPayReq.getGoOrderId());
+		if (goJoin == null) {
+			throw new BusinessException("更新活动支付状态失败:活动参加记录不存在");
+		}
+		if (!updateGoJoinPayReq.getPayOrderId().equals(goJoin.getPayOrderId())) {
+			throw new BusinessException("更新活动支付状态失败:支付流水不正确");
+		}
+		HyGo hyGo = this.getHyGo(goJoin.getGoId());
+		if (hyGo == null) {
+			throw new BusinessException("更新活动支付状态失败:活动不存在");
+		}
+		if (com.the.harbor.base.enumeration.hygojoin.OrderStatus.APPLIED.getValue().equals(goJoin.getOrderStatus())) {
+			// 如果状态是报名完成，则如果支付成功，则将状态修改等待审核。如果没有支付成功，则状态还是初始化
+			if ("SUCCESS".equals(updateGoJoinPayReq.getPayStatus())) {
+				// 如果是完成状态，则写入信息
+				Timestamp sysdate = DateUtil.getSysDate();
+				HyGoJoin o = new HyGoJoin();
+				o.setOrderId(goJoin.getOrderId());
+				o.setOrderStatus(com.the.harbor.base.enumeration.hygojoin.OrderStatus.WAIT_CONFIRM.getValue());
+				o.setStsDate(sysdate);
+				hyGoJoinMapper.updateByPrimaryKeySelective(o);
+
+				// 支付成功后记录用户报名申请此活动，交给活动发起者进行审核
+				HyGoUtil.userApplyJoinGroup(hyGo.getGoId(), goJoin.getUserId());
+
+				// 给活动发起者通知审核
+				UserViewInfo orderUser = userManagerSV.getUserViewInfoByUserId(goJoin.getUserId());
+				DoNotify body = new DoNotify();
+				body.setHandleType(DoNotify.HandleType.PUBLISH.name());
+				body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+				body.setSenderType(SenderType.USER.getValue());
+				body.setSenderId(goJoin.getUserId());
+				body.setAccepterType(AccepterType.USER.getValue());
+				body.setAccepterId(hyGo.getUserId());
+				body.setTitle("有新用户报名参加活动");
+				body.setContent("[" + orderUser.getEnName() + "]报名参加并支付了您发起的group活动[" + hyGo.getTopic() + "],请您确认~");
+				body.setLink("../go/confirmlist.html?goId=" + hyGo.getGoId());
+				NotifyMQSend.sendNotifyMQ(body);
+			}
+		}
 	}
 
 }

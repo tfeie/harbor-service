@@ -16,10 +16,13 @@ import com.the.harbor.api.go.param.GoOrderQueryReq;
 import com.the.harbor.api.go.param.GoOrderQueryResp;
 import com.the.harbor.api.go.param.GoQueryReq;
 import com.the.harbor.api.go.param.GoQueryResp;
+import com.the.harbor.api.go.param.GroupApplyReq;
+import com.the.harbor.api.go.param.GroupApplyResp;
 import com.the.harbor.api.go.param.QueryGoReq;
 import com.the.harbor.api.go.param.QueryGoResp;
 import com.the.harbor.api.go.param.QueryMyGoReq;
 import com.the.harbor.api.go.param.QueryMyGoResp;
+import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
@@ -51,6 +54,10 @@ public interface IGoSV {
 
 	}
 
+	@interface UpdateGoJoinPay {
+
+	}
+
 	@interface QueryUserOrderGo {
 
 	}
@@ -76,6 +83,10 @@ public interface IGoSV {
 	}
 
 	@interface QueryGoes {
+
+	}
+
+	@interface ApplyGroup {
 
 	}
 
@@ -213,11 +224,33 @@ public interface IGoSV {
 
 	/**
 	 * 查询活动信息
+	 * 
 	 * @param queryGoReq
 	 * @return
 	 * @throws BusinessException
 	 * @throws SystemException
 	 */
 	QueryGoResp queryGoes(@NotNull(message = "参数为空") QueryGoReq queryGoReq) throws BusinessException, SystemException;
+
+	/**
+	 * 申请参加GROUP活动
+	 * 
+	 * @param groupApplyReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	GroupApplyResp applyGroup(@NotNull(message = "参数为空") GroupApplyReq groupApplyReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * group活动参加支付结果写入
+	 * @param updateGoJoinPayReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	Response updateGoJoinPay(@NotNull(message = "参数为空") UpdateGoJoinPayReq updateGoJoinPayReq)
+			throws BusinessException, SystemException;
 
 }

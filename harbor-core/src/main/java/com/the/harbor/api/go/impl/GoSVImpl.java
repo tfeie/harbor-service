@@ -35,10 +35,13 @@ import com.the.harbor.api.go.param.GoOrderQueryResp;
 import com.the.harbor.api.go.param.GoQueryReq;
 import com.the.harbor.api.go.param.GoQueryResp;
 import com.the.harbor.api.go.param.GoTag;
+import com.the.harbor.api.go.param.GroupApplyReq;
+import com.the.harbor.api.go.param.GroupApplyResp;
 import com.the.harbor.api.go.param.QueryGoReq;
 import com.the.harbor.api.go.param.QueryGoResp;
 import com.the.harbor.api.go.param.QueryMyGoReq;
 import com.the.harbor.api.go.param.QueryMyGoResp;
+import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.base.constants.ExceptCodeConstants;
@@ -48,9 +51,6 @@ import com.the.harbor.base.enumeration.hygo.GoDetailType;
 import com.the.harbor.base.enumeration.hygo.GoType;
 import com.the.harbor.base.enumeration.hygo.OrgMode;
 import com.the.harbor.base.enumeration.hygo.PayMode;
-import com.the.harbor.base.enumeration.hynotify.AccepterType;
-import com.the.harbor.base.enumeration.hynotify.NotifyType;
-import com.the.harbor.base.enumeration.hynotify.SenderType;
 import com.the.harbor.base.enumeration.hytags.TagCat;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.exception.BusinessException;
@@ -63,7 +63,6 @@ import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
-import com.the.harbor.commons.redisdata.def.DoNotify;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
 import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
@@ -73,7 +72,6 @@ import com.the.harbor.dao.mapper.bo.HyGo;
 import com.the.harbor.dao.mapper.bo.HyGoOrder;
 import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
-import com.the.harbor.util.NotifyMQSend;
 
 @Service(validation = "true")
 public class GoSVImpl implements IGoSV {
@@ -441,6 +439,24 @@ public class GoSVImpl implements IGoSV {
 		Go go = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Go.class);
 		this.fillGoInfo(go);
 		return go;
+	}
+
+	@Override
+	public GroupApplyResp applyGroup(GroupApplyReq groupApplyReq) throws BusinessException, SystemException {
+		GroupApplyResp resp = goBusiSV.applyGroup(groupApplyReq);
+		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("处理成功");
+		resp.setResponseHeader(responseHeader);
+		return resp;
+	}
+
+	@Override
+	public Response updateGoJoinPay(UpdateGoJoinPayReq updateGoJoinPayReq) throws BusinessException, SystemException {
+		if (!"SUCCESS".equals(updateGoJoinPayReq.getPayStatus())
+				&& !"FAIL".equals(updateGoJoinPayReq.getPayStatus())) {
+			throw new BusinessException("GO_0001", "支付结果状态不合格");
+		}
+		goBusiSV.updateGoJoinPay(updateGoJoinPayReq);
+		return ResponseBuilder.buildSuccessResponse("修改成功");
 	}
 
 }
