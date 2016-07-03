@@ -19,6 +19,7 @@ import com.aliyun.mns.model.Message;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.DoGoComment;
 import com.the.harbor.api.go.param.DoGoFavorite;
+import com.the.harbor.api.go.param.DoGoJoinConfirm;
 import com.the.harbor.api.go.param.DoGoView;
 import com.the.harbor.api.go.param.Go;
 import com.the.harbor.api.go.param.GoComment;
@@ -694,6 +695,14 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		return CollectionUtil.isEmpty(list) ? null : list.get(0);
 	}
 
+	private HyGoJoin getWaitConfirmHyGoJoin(String goId, String userId) {
+		HyGoJoinCriteria sql = new HyGoJoinCriteria();
+		sql.or().andGoIdEqualTo(goId).andUserIdEqualTo(userId)
+				.andOrderStatusEqualTo(com.the.harbor.base.enumeration.hygojoin.OrderStatus.WAIT_CONFIRM.getValue());
+		List<HyGoJoin> list = hyGoJoinMapper.selectByExample(sql);
+		return CollectionUtil.isEmpty(list) ? null : list.get(0);
+	}
+
 	@Override
 	public void updateGoJoinPay(UpdateGoJoinPayReq updateGoJoinPayReq) {
 		HyGoJoin goJoin = hyGoJoinMapper.selectByPrimaryKey(updateGoJoinPayReq.getGoOrderId());
@@ -736,6 +745,36 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				NotifyMQSend.sendNotifyMQ(body);
 			}
 		}
+	}
+
+	@Override
+	public void processDoGoJoinConfirm(DoGoJoinConfirm doGoJoinConfirm) {
+		HyGoJoin goJoin = this.getWaitConfirmHyGoJoin(doGoJoinConfirm.getGoId(), doGoJoinConfirm.getUserId());
+		Timestamp sysdate = DateUtil.getSysDate();
+		if (DoGoJoinConfirm.HandleType.AGREE.name().equals(doGoJoinConfirm.getHandleType())) {
+			// 如果同意，则修改状态为同意
+			if (goJoin != null) {
+				HyGoJoin o = new HyGoJoin();
+				o.setOrderId(goJoin.getOrderId());
+				o.setOrderStatus(com.the.harbor.base.enumeration.hygojoin.OrderStatus.AGREE.getValue());
+				o.setStsDate(sysdate);
+				hyGoJoinMapper.updateByPrimaryKeySelective(o);
+			}
+			// 更新REDIS状态集合
+			HyGoUtil.agreeUserJoinGroupApply(goJoin.getGoId(), goJoin.getUserId());
+		} else if (DoGoJoinConfirm.HandleType.REJECT.name().equals(doGoJoinConfirm.getHandleType())) {
+			// 如果拒绝，则修改状态为拒绝
+			if (goJoin != null) {
+				HyGoJoin o = new HyGoJoin();
+				o.setOrderId(goJoin.getOrderId());
+				o.setOrderStatus(com.the.harbor.base.enumeration.hygojoin.OrderStatus.REJECT.getValue());
+				o.setStsDate(sysdate);
+				hyGoJoinMapper.updateByPrimaryKeySelective(o);
+			}
+			// 更新REDIS状态集合
+			HyGoUtil.rejectUserJoinGroupApply(goJoin.getGoId(), goJoin.getUserId());
+		}
+
 	}
 
 }

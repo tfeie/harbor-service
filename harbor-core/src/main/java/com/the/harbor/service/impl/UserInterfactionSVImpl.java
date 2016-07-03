@@ -11,6 +11,7 @@ import com.the.harbor.api.be.param.DoBeComment;
 import com.the.harbor.api.be.param.DoBeLikes;
 import com.the.harbor.api.go.param.DoGoComment;
 import com.the.harbor.api.go.param.DoGoFavorite;
+import com.the.harbor.api.go.param.DoGoJoinConfirm;
 import com.the.harbor.api.go.param.DoGoView;
 import com.the.harbor.api.user.param.DoUserFans;
 import com.the.harbor.api.user.param.DoUserFriend;
@@ -70,6 +71,10 @@ public class UserInterfactionSVImpl implements IUserInterfactionSV {
 			// 加好友
 			DoUserFriend doUserFriend = JSONObject.parseObject(mnsBody, DoUserFriend.class);
 			userManagerSV.processDoUserFriend(doUserFriend);
+		} else if (MQType.MQ_HY_GO_JOIN_CONFIRM.getValue().equals(mqType)) {
+			// GROUP活动报名审核信息
+			DoGoJoinConfirm doGoJoinConfirm = JSONObject.parseObject(mnsBody, DoGoJoinConfirm.class);
+			goBusiSV.processDoGoJoinConfirm(doGoJoinConfirm);
 		}
 
 	}
