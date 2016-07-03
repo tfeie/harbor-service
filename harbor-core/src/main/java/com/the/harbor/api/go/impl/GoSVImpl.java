@@ -48,6 +48,9 @@ import com.the.harbor.base.enumeration.hygo.GoDetailType;
 import com.the.harbor.base.enumeration.hygo.GoType;
 import com.the.harbor.base.enumeration.hygo.OrgMode;
 import com.the.harbor.base.enumeration.hygo.PayMode;
+import com.the.harbor.base.enumeration.hynotify.AccepterType;
+import com.the.harbor.base.enumeration.hynotify.NotifyType;
+import com.the.harbor.base.enumeration.hynotify.SenderType;
 import com.the.harbor.base.enumeration.hytags.TagCat;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.exception.BusinessException;
@@ -60,6 +63,7 @@ import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
+import com.the.harbor.commons.redisdata.def.DoNotify;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
 import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
@@ -69,6 +73,7 @@ import com.the.harbor.dao.mapper.bo.HyGo;
 import com.the.harbor.dao.mapper.bo.HyGoOrder;
 import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
+import com.the.harbor.util.NotifyMQSend;
 
 @Service(validation = "true")
 public class GoSVImpl implements IGoSV {

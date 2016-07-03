@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.aliyun.mns.client.CloudQueue;
 import com.aliyun.mns.client.MNSClient;
 import com.aliyun.mns.common.ClientException;
@@ -72,6 +71,7 @@ import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IPaymentBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.HarborSeqUtil;
+import com.the.harbor.util.NotifyMQSend;
 
 @Component
 @Transactional
@@ -322,7 +322,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				body.setTitle("活动预约确认");
 				body.setContent("[" + orderUser.getEnName() + "]预约并支付了您发布的一对一活动[" + hyGo.getTopic() + "],请您确认~");
 				body.setLink("../go/toHainiuConfirm.html?goOrderId=" + goOrder.getOrderId());
-				this.sendNotifyMQ(body);
+				NotifyMQSend.sendNotifyMQ(body);
 			}
 		}
 	}
@@ -340,17 +340,36 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		if (!hyGo.getUserId().equals(goOrderConfirmReq.getPublishUserId())) {
 			throw new BusinessException("操作无效:您不是活动发起方");
 		}
+		UserViewInfo publishUser = userManagerSV.getUserViewInfoByUserId(hyGo.getUserId());
+		String title = "";
+		String content = "";
 		HyGoOrder o = new HyGoOrder();
 		o.setOrderId(hyGoOrder.getOrderId());
 		if ("confirm".equals(goOrderConfirmReq.getAckFlag())) {
+			title = "海牛同意了您的预约";
+			content = "[" + publishUser.getEnName() + "]同意了您的预约的活动[" + hyGo.getTopic() + "]";
 			o.setOrderStatus(OrderStatus.WAIT_MEET.getValue());
 		} else if ("reject".equals(goOrderConfirmReq.getAckFlag())) {
 			o.setOrderStatus(OrderStatus.REJECT.getValue());
+			title = "海牛拒绝了您的预约";
+			content = "[" + publishUser.getEnName() + "]拒绝了您的预约的活动[" + hyGo.getTopic() + "]";
 		}
 		Timestamp sysdate = DateUtil.getSysDate();
 		o.setStsDate(sysdate);
 		o.setConfirmDate(sysdate);
 		hyGoOrderMapper.updateByPrimaryKeySelective(o);
+
+		/* 海牛确认或拒绝消息发送 */
+		DoNotify body = new DoNotify();
+		body.setHandleType(DoNotify.HandleType.PUBLISH.name());
+		body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+		body.setSenderType(SenderType.USER.getValue());
+		body.setSenderId(hyGo.getUserId());
+		body.setAccepterType(AccepterType.USER.getValue());
+		body.setAccepterId(hyGoOrder.getUserId());
+		body.setTitle(title);
+		body.setContent(content);
+		NotifyMQSend.sendNotifyMQ(body);
 
 	}
 
@@ -377,6 +396,20 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		o.setConfirmStsDate(sysdate);
 		hyGoOrderMapper.updateByPrimaryKeySelective(o);
 
+		// 将海牛设置的时间与地点信息告知小白
+		UserViewInfo publishUser = userManagerSV.getUserViewInfoByUserId(hyGo.getUserId());
+		DoNotify body = new DoNotify();
+		body.setHandleType(DoNotify.HandleType.PUBLISH.name());
+		body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+		body.setSenderType(SenderType.USER.getValue());
+		body.setSenderId(hyGo.getUserId());
+		body.setAccepterType(AccepterType.USER.getValue());
+		body.setAccepterId(hyGoOrder.getUserId());
+		body.setTitle("海牛提交了与您见面的时间地点");
+		body.setContent("[" + publishUser.getEnName() + "]提交了您预约的活动[" + hyGo.getTopic() + "]见面的时间与地点，您可以选择确认啦~");
+		body.setLink("../go/toConfirm.html?goOrderId=" + hyGoOrder.getOrderId());
+		NotifyMQSend.sendNotifyMQ(body);
+
 	}
 
 	@Override
@@ -388,6 +421,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		if (!hyGoOrder.getUserId().equals(goOrderMeetLocaltionConfirmReq.getUserId())) {
 			throw new BusinessException("操作无效:您不是活动预约者");
 		}
+		HyGo hyGo = this.getHyGo(hyGoOrder.getGoId());
+		if (hyGo == null) {
+			throw new BusinessException("GO_0001", "活动信息不存在");
+		}
 		HyGoOrder o = new HyGoOrder();
 		o.setOrderId(hyGoOrder.getOrderId());
 		Timestamp sysdate = DateUtil.getSysDate();
@@ -395,6 +432,20 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		o.setConfirmLocation(goOrderMeetLocaltionConfirmReq.getConfirmLocation());
 		o.setConfirmStsDate(sysdate);
 		hyGoOrderMapper.updateByPrimaryKeySelective(o);
+
+		// 将小白设置的时间与地点信息告知海牛
+		UserViewInfo orderUser = userManagerSV.getUserViewInfoByUserId(hyGoOrder.getUserId());
+		DoNotify body = new DoNotify();
+		body.setHandleType(DoNotify.HandleType.PUBLISH.name());
+		body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+		body.setSenderType(SenderType.USER.getValue());
+		body.setSenderId(hyGoOrder.getUserId());
+		body.setAccepterType(AccepterType.USER.getValue());
+		body.setAccepterId(hyGo.getUserId());
+		body.setTitle("小白确认了与您见面的时间地点");
+		body.setContent("[" + orderUser.getEnName() + "]确认了活动[" + hyGo.getTopic() + "]见面的时间与地点，点击查看~");
+		body.setLink("../go/toHainiuAppointment.html?goOrderId=" + hyGoOrder.getOrderId());
+		NotifyMQSend.sendNotifyMQ(body);
 	}
 
 	@Override
@@ -419,6 +470,34 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		o.setOrderStatus(OrderStatus.FINISH.getValue());
 		o.setStsDate(sysdate);
 		hyGoOrderMapper.updateByPrimaryKeySelective(o);
+
+		// 将海牛确认服务结束后，告知小白
+		UserViewInfo publishUser = userManagerSV.getUserViewInfoByUserId(hyGo.getUserId());
+		DoNotify body = new DoNotify();
+		body.setHandleType(DoNotify.HandleType.PUBLISH.name());
+		body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+		body.setSenderType(SenderType.USER.getValue());
+		body.setSenderId(hyGo.getUserId());
+		body.setAccepterType(AccepterType.USER.getValue());
+		body.setAccepterId(hyGoOrder.getUserId());
+		body.setTitle("海牛确认了对您的服务结束");
+		body.setContent("[" + publishUser.getEnName() + "]确认了您预约的活动[" + hyGo.getTopic() + "]服务结束，您可以进入互评~");
+		body.setLink("../go/toFeedback.html?goOrderId=" + hyGoOrder.getOrderId());
+		NotifyMQSend.sendNotifyMQ(body);
+
+		// 海牛确认服务结束后，给自己发送一条消息
+		UserViewInfo orderUser = userManagerSV.getUserViewInfoByUserId(hyGoOrder.getUserId());
+		body = new DoNotify();
+		body.setHandleType(DoNotify.HandleType.PUBLISH.name());
+		body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+		body.setSenderType(SenderType.USER.getValue());
+		body.setSenderId(hyGo.getUserId());
+		body.setAccepterType(AccepterType.USER.getValue());
+		body.setAccepterId(hyGo.getUserId());
+		body.setTitle("您确认了服务结束");
+		body.setContent("您确认了[" + orderUser.getEnName() + "]预约您活动[" + hyGo.getTopic() + "]服务结束，您可以进入互评~");
+		body.setLink("../go/toHainiuFeedback.html?goOrderId=" + hyGoOrder.getOrderId());
+		NotifyMQSend.sendNotifyMQ(body);
 	}
 
 	@Override
@@ -450,29 +529,6 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		record.setGoId(doGoView.getGoId());
 		hyGoViewMapper.insert(record);
 
-	}
-
-	private void sendNotifyMQ(DoNotify body) {
-		MNSClient client = MNSFactory.getMNSClient();
-		try {
-			CloudQueue queue = client.getQueueRef(GlobalSettings.getNotifyQueueName());
-			Message message = new Message();
-			message.setMessageBody(JSONObject.toJSONString(body));
-			queue.putMessage(message);
-		} catch (ClientException ce) {
-			LOG.error("Something wrong with the network connection between client and MNS service."
-					+ "Please check your network and DNS availablity.", ce);
-		} catch (ServiceException se) {
-			if (se.getErrorCode().equals("QueueNotExist")) {
-				LOG.error("Queue is not exist.Please create before use", se);
-			} else if (se.getErrorCode().equals("TimeExpired")) {
-				LOG.error("The request is time expired. Please check your local machine timeclock", se);
-			}
-			LOG.error("notify message put in Queue error", se);
-		} catch (Exception e) {
-			LOG.error("Unknown exception happened!", e);
-		}
-		client.close();
 	}
 
 	@Override
