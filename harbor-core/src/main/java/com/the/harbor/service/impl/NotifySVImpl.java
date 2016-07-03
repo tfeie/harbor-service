@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
 import com.the.harbor.base.enumeration.hynotify.AccepterType;
 import com.the.harbor.base.enumeration.hynotify.SenderType;
 import com.the.harbor.base.enumeration.hynotify.Status;
@@ -34,6 +35,7 @@ public class NotifySVImpl implements INotifySV {
 
 	@Override
 	public void process(DoNotify notify) {
+		LOG.debug("接收到消息内容:" + JSON.toJSONString(notify));
 		Timestamp sysdate = DateUtil.getSysDate();
 		if (DoNotify.HandleType.PUBLISH.name().equals(notify.getHandleType())) {
 			// 如果是发布一条通知
