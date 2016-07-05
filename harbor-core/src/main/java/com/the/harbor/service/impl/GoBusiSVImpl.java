@@ -614,8 +614,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			payAmount = AmountUtils.changeF2Y(hyGo.getFixedPrice());
 		}
 		/* 判断用户是否已经申请了此活动 */
-		boolean applied = HyGoUtil.checkUserHadAppliedGroup(goId, userId);
-		if (applied) {
+		HyGoJoin applied = this.getApplyHyGoJoin(goId, userId);
+		if (applied!=null) {
 			// 如果已经申请过了，获取申请信息
 			HyGoJoin hyGoJoin = this.getApplyHyGoJoin(goId, userId);
 			if (hyGoJoin == null) {
@@ -678,6 +678,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			record.setPayOrderId(payOrderId);
 			record.setStsDate(sysdate);
 			record.setUserId(userId);
+			hyGoJoinMapper.insert(record);
 		}
 		GroupApplyResp resp = new GroupApplyResp();
 		resp.setNeedPay(needPay);
