@@ -453,8 +453,7 @@ public class GoSVImpl implements IGoSV {
 
 	@Override
 	public Response updateGoJoinPay(UpdateGoJoinPayReq updateGoJoinPayReq) throws BusinessException, SystemException {
-		if (!"SUCCESS".equals(updateGoJoinPayReq.getPayStatus())
-				&& !"FAIL".equals(updateGoJoinPayReq.getPayStatus())) {
+		if (!"SUCCESS".equals(updateGoJoinPayReq.getPayStatus()) && !"FAIL".equals(updateGoJoinPayReq.getPayStatus())) {
 			throw new BusinessException("GO_0001", "支付结果状态不合格");
 		}
 		goBusiSV.updateGoJoinPay(updateGoJoinPayReq);
@@ -464,7 +463,12 @@ public class GoSVImpl implements IGoSV {
 	@Override
 	public CheckUserOrderGoResp checkUserOrderGo(CheckUserOrderGoReq checkUserOrderGoReq)
 			throws BusinessException, SystemException {
-		return null;
+		boolean check = goBusiSV.checkUserOrderGo(checkUserOrderGoReq);
+		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("处理成功");
+		CheckUserOrderGoResp resp = new CheckUserOrderGoResp();
+		resp.setResponseHeader(responseHeader);
+		resp.setCheckflag(check);
+		return resp;
 	}
 
 }
