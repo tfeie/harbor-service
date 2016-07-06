@@ -785,6 +785,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		if (hyGo == null) {
 			throw new BusinessException("活动不存在");
 		}
+		if (hyGo.getUserId().equals(checkUserOrderGoReq.getUserId())) {
+			// 如果是活动发起者
+			return true;
+		}
 		if (GoType.ONE_ON_ONE.getValue().equals(hyGo.getGoType())) {
 			HyGoOrder o = hyGoOrderMapper.selectByPrimaryKey(checkUserOrderGoReq.getGoOrderId());
 			if (o == null) {
