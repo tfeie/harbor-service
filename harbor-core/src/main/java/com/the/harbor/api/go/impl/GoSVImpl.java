@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.the.harbor.api.go.IGoSV;
+import com.the.harbor.api.go.param.CheckUserOrderGoReq;
+import com.the.harbor.api.go.param.CheckUserOrderGoResp;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderResp;
 import com.the.harbor.api.go.param.Go;
@@ -457,6 +459,12 @@ public class GoSVImpl implements IGoSV {
 		}
 		goBusiSV.updateGoJoinPay(updateGoJoinPayReq);
 		return ResponseBuilder.buildSuccessResponse("修改成功");
+	}
+
+	@Override
+	public CheckUserOrderGoResp checkUserOrderGo(CheckUserOrderGoReq checkUserOrderGoReq)
+			throws BusinessException, SystemException {
+		return null;
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.the.harbor.service.interfaces;
 
+import com.the.harbor.api.go.param.CheckUserOrderGoReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.DoGoComment;
 import com.the.harbor.api.go.param.DoGoFavorite;
@@ -53,6 +54,8 @@ public interface IGoBusiSV {
 	GroupApplyResp applyGroup(GroupApplyReq groupApplyReq);
 
 	void updateGoJoinPay(UpdateGoJoinPayReq updateGoJoinPayReq);
+
+	boolean checkUserOrderGo(CheckUserOrderGoReq checkUserOrderGoReq);
 
 	void processDoGoJoinConfirm(DoGoJoinConfirm doGoJoinConfirm);
 

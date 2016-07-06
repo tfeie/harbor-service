@@ -2,6 +2,8 @@ package com.the.harbor.api.go;
 
 import javax.validation.constraints.NotNull;
 
+import com.the.harbor.api.go.param.CheckUserOrderGoReq;
+import com.the.harbor.api.go.param.CheckUserOrderGoResp;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderResp;
 import com.the.harbor.api.go.param.GoCreateReq;
@@ -87,6 +89,10 @@ public interface IGoSV {
 	}
 
 	@interface ApplyGroup {
+
+	}
+
+	@interface CheckUserOrderGo {
 
 	}
 
@@ -245,12 +251,24 @@ public interface IGoSV {
 
 	/**
 	 * group活动参加支付结果写入
+	 * 
 	 * @param updateGoJoinPayReq
 	 * @return
 	 * @throws BusinessException
 	 * @throws SystemException
 	 */
 	Response updateGoJoinPay(@NotNull(message = "参数为空") UpdateGoJoinPayReq updateGoJoinPayReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 判断用户是否订购了此活动
+	 * 
+	 * @param checkUserOrderGoReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	CheckUserOrderGoResp checkUserOrderGo(@NotNull(message = "参数为空") CheckUserOrderGoReq checkUserOrderGoReq)
 			throws BusinessException, SystemException;
 
 }

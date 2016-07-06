@@ -16,6 +16,7 @@ import com.aliyun.mns.client.MNSClient;
 import com.aliyun.mns.common.ClientException;
 import com.aliyun.mns.common.ServiceException;
 import com.aliyun.mns.model.Message;
+import com.the.harbor.api.go.param.CheckUserOrderGoReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.DoGoComment;
 import com.the.harbor.api.go.param.DoGoFavorite;
@@ -615,7 +616,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		}
 		/* 判断用户是否已经申请了此活动 */
 		HyGoJoin applied = this.getApplyHyGoJoin(goId, userId);
-		if (applied!=null) {
+		if (applied != null) {
 			// 如果已经申请过了，获取申请信息
 			HyGoJoin hyGoJoin = this.getApplyHyGoJoin(goId, userId);
 			if (hyGoJoin == null) {
@@ -776,6 +777,28 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			HyGoUtil.rejectUserJoinGroupApply(goJoin.getGoId(), goJoin.getUserId());
 		}
 
+	}
+
+	@Override
+	public boolean checkUserOrderGo(CheckUserOrderGoReq checkUserOrderGoReq) {
+		HyGo hyGo = this.getHyGo(checkUserOrderGoReq.getGoId());
+		if (hyGo == null) {
+			throw new BusinessException("活动不存在");
+		}
+		if (GoType.ONE_ON_ONE.getValue().equals(hyGo.getGoType())) {
+			HyGoOrder o = hyGoOrderMapper.selectByPrimaryKey(checkUserOrderGoReq.getGoOrderId());
+			if (o == null) {
+				throw new BusinessException("活动预约不存在");
+			}
+			return o.getUserId().equals(checkUserOrderGoReq.getUserId());
+		} else if (GoType.GROUP.getValue().equals(hyGo.getGoType())) {
+			HyGoJoin o = hyGoJoinMapper.selectByPrimaryKey(checkUserOrderGoReq.getGoOrderId());
+			if (o == null) {
+				throw new BusinessException("活动参加记录不存在");
+			}
+			return o.getUserId().equals(checkUserOrderGoReq.getUserId());
+		}
+		return false;
 	}
 
 }
