@@ -66,6 +66,7 @@ import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
+import com.the.harbor.commons.redisdata.util.HyGoUtil;
 import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
@@ -420,9 +421,13 @@ public class GoSVImpl implements IGoSV {
 		go.setHomePageBg(createUserInfo.getHomePageBg());
 		go.setFavorCount(0);
 		go.setViewCount(0);
-		go.setJoinCount(0);
+		
 		go.setCreateTimeStr(DateUtil.getDateString(go.getCreateDate(), "MM月dd"));
 		go.setCreateTimeInterval(DateUtil.getInterval(go.getCreateDate()));
+		
+		if(GoType.GROUP.getValue().equals(go.getGoType())){
+			go.setJoinCount(HyGoUtil.getGroupConfirmedJoinUsersCount(go.getGoId()));
+		}
 	}
 
 	/**
