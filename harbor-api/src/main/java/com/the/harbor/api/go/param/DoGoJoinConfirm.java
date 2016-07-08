@@ -17,6 +17,10 @@ public class DoGoJoinConfirm extends MNSBody {
 	private String userId;
 
 	private String handleType;
+	
+	private String goName;
+	
+	private String publishUserName;
 
 	public String getGoId() {
 		return goId;
@@ -41,5 +45,23 @@ public class DoGoJoinConfirm extends MNSBody {
 	public void setHandleType(String handleType) {
 		this.handleType = handleType;
 	}
+
+	public String getGoName() {
+		return goName;
+	}
+
+	public void setGoName(String goName) {
+		this.goName = goName;
+	}
+
+	public String getPublishUserName() {
+		return publishUserName;
+	}
+
+	public void setPublishUserName(String publishUserName) {
+		this.publishUserName = publishUserName;
+	}
+	
+	
 
 }
