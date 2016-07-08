@@ -764,6 +764,19 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			}
 			// 更新REDIS状态集合
 			HyGoUtil.agreeUserJoinGroupApply(goJoin.getGoId(), goJoin.getUserId());
+			// 发送消息
+			DoNotify body = new DoNotify();
+			body.setHandleType(DoNotify.HandleType.PUBLISH.name());
+			body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+			body.setSenderType(SenderType.USER.getValue());
+			body.setSenderId(doGoJoinConfirm.getPublishUserId());
+			body.setAccepterType(AccepterType.USER.getValue());
+			body.setAccepterId(doGoJoinConfirm.getUserId());
+			body.setTitle("同意您的参加活动");
+			body.setContent(
+					doGoJoinConfirm.getPublishUserName() + "同意您参加group活动[" + doGoJoinConfirm.getTopic() + "]，查看详情");
+			body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId());
+			NotifyMQSend.sendNotifyMQ(body);
 		} else if (DoGoJoinConfirm.HandleType.REJECT.name().equals(doGoJoinConfirm.getHandleType())) {
 			// 如果拒绝，则修改状态为拒绝
 			if (goJoin != null) {
@@ -775,6 +788,19 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			}
 			// 更新REDIS状态集合
 			HyGoUtil.rejectUserJoinGroupApply(goJoin.getGoId(), goJoin.getUserId());
+			// 发送消息
+			DoNotify body = new DoNotify();
+			body.setHandleType(DoNotify.HandleType.PUBLISH.name());
+			body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+			body.setSenderType(SenderType.USER.getValue());
+			body.setSenderId(doGoJoinConfirm.getPublishUserId());
+			body.setAccepterType(AccepterType.USER.getValue());
+			body.setAccepterId(doGoJoinConfirm.getUserId());
+			body.setTitle("拒绝您的参加活动");
+			body.setContent(doGoJoinConfirm.getPublishUserName() + "拒绝您参加group活动[" + doGoJoinConfirm.getTopic()
+					+ "],您支付的费用将于3天内退回您的账户。查看详情");
+			body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId());
+			NotifyMQSend.sendNotifyMQ(body);
 		}
 
 	}
