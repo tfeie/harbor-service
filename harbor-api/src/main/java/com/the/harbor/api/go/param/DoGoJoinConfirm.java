@@ -20,6 +20,8 @@ public class DoGoJoinConfirm extends MNSBody {
 
 	private String topic;
 
+	private String publishUserId;
+
 	private String publishUserName;
 
 	public String getGoId() {
@@ -60,6 +62,14 @@ public class DoGoJoinConfirm extends MNSBody {
 
 	public void setTopic(String topic) {
 		this.topic = topic;
+	}
+
+	public String getPublishUserId() {
+		return publishUserId;
+	}
+
+	public void setPublishUserId(String publishUserId) {
+		this.publishUserId = publishUserId;
 	}
 
 }
