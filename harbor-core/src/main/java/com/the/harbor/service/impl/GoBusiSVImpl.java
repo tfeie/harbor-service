@@ -767,7 +767,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				hyGoJoinMapper.updateByPrimaryKeySelective(o);
 
 				// 将参与者支付的信息转移到个人账户下
-				HyGo go = this.getHyGo(o.getGoId());
+				HyGo go = this.getHyGo(goJoin.getGoId());
 				if (!PayMode.MY_TREAT.getValue().equals(go.getPayMode())) {
 					// 如果不是我请客，则说明用户已经支付过了
 					DoUserAssetsTrade t = new DoUserAssetsTrade();
