@@ -81,7 +81,8 @@ public class SMSRecordListener implements InitializingBean {
 	}
 
 	public static void WorkerFunc(int workerId, ISmsSendRecordSV builder) {
-		MessageReceiver receiver = new MessageReceiver(workerId, sMNSClient, GlobalSettings.getSMSRecordQueueName());
+		String queueName = GlobalSettings.getSMSRecordQueueName();
+		MessageReceiver receiver = new MessageReceiver(workerId, sMNSClient, queueName);
 		while (true) {
 			Message message = receiver.receiveMessage();
 			LOG.info("Thread" + workerId + " GOT ONE MESSAGE! " + message.getMessageId());
@@ -99,11 +100,7 @@ public class SMSRecordListener implements InitializingBean {
 				success = false;
 				LOG.error("短信发送记录MNS消息失败", ex);
 			}
-			if (success) {
-				// 如果记录入库成功，则需要从MNS删除消息
-				sMNSClient.getQueueRef(GlobalSettings.getSMSRecordQueueName())
-						.deleteMessage(message.getReceiptHandle());
-			}
+			sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
 		}
 	}
 

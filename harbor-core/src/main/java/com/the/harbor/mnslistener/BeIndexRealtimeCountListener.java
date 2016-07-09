@@ -122,10 +122,8 @@ public class BeIndexRealtimeCountListener implements InitializingBean {
 				success = false;
 				LOG.error("BE实时统计数据索引更新存储MNS消息消费失败", ex);
 			}
-			if (success) {
-				// 如果记录入库成功，则需要从MNS删除消息
-				sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
-			}
+			// 如果记录入库成功，则需要从MNS删除消息
+			sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
 		}
 	}
 

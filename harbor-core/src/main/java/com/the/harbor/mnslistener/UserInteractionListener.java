@@ -85,8 +85,8 @@ public class UserInteractionListener implements InitializingBean {
 	}
 
 	public static void WorkerFunc(int workerId, IUserInterfactionSV userInterfactionSV) {
-		MessageReceiver receiver = new MessageReceiver(workerId, sMNSClient,
-				GlobalSettings.getUserInteractionQueueName());
+		String queueName = GlobalSettings.getUserInteractionQueueName();
+		MessageReceiver receiver = new MessageReceiver(workerId, sMNSClient, queueName);
 		while (true) {
 			Message message = receiver.receiveMessage();
 			LOG.info("Thread" + workerId + " GOT ONE MESSAGE! " + message.getMessageId());
@@ -100,11 +100,7 @@ public class UserInteractionListener implements InitializingBean {
 				success = false;
 				LOG.error("用户交互消息消费失败", ex);
 			}
-			if (success) {
-				// 如果记录入库成功，则需要从MNS删除消息
-				sMNSClient.getQueueRef(GlobalSettings.getUserInteractionQueueName())
-						.deleteMessage(message.getReceiptHandle());
-			}
+			sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
 		}
 	}
 

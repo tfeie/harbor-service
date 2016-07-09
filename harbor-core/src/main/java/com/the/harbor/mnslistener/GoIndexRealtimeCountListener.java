@@ -120,10 +120,7 @@ public class GoIndexRealtimeCountListener implements InitializingBean {
 				success = false;
 				LOG.error("GO实时统计数据索引更新存储MNS消息消费失败", ex);
 			}
-			if (success) {
-				// 如果记录入库成功，则需要从MNS删除消息
-				sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
-			}
+			sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
 		}
 	}
 

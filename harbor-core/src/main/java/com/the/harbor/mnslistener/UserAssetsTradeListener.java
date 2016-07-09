@@ -84,8 +84,8 @@ public class UserAssetsTradeListener implements InitializingBean {
 	}
 
 	public static void WorkerFunc(int workerId, IUserManagerSV userManagerSV) {
-		MessageReceiver receiver = new MessageReceiver(workerId, sMNSClient,
-				GlobalSettings.getUserAssetsTradeQueueName());
+		String queueName = GlobalSettings.getUserAssetsTradeQueueName();
+		MessageReceiver receiver = new MessageReceiver(workerId, sMNSClient, queueName);
 		while (true) {
 			Message message = receiver.receiveMessage();
 			LOG.info("Thread" + workerId + " GOT ONE MESSAGE! " + message.getMessageId());
@@ -100,11 +100,7 @@ public class UserAssetsTradeListener implements InitializingBean {
 				success = false;
 				LOG.error("系统通知消息消费失败", ex);
 			}
-			if (success) {
-				// 如果记录入库成功，则需要从MNS删除消息
-				sMNSClient.getQueueRef(GlobalSettings.getUserAssetsTradeQueueName())
-						.deleteMessage(message.getReceiptHandle());
-			}
+			sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
 		}
 	}
 
