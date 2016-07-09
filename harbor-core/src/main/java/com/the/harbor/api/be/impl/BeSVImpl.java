@@ -216,7 +216,6 @@ public class BeSVImpl implements IBeSV {
 		be.setCommentCount(HyBeUtil.getBeCommentsCount(be.getBeId()));
 		be.setDianzanCount(HyBeUtil.getBeDianzanCount(be.getBeId()));
 		be.setGiveHaibeiCount(HyBeUtil.getRewardUserCount(be.getBeId()));
-		be.setGiveHaibeiCount(0);
 	}
 
 	@Override
