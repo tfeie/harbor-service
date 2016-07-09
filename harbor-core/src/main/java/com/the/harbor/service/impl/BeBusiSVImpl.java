@@ -247,13 +247,17 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			throw new BusinessException(BusiErrorCode.HAIBEI_NOT_ENOUGH.getValue(),
 					"您的海贝数量只有" + userAssets.getBalance() + "个，请充值");
 		}
+		HyBe be = hyBeMapper.selectByPrimaryKey(giveHBReq.getBeId());
+		if (be == null) {
+			throw new BusinessException("打赏失败:主题已被删除");
+		}
 		String giveId = UUIDUtil.genId32();
 		HyBeGiveHb record = new HyBeGiveHb();
 		record.setGiveId(giveId);
 		record.setBeId(giveHBReq.getBeId());
 		record.setBusiType(BusiType.REWARD_HB_FOR_BE.getValue());
 		record.setPayUserId(giveHBReq.getFromUserId());
-		record.setTargetUserId(giveHBReq.getToUserId());
+		record.setTargetUserId(be.getUserId());
 		record.setAmount(giveHBReq.getCount());
 		record.setTradeDate(DateUtil.getSysDate());
 		hyBeGiveHbMapper.insert(record);
@@ -264,14 +268,14 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		t.setFromUserId(giveHBReq.getFromUserId());
 		t.setHandleType(DoUserAssetsTrade.HandleType.TRANSFER.name());
 		t.setSourceNo(giveId);
-		t.setSummary("用户[" + giveHBReq.getFromUserId() + "]给BE[" + giveHBReq.getBeId() + "]打赏用户["
-				+ giveHBReq.getToUserId() + "]海贝[" + giveHBReq.getCount() + "]");
-		t.setToUserId(giveHBReq.getToUserId());
+		t.setSummary("用户[" + giveHBReq.getFromUserId() + "]给BE[" + giveHBReq.getBeId() + "]打赏用户[" + be.getUserId()
+				+ "]海贝[" + giveHBReq.getCount() + "]");
+		t.setToUserId(be.getUserId());
 		t.setTradeBalance(giveHBReq.getCount());
 		UserAssetsTradeMQSend.sendMQ(t);
-		//记录BE的打赏用户信息
+		// 记录BE的打赏用户信息
 		HyBeUtil.userRewardBe(giveHBReq.getBeId(), giveHBReq.getFromUserId());
-		
+
 	}
 
 }

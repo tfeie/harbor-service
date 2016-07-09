@@ -256,7 +256,7 @@ public class BeSVImpl implements IBeSV {
 
 	@Override
 	public Response giveHaibei(GiveHBReq giveHBReq) throws BusinessException, SystemException {
-		// TODO Auto-generated method stub
+		beBusiSV.giveHaibei(giveHBReq);
 		return ResponseBuilder.buildSuccessResponse("海贝打赏成功");
 	}
 

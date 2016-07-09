@@ -16,9 +16,6 @@ public class GiveHBReq implements Serializable {
 	@NotNull(message = "打赏用户为空", groups = { IBeSV.GiveHaibei.class })
 	private String fromUserId;
 
-	@NotNull(message = "被打赏用户为空", groups = { IBeSV.GiveHaibei.class })
-	private String toUserId;
-
 	@NotNull(message = "打赏海贝数量为空", groups = { IBeSV.GiveHaibei.class })
 	private long count;
 
@@ -36,14 +33,6 @@ public class GiveHBReq implements Serializable {
 
 	public void setFromUserId(String fromUserId) {
 		this.fromUserId = fromUserId;
-	}
-
-	public String getToUserId() {
-		return toUserId;
-	}
-
-	public void setToUserId(String toUserId) {
-		this.toUserId = toUserId;
 	}
 
 	public long getCount() {
