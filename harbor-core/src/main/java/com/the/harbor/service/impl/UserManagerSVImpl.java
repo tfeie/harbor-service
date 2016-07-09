@@ -874,6 +874,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		}
 		// 获取用户所有BE被赞
 		resp.setTotalDianzan(beBusiSV.getBesCount(userId));
+		resp.setUserId(userId);
 		return resp;
 	}
 
