@@ -19,6 +19,10 @@ public class DoBeIndexRealtimeStat implements Serializable {
 	private String beId;
 
 	private String statType;
+	
+	public DoBeIndexRealtimeStat(){
+		//序列化时候默认构造函数必须声明
+	}
 
 	public DoBeIndexRealtimeStat(String beId, String statType) {
 		this.beId = beId;

@@ -20,6 +20,10 @@ public class DoGoIndexRealtimeStat implements Serializable {
 
 	private String statType;
 
+	public DoGoIndexRealtimeStat() {
+		// 序列化时候默认构造函数必须声明
+	}
+
 	public DoGoIndexRealtimeStat(String goId, String statType) {
 		this.goId = goId;
 		this.statType = statType;
