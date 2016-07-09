@@ -11,4 +11,6 @@ public interface IBeBusiSV {
 	void processDoBeLikesMQ(DoBeLikes doBELikes);
 
 	void processDoBeComment(DoBeComment doBeComment);
+
+	long getBesCount(String userId);
 }

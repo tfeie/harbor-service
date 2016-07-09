@@ -37,6 +37,7 @@ import com.the.harbor.api.go.param.GroupApplyResp;
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.api.pay.param.CreatePaymentOrderReq;
+import com.the.harbor.api.user.param.DoUserAssetsTrade;
 import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.base.enumeration.hygo.GoType;
 import com.the.harbor.base.enumeration.hygo.OrgMode;
@@ -50,6 +51,8 @@ import com.the.harbor.base.enumeration.hypaymentorder.BusiType;
 import com.the.harbor.base.enumeration.hypaymentorder.PayStatus;
 import com.the.harbor.base.enumeration.hypaymentorder.PayType;
 import com.the.harbor.base.enumeration.hytags.TagType;
+import com.the.harbor.base.enumeration.hyuser.SystemUser;
+import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
@@ -85,6 +88,7 @@ import com.the.harbor.service.interfaces.IPaymentBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.HarborSeqUtil;
 import com.the.harbor.util.NotifyMQSend;
+import com.the.harbor.util.UserAssetsTradeMQSend;
 
 @Component
 @Transactional
@@ -761,22 +765,41 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				o.setOrderStatus(com.the.harbor.base.enumeration.hygojoin.OrderStatus.AGREE.getValue());
 				o.setStsDate(sysdate);
 				hyGoJoinMapper.updateByPrimaryKeySelective(o);
+
+				// 将参与者支付的信息转移到个人账户下
+				HyGo go = this.getHyGo(o.getGoId());
+				if (!PayMode.MY_TREAT.getValue().equals(go.getPayMode())) {
+					// 如果不是我请客，则说明用户已经支付过了
+					DoUserAssetsTrade t = new DoUserAssetsTrade();
+					t.setAssetsType(AssetsType.CASH.getValue());
+					t.setBusiType(BusiType.PAY_FOR_GO.getValue());
+					// 因为用户支付现金给系统，这里由系统支付给活动发起方
+					t.setFromUserId(SystemUser.SYSTEM.getValue());
+					t.setHandleType(DoUserAssetsTrade.HandleType.TRANSFER.name());
+					t.setSourceNo(o.getOrderId());
+					t.setSummary("系统将用户[" + doGoJoinConfirm.getUserId() + "]支付的现金[" + go.getFixedPrice() + "]转给活动发起方");
+					t.setToUserId(go.getUserId());
+					t.setTradeBalance(go.getFixedPrice());
+					UserAssetsTradeMQSend.sendMQ(t);
+				}
+
+				// 更新REDIS状态集合
+				HyGoUtil.agreeUserJoinGroupApply(goJoin.getGoId(), goJoin.getUserId());
+				// 发送通知消息
+				DoNotify body = new DoNotify();
+				body.setHandleType(DoNotify.HandleType.PUBLISH.name());
+				body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+				body.setSenderType(SenderType.USER.getValue());
+				body.setSenderId(doGoJoinConfirm.getPublishUserId());
+				body.setAccepterType(AccepterType.USER.getValue());
+				body.setAccepterId(doGoJoinConfirm.getUserId());
+				body.setTitle("同意您的参加活动");
+				body.setContent(
+						doGoJoinConfirm.getPublishUserName() + "同意您参加group活动[" + doGoJoinConfirm.getTopic() + "]，查看详情");
+				body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId());
+				NotifyMQSend.sendNotifyMQ(body);
 			}
-			// 更新REDIS状态集合
-			HyGoUtil.agreeUserJoinGroupApply(goJoin.getGoId(), goJoin.getUserId());
-			// 发送消息
-			DoNotify body = new DoNotify();
-			body.setHandleType(DoNotify.HandleType.PUBLISH.name());
-			body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
-			body.setSenderType(SenderType.USER.getValue());
-			body.setSenderId(doGoJoinConfirm.getPublishUserId());
-			body.setAccepterType(AccepterType.USER.getValue());
-			body.setAccepterId(doGoJoinConfirm.getUserId());
-			body.setTitle("同意您的参加活动");
-			body.setContent(
-					doGoJoinConfirm.getPublishUserName() + "同意您参加group活动[" + doGoJoinConfirm.getTopic() + "]，查看详情");
-			body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId());
-			NotifyMQSend.sendNotifyMQ(body);
+
 		} else if (DoGoJoinConfirm.HandleType.REJECT.name().equals(doGoJoinConfirm.getHandleType())) {
 			// 如果拒绝，则修改状态为拒绝
 			if (goJoin != null) {
@@ -785,22 +808,24 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				o.setOrderStatus(com.the.harbor.base.enumeration.hygojoin.OrderStatus.REJECT.getValue());
 				o.setStsDate(sysdate);
 				hyGoJoinMapper.updateByPrimaryKeySelective(o);
+
+				// 更新REDIS状态集合
+				HyGoUtil.rejectUserJoinGroupApply(goJoin.getGoId(), goJoin.getUserId());
+				// 发送消息
+				DoNotify body = new DoNotify();
+				body.setHandleType(DoNotify.HandleType.PUBLISH.name());
+				body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+				body.setSenderType(SenderType.USER.getValue());
+				body.setSenderId(doGoJoinConfirm.getPublishUserId());
+				body.setAccepterType(AccepterType.USER.getValue());
+				body.setAccepterId(doGoJoinConfirm.getUserId());
+				body.setTitle("拒绝您的参加活动");
+				body.setContent(doGoJoinConfirm.getPublishUserName() + "拒绝您参加group活动[" + doGoJoinConfirm.getTopic()
+						+ "],您支付的费用将于3天内退回您的账户。查看详情");
+				body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId());
+				NotifyMQSend.sendNotifyMQ(body);
 			}
-			// 更新REDIS状态集合
-			HyGoUtil.rejectUserJoinGroupApply(goJoin.getGoId(), goJoin.getUserId());
-			// 发送消息
-			DoNotify body = new DoNotify();
-			body.setHandleType(DoNotify.HandleType.PUBLISH.name());
-			body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
-			body.setSenderType(SenderType.USER.getValue());
-			body.setSenderId(doGoJoinConfirm.getPublishUserId());
-			body.setAccepterType(AccepterType.USER.getValue());
-			body.setAccepterId(doGoJoinConfirm.getUserId());
-			body.setTitle("拒绝您的参加活动");
-			body.setContent(doGoJoinConfirm.getPublishUserName() + "拒绝您参加group活动[" + doGoJoinConfirm.getTopic()
-					+ "],您支付的费用将于3天内退回您的账户。查看详情");
-			body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId());
-			NotifyMQSend.sendNotifyMQ(body);
+
 		}
 
 	}

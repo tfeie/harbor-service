@@ -11,6 +11,8 @@ public class HyBeLikes {
 
     private Timestamp createDate;
 
+    private String dianzanUserId;
+
     public String getLikesId() {
         return likesId;
     }
@@ -41,5 +43,13 @@ public class HyBeLikes {
 
     public void setCreateDate(Timestamp createDate) {
         this.createDate = createDate;
+    }
+
+    public String getDianzanUserId() {
+        return dianzanUserId;
+    }
+
+    public void setDianzanUserId(String dianzanUserId) {
+        this.dianzanUserId = dianzanUserId == null ? null : dianzanUserId.trim();
     }
 }

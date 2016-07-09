@@ -394,6 +394,76 @@ public class HyBeLikesCriteria {
             addCriterion("CREATE_DATE not between", value1, value2, "createDate");
             return (Criteria) this;
         }
+
+        public Criteria andDianzanUserIdIsNull() {
+            addCriterion("DIANZAN_USER_ID is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDianzanUserIdIsNotNull() {
+            addCriterion("DIANZAN_USER_ID is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDianzanUserIdEqualTo(String value) {
+            addCriterion("DIANZAN_USER_ID =", value, "dianzanUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDianzanUserIdNotEqualTo(String value) {
+            addCriterion("DIANZAN_USER_ID <>", value, "dianzanUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDianzanUserIdGreaterThan(String value) {
+            addCriterion("DIANZAN_USER_ID >", value, "dianzanUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDianzanUserIdGreaterThanOrEqualTo(String value) {
+            addCriterion("DIANZAN_USER_ID >=", value, "dianzanUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDianzanUserIdLessThan(String value) {
+            addCriterion("DIANZAN_USER_ID <", value, "dianzanUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDianzanUserIdLessThanOrEqualTo(String value) {
+            addCriterion("DIANZAN_USER_ID <=", value, "dianzanUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDianzanUserIdLike(String value) {
+            addCriterion("DIANZAN_USER_ID like", value, "dianzanUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDianzanUserIdNotLike(String value) {
+            addCriterion("DIANZAN_USER_ID not like", value, "dianzanUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDianzanUserIdIn(List<String> values) {
+            addCriterion("DIANZAN_USER_ID in", values, "dianzanUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDianzanUserIdNotIn(List<String> values) {
+            addCriterion("DIANZAN_USER_ID not in", values, "dianzanUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDianzanUserIdBetween(String value1, String value2) {
+            addCriterion("DIANZAN_USER_ID between", value1, value2, "dianzanUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDianzanUserIdNotBetween(String value1, String value2) {
+            addCriterion("DIANZAN_USER_ID not between", value1, value2, "dianzanUserId");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

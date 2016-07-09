@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.the.harbor.api.user.param.DoUserAssetsTrade;
 import com.the.harbor.api.user.param.DoUserFans;
 import com.the.harbor.api.user.param.DoUserFriend;
 import com.the.harbor.api.user.param.UserCertificationReq;
@@ -26,19 +27,23 @@ import com.the.harbor.api.user.param.UserTag;
 import com.the.harbor.api.user.param.UserTagQueryReq;
 import com.the.harbor.api.user.param.UserTagQueryResp;
 import com.the.harbor.api.user.param.UserViewInfo;
+import com.the.harbor.api.user.param.UserWealthQueryResp;
 import com.the.harbor.base.constants.ExceptCodeConstants;
 import com.the.harbor.base.enumeration.common.Status;
 import com.the.harbor.base.enumeration.dict.ParamCode;
 import com.the.harbor.base.enumeration.dict.TypeCode;
+import com.the.harbor.base.enumeration.hypaymentorder.BusiType;
 import com.the.harbor.base.enumeration.hytags.TagCat;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.enumeration.hyuser.AccessPermission;
 import com.the.harbor.base.enumeration.hyuser.MemberLevel;
+import com.the.harbor.base.enumeration.hyuser.SystemUser;
 import com.the.harbor.base.enumeration.hyuser.UserStatus;
 import com.the.harbor.base.enumeration.hyuser.UserType;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsStatus;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsUnit;
+import com.the.harbor.base.enumeration.hyuserassets.TradeType;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
@@ -46,6 +51,7 @@ import com.the.harbor.commons.redisdata.util.HyCountryUtil;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
 import com.the.harbor.commons.redisdata.util.HyIndustryUtil;
 import com.the.harbor.commons.redisdata.util.HyUserUtil;
+import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
@@ -53,19 +59,24 @@ import com.the.harbor.commons.util.UUIDUtil;
 import com.the.harbor.constants.HarborErrorCodeConstants;
 import com.the.harbor.dao.mapper.bo.HyUser;
 import com.the.harbor.dao.mapper.bo.HyUserAssets;
+import com.the.harbor.dao.mapper.bo.HyUserAssetsCriteria;
+import com.the.harbor.dao.mapper.bo.HyUserAssetsTrade;
 import com.the.harbor.dao.mapper.bo.HyUserCriteria;
 import com.the.harbor.dao.mapper.bo.HyUserFans;
 import com.the.harbor.dao.mapper.bo.HyUserFansCriteria;
 import com.the.harbor.dao.mapper.bo.HyUserFriend;
 import com.the.harbor.dao.mapper.bo.HyUserFriendCriteria;
+import com.the.harbor.dao.mapper.bo.HyUserHbAssets;
 import com.the.harbor.dao.mapper.bo.HyUserTags;
 import com.the.harbor.dao.mapper.bo.HyUserTagsCriteria;
 import com.the.harbor.dao.mapper.interfaces.HyUserAssetsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserAssetsTradeMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserFansMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserFriendMapper;
+import com.the.harbor.dao.mapper.interfaces.HyUserHbAssetsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserTagsMapper;
+import com.the.harbor.service.interfaces.IBeBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.HarborSeqUtil;
 
@@ -90,6 +101,12 @@ public class UserManagerSVImpl implements IUserManagerSV {
 
 	@Autowired
 	private transient HyUserAssetsTradeMapper hyUserAssetsTradeMapper;
+
+	@Autowired
+	private transient HyUserHbAssetsMapper hyUserHbAssetsMapper;
+
+	@Autowired
+	private transient IBeBusiSV beBusiSV;
 
 	@Override
 	public String userRegister(UserRegReq userRegReq) {
@@ -678,6 +695,186 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			}
 		}
 
+	}
+
+	@Override
+	public void process(DoUserAssetsTrade notify) {
+		if (notify == null) {
+			return;
+		}
+		if (notify.getTradeBalance() == 0) {
+			return;
+		}
+		if (StringUtil.isBlank(notify.getAssetsType())) {
+			throw new BusinessException("资产类型为空");
+		}
+		if (StringUtil.isBlank(notify.getFromUserId())) {
+			throw new BusinessException("发起用户为空");
+		}
+		if (StringUtil.isBlank(notify.getBusiType())) {
+			throw new BusinessException("业务类型为空");
+		}
+		if (StringUtil.isBlank(notify.getSourceNo())) {
+			throw new BusinessException("业务订单号为空");
+		}
+		if (StringUtil.isBlank(notify.getToUserId())) {
+			throw new BusinessException("目标用户为空");
+		}
+		if (StringUtil.isBlank(notify.getHandleType())) {
+			throw new BusinessException("交易类型为空");
+		}
+		Timestamp sysdate = DateUtil.getSysDate();
+		if (DoUserAssetsTrade.HandleType.TRANSFER.name().equals(notify.getHandleType())) {
+			String fromLogId = UUIDUtil.genId32();
+			String toLogId = UUIDUtil.genId32();
+			// 如果是转账, 发起用户需要进行扣款操作
+			if (!SystemUser.SYSTEM.getValue().equals(notify.getFromUserId())) {
+				// 如果发起用户不是系统用户，则进行对应科目的资金扣减
+				HyUserAssets assets = this.getUserAssets(notify.getFromUserId(), notify.getAssetsType());
+				if (assets == null) {
+					throw new BusinessException(
+							"用户[" + notify.getFromUserId() + "]缺少资金账户[" + notify.getAssetsType() + "]");
+				}
+				HyUserAssets record = new HyUserAssets();
+				record.setAssetsId(assets.getAssetsId());
+				record.setBalance(assets.getBalance() - notify.getTradeBalance());
+				record.setChgDate(sysdate);
+				record.setTotalExpenditure(assets.getBalance() - notify.getTradeBalance());
+				record.setChgDesc("业务交易[" + notify.getSourceNo() + "]给用户[" + notify.getToUserId() + "]转账额度["
+						+ notify.getTradeBalance() + "]。账户变动日志[" + fromLogId + "]");
+				hyUserAssetsMapper.updateByPrimaryKeySelective(record);
+
+				// 发起用户记录资金变动日志
+				HyUserAssetsTrade flog = new HyUserAssetsTrade();
+				flog.setLogId(fromLogId);
+				flog.setAssetsId(assets.getAssetsId());
+				flog.setUserId(assets.getUserId());
+				flog.setTradeType(TradeType.DEDUCTION.getValue());
+				flog.setBusiType(notify.getBusiType());
+				flog.setAssetsType(assets.getAssetsType());
+				flog.setAssetsUnit(assets.getAssetsUnit());
+				flog.setLastBalance(assets.getBalance());
+				flog.setCurrentBalance(notify.getTradeBalance());
+				flog.setSummary(notify.getSummary());
+				flog.setTradeDate(sysdate);
+				flog.setSourceNo(notify.getSourceNo());
+				flog.setRelUserId(notify.getToUserId());
+				hyUserAssetsTradeMapper.insert(flog);
+
+				HyUserHbAssets hb = this.getUserHBAssets(assets.getAssetsId());
+				if (hb == null) {
+					hb = new HyUserHbAssets();
+					hb.setAssetsId(assets.getAssetsId());
+					hb.setUserId(assets.getUserId());
+					hb.setTotalDashang(0);
+					hb.setTotalBeishang(0);
+					hb.setTotalGongyi(0);
+					hb.setTotalJiangli(0);
+					hyUserHbAssetsMapper.insertSelective(hb);
+				}
+
+				// 如果业务类型涉及到海贝交易，且是支出方
+				if (BusiType.REWARD_HB_FOR_BE.getValue().equals(notify.getBusiType())) {
+					// 我打赏别人海贝
+					HyUserHbAssets hbr = new HyUserHbAssets();
+					hbr.setAssetsId(assets.getAssetsId());
+					hbr.setTotalDashang(hbr.getTotalDashang() - notify.getTradeBalance());
+					hyUserHbAssetsMapper.updateByPrimaryKeySelective(hbr);
+				}
+			}
+
+			// 目标用户资金存入
+			HyUserAssets assets = this.getUserAssets(notify.getToUserId(), notify.getAssetsType());
+			if (assets == null) {
+				throw new BusinessException("用户[" + notify.getToUserId() + "]缺少资金账户[" + notify.getAssetsType() + "]");
+			}
+			HyUserAssets record = new HyUserAssets();
+			record.setAssetsId(assets.getAssetsId());
+			record.setBalance(assets.getBalance() + notify.getTradeBalance());
+			record.setChgDate(sysdate);
+			record.setTotalIncome(assets.getBalance() + notify.getTradeBalance());
+			record.setChgDesc("业务交易[" + notify.getSourceNo() + "]用户[" + notify.getFromUserId() + "]给我转账额度["
+					+ notify.getTradeBalance() + "]。账户变动日志[" + toLogId + "]");
+			hyUserAssetsMapper.updateByPrimaryKeySelective(record);
+			// 记录目标用户资金存入变动日志
+			HyUserAssetsTrade tlog = new HyUserAssetsTrade();
+			tlog.setLogId(toLogId);
+			tlog.setAssetsId(assets.getAssetsId());
+			tlog.setUserId(assets.getUserId());
+			tlog.setTradeType(TradeType.DEPOSIT.getValue());
+			tlog.setBusiType(notify.getBusiType());
+			tlog.setAssetsType(assets.getAssetsType());
+			tlog.setAssetsUnit(assets.getAssetsUnit());
+			tlog.setLastBalance(assets.getBalance());
+			tlog.setCurrentBalance(notify.getTradeBalance());
+			tlog.setSummary(notify.getSummary());
+			tlog.setTradeDate(sysdate);
+			tlog.setSourceNo(notify.getSourceNo());
+			tlog.setRelUserId(notify.getFromUserId());
+			hyUserAssetsTradeMapper.insert(tlog);
+
+			HyUserHbAssets hb = this.getUserHBAssets(assets.getAssetsId());
+			if (hb == null) {
+				hb = new HyUserHbAssets();
+				hb.setAssetsId(assets.getAssetsId());
+				hb.setUserId(assets.getUserId());
+				hb.setTotalDashang(0);
+				hb.setTotalBeishang(0);
+				hb.setTotalGongyi(0);
+				hb.setTotalJiangli(0);
+				hyUserHbAssetsMapper.insertSelective(hb);
+			}
+
+			// 如果业务类型涉及到海贝交易，且是获得放
+			if (BusiType.REWARD_HB_FOR_BE.getValue().equals(notify.getBusiType())) {
+				// 我获得别人打赏的海贝
+				HyUserHbAssets hbr = new HyUserHbAssets();
+				hbr.setAssetsId(assets.getAssetsId());
+				hbr.setTotalBeishang(hbr.getTotalBeishang() + notify.getTradeBalance());
+				hyUserHbAssetsMapper.updateByPrimaryKeySelective(hbr);
+			}
+
+		}
+
+	}
+
+	private HyUserAssets getUserAssets(String userId, String assetsType) {
+		HyUserAssetsCriteria sql = new HyUserAssetsCriteria();
+		sql.or().andUserIdEqualTo(userId).andAssetsTypeEqualTo(assetsType);
+		List<HyUserAssets> list = hyUserAssetsMapper.selectByExample(sql);
+		return CollectionUtil.isEmpty(list) ? null : list.get(0);
+	}
+
+	private HyUserHbAssets getUserHBAssets(String assetsId) {
+		HyUserHbAssets b = hyUserHbAssetsMapper.selectByPrimaryKey(assetsId);
+		return b;
+	}
+
+	@Override
+	public UserWealthQueryResp queryUserWealth(String userId) {
+		UserWealthQueryResp resp = new UserWealthQueryResp();
+		// 查询现金账户余额
+		HyUserAssets cash = this.getUserAssets(userId, AssetsType.CASH.getValue());
+		if (cash != null) {
+			resp.setCashBlance(cash.getBalance());
+			resp.setCashBlanceYuan(AmountUtils.changeF2Y(cash.getBalance()));
+		}
+		// 查询海贝余额
+		HyUserAssets haibei = this.getUserAssets(userId, AssetsType.HAIBEI.getValue());
+		if (cash != null) {
+			resp.setHbBalance(haibei.getBalance());
+			// 查询海贝交易明细
+			HyUserHbAssets hbast = this.getUserHBAssets(haibei.getAssetsId());
+			if (hbast != null) {
+				resp.setTotalBeishang(hbast.getTotalBeishang());
+				resp.setTotalDashang(hbast.getTotalDashang());
+				resp.setTotalGongyi(hbast.getTotalGongyi());
+				resp.setTotalJiangli(hbast.getTotalJiangli());
+			}
+		}
+		// 获取用户所有BE被赞
+		resp.setTotalDianzan(beBusiSV.getBesCount(userId));
+		return resp;
 	}
 
 }

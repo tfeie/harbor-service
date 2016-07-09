@@ -934,6 +934,76 @@ public class HyUserAssetsTradeCriteria {
             addCriterion("SOURCE_NO not between", value1, value2, "sourceNo");
             return (Criteria) this;
         }
+
+        public Criteria andRelUserIdIsNull() {
+            addCriterion("REL_USER_ID is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelUserIdIsNotNull() {
+            addCriterion("REL_USER_ID is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelUserIdEqualTo(String value) {
+            addCriterion("REL_USER_ID =", value, "relUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelUserIdNotEqualTo(String value) {
+            addCriterion("REL_USER_ID <>", value, "relUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelUserIdGreaterThan(String value) {
+            addCriterion("REL_USER_ID >", value, "relUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelUserIdGreaterThanOrEqualTo(String value) {
+            addCriterion("REL_USER_ID >=", value, "relUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelUserIdLessThan(String value) {
+            addCriterion("REL_USER_ID <", value, "relUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelUserIdLessThanOrEqualTo(String value) {
+            addCriterion("REL_USER_ID <=", value, "relUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelUserIdLike(String value) {
+            addCriterion("REL_USER_ID like", value, "relUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelUserIdNotLike(String value) {
+            addCriterion("REL_USER_ID not like", value, "relUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelUserIdIn(List<String> values) {
+            addCriterion("REL_USER_ID in", values, "relUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelUserIdNotIn(List<String> values) {
+            addCriterion("REL_USER_ID not in", values, "relUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelUserIdBetween(String value1, String value2) {
+            addCriterion("REL_USER_ID between", value1, value2, "relUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRelUserIdNotBetween(String value1, String value2) {
+            addCriterion("REL_USER_ID not between", value1, value2, "relUserId");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

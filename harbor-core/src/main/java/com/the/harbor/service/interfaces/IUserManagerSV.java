@@ -2,6 +2,7 @@ package com.the.harbor.service.interfaces;
 
 import java.util.List;
 
+import com.the.harbor.api.user.param.DoUserAssetsTrade;
 import com.the.harbor.api.user.param.DoUserFans;
 import com.the.harbor.api.user.param.DoUserFriend;
 import com.the.harbor.api.user.param.UserCertificationReq;
@@ -16,6 +17,7 @@ import com.the.harbor.api.user.param.UserTag;
 import com.the.harbor.api.user.param.UserTagQueryReq;
 import com.the.harbor.api.user.param.UserTagQueryResp;
 import com.the.harbor.api.user.param.UserViewInfo;
+import com.the.harbor.api.user.param.UserWealthQueryResp;
 
 public interface IUserManagerSV {
 
@@ -105,5 +107,14 @@ public interface IUserManagerSV {
 	 * @param userId
 	 */
 	void createDefaultUserAssets(String userId);
+
+	/**
+	 * 用户资产交易处理
+	 * 
+	 * @param notify
+	 */
+	void process(DoUserAssetsTrade notify);
+
+	UserWealthQueryResp queryUserWealth(String userId);
 
 }

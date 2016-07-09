@@ -27,6 +27,8 @@ public class HyUserAssetsTrade {
 
     private String sourceNo;
 
+    private String relUserId;
+
     public String getLogId() {
         return logId;
     }
@@ -121,5 +123,13 @@ public class HyUserAssetsTrade {
 
     public void setSourceNo(String sourceNo) {
         this.sourceNo = sourceNo == null ? null : sourceNo.trim();
+    }
+
+    public String getRelUserId() {
+        return relUserId;
+    }
+
+    public void setRelUserId(String relUserId) {
+        this.relUserId = relUserId == null ? null : relUserId.trim();
     }
 }

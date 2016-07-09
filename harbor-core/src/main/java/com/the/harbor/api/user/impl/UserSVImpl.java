@@ -26,6 +26,8 @@ import com.the.harbor.api.user.param.UserTagQueryReq;
 import com.the.harbor.api.user.param.UserTagQueryResp;
 import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.api.user.param.UserViewResp;
+import com.the.harbor.api.user.param.UserWealthQueryReq;
+import com.the.harbor.api.user.param.UserWealthQueryResp;
 import com.the.harbor.base.constants.ExceptCodeConstants;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
@@ -37,7 +39,6 @@ import com.the.harbor.commons.redisdata.util.HyUserUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
-import com.the.harbor.dao.mapper.bo.HyUser;
 import com.the.harbor.service.interfaces.IPaymentBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 
@@ -262,6 +263,13 @@ public class UserSVImpl implements IUserSV {
 		} catch (Exception ex) {
 
 		}
+	}
+
+	@Override
+	public UserWealthQueryResp queryUserWealth(UserWealthQueryReq req) throws BusinessException, SystemException {
+		UserWealthQueryResp resp = userManagerSV.queryUserWealth(req.getUserId());
+		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("查询成功"));
+		return resp;
 	}
 
 }

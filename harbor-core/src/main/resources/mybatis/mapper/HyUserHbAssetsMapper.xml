@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.the.harbor.dao.mapper.interfaces.HyBeLikesMapper" >
-  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyBeLikes" >
-    <id column="LIKES_ID" property="likesId" jdbcType="VARCHAR" />
-    <result column="BE_ID" property="beId" jdbcType="VARCHAR" />
+<mapper namespace="com.the.harbor.dao.mapper.interfaces.HyUserHbAssetsMapper" >
+  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyUserHbAssets" >
+    <id column="ASSETS_ID" property="assetsId" jdbcType="VARCHAR" />
     <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
-    <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
-    <result column="DIANZAN_USER_ID" property="dianzanUserId" jdbcType="VARCHAR" />
+    <result column="TOTAL_BEISHANG" property="totalBeishang" jdbcType="BIGINT" />
+    <result column="TOTAL_JIANGLI" property="totalJiangli" jdbcType="BIGINT" />
+    <result column="TOTAL_DASHANG" property="totalDashang" jdbcType="BIGINT" />
+    <result column="TOTAL_GONGYI" property="totalGongyi" jdbcType="BIGINT" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -67,16 +68,16 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    LIKES_ID, BE_ID, USER_ID, CREATE_DATE, DIANZAN_USER_ID
+    ASSETS_ID, USER_ID, TOTAL_BEISHANG, TOTAL_JIANGLI, TOTAL_DASHANG, TOTAL_GONGYI
   </sql>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyBeLikesCriteria" >
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyUserHbAssetsCriteria" >
     select
     <if test="distinct" >
       distinct
     </if>
     'false' as QUERYID,
     <include refid="Base_Column_List" />
-    from hy_be_likes
+    from hy_user_hb_assets
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
@@ -90,85 +91,80 @@
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     <include refid="Base_Column_List" />
-    from hy_be_likes
-    where LIKES_ID = #{likesId,jdbcType=VARCHAR}
+    from hy_user_hb_assets
+    where ASSETS_ID = #{assetsId,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-    delete from hy_be_likes
-    where LIKES_ID = #{likesId,jdbcType=VARCHAR}
+    delete from hy_user_hb_assets
+    where ASSETS_ID = #{assetsId,jdbcType=VARCHAR}
   </delete>
-  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HyBeLikesCriteria" >
-    delete from hy_be_likes
+  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUserHbAssetsCriteria" >
+    delete from hy_user_hb_assets
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyBeLikes" >
-    insert into hy_be_likes (LIKES_ID, BE_ID, USER_ID, 
-      CREATE_DATE, DIANZAN_USER_ID)
-    values (#{likesId,jdbcType=VARCHAR}, #{beId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, 
-      #{createDate,jdbcType=TIMESTAMP}, #{dianzanUserId,jdbcType=VARCHAR})
+  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyUserHbAssets" >
+    insert into hy_user_hb_assets (ASSETS_ID, USER_ID, TOTAL_BEISHANG, 
+      TOTAL_JIANGLI, TOTAL_DASHANG, TOTAL_GONGYI
+      )
+    values (#{assetsId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{totalBeishang,jdbcType=BIGINT}, 
+      #{totalJiangli,jdbcType=BIGINT}, #{totalDashang,jdbcType=BIGINT}, #{totalGongyi,jdbcType=BIGINT}
+      )
   </insert>
-  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyBeLikes" >
-    insert into hy_be_likes
+  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyUserHbAssets" >
+    insert into hy_user_hb_assets
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="likesId != null" >
-        LIKES_ID,
-      </if>
-      <if test="beId != null" >
-        BE_ID,
+      <if test="assetsId != null" >
+        ASSETS_ID,
       </if>
       <if test="userId != null" >
         USER_ID,
       </if>
-      <if test="createDate != null" >
-        CREATE_DATE,
-      </if>
-      <if test="dianzanUserId != null" >
-        DIANZAN_USER_ID,
-      </if>
+      TOTAL_BEISHANG,
+      TOTAL_JIANGLI,
+      TOTAL_DASHANG,
+      TOTAL_GONGYI,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="likesId != null" >
-        #{likesId,jdbcType=VARCHAR},
-      </if>
-      <if test="beId != null" >
-        #{beId,jdbcType=VARCHAR},
+      <if test="assetsId != null" >
+        #{assetsId,jdbcType=VARCHAR},
       </if>
       <if test="userId != null" >
         #{userId,jdbcType=VARCHAR},
       </if>
-      <if test="createDate != null" >
-        #{createDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="dianzanUserId != null" >
-        #{dianzanUserId,jdbcType=VARCHAR},
-      </if>
+      #{totalBeishang,jdbcType=BIGINT},
+      #{totalJiangli,jdbcType=BIGINT},
+      #{totalDashang,jdbcType=BIGINT},
+      #{totalGongyi,jdbcType=BIGINT},
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyBeLikesCriteria" resultType="java.lang.Integer" >
-    select count(*) from hy_be_likes
+  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUserHbAssetsCriteria" resultType="java.lang.Integer" >
+    select count(*) from hy_user_hb_assets
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map" >
-    update hy_be_likes
+    update hy_user_hb_assets
     <set >
-      <if test="record.likesId != null" >
-        LIKES_ID = #{record.likesId,jdbcType=VARCHAR},
-      </if>
-      <if test="record.beId != null" >
-        BE_ID = #{record.beId,jdbcType=VARCHAR},
+      <if test="record.assetsId != null" >
+        ASSETS_ID = #{record.assetsId,jdbcType=VARCHAR},
       </if>
       <if test="record.userId != null" >
         USER_ID = #{record.userId,jdbcType=VARCHAR},
       </if>
-      <if test="record.createDate != null" >
-        CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
+      <if test="record.totalBeishang != null" >
+        TOTAL_BEISHANG = #{record.totalBeishang,jdbcType=BIGINT},
       </if>
-      <if test="record.dianzanUserId != null" >
-        DIANZAN_USER_ID = #{record.dianzanUserId,jdbcType=VARCHAR},
+      <if test="record.totalJiangli != null" >
+        TOTAL_JIANGLI = #{record.totalJiangli,jdbcType=BIGINT},
+      </if>
+      <if test="record.totalDashang != null" >
+        TOTAL_DASHANG = #{record.totalDashang,jdbcType=BIGINT},
+      </if>
+      <if test="record.totalGongyi != null" >
+        TOTAL_GONGYI = #{record.totalGongyi,jdbcType=BIGINT},
       </if>
     </set>
     <if test="_parameter != null" >
@@ -176,40 +172,45 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map" >
-    update hy_be_likes
-    set LIKES_ID = #{record.likesId,jdbcType=VARCHAR},
-      BE_ID = #{record.beId,jdbcType=VARCHAR},
+    update hy_user_hb_assets
+    set ASSETS_ID = #{record.assetsId,jdbcType=VARCHAR},
       USER_ID = #{record.userId,jdbcType=VARCHAR},
-      CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
-      DIANZAN_USER_ID = #{record.dianzanUserId,jdbcType=VARCHAR}
+      TOTAL_BEISHANG = #{record.totalBeishang,jdbcType=BIGINT},
+      TOTAL_JIANGLI = #{record.totalJiangli,jdbcType=BIGINT},
+      TOTAL_DASHANG = #{record.totalDashang,jdbcType=BIGINT},
+      TOTAL_GONGYI = #{record.totalGongyi,jdbcType=BIGINT}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HyBeLikes" >
-    update hy_be_likes
+  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HyUserHbAssets" >
+    update hy_user_hb_assets
     <set >
-      <if test="beId != null" >
-        BE_ID = #{beId,jdbcType=VARCHAR},
-      </if>
       <if test="userId != null" >
         USER_ID = #{userId,jdbcType=VARCHAR},
       </if>
-      <if test="createDate != null" >
-        CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      <if test="totalBeishang != null" >
+        TOTAL_BEISHANG = #{totalBeishang,jdbcType=BIGINT},
       </if>
-      <if test="dianzanUserId != null" >
-        DIANZAN_USER_ID = #{dianzanUserId,jdbcType=VARCHAR},
+      <if test="totalJiangli != null" >
+        TOTAL_JIANGLI = #{totalJiangli,jdbcType=BIGINT},
+      </if>
+      <if test="totalDashang != null" >
+        TOTAL_DASHANG = #{totalDashang,jdbcType=BIGINT},
+      </if>
+      <if test="totalGongyi != null" >
+        TOTAL_GONGYI = #{totalGongyi,jdbcType=BIGINT},
       </if>
     </set>
-    where LIKES_ID = #{likesId,jdbcType=VARCHAR}
+    where ASSETS_ID = #{assetsId,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyBeLikes" >
-    update hy_be_likes
-    set BE_ID = #{beId,jdbcType=VARCHAR},
-      USER_ID = #{userId,jdbcType=VARCHAR},
-      CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
-      DIANZAN_USER_ID = #{dianzanUserId,jdbcType=VARCHAR}
-    where LIKES_ID = #{likesId,jdbcType=VARCHAR}
+  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyUserHbAssets" >
+    update hy_user_hb_assets
+    set USER_ID = #{userId,jdbcType=VARCHAR},
+      TOTAL_BEISHANG = #{totalBeishang,jdbcType=BIGINT},
+      TOTAL_JIANGLI = #{totalJiangli,jdbcType=BIGINT},
+      TOTAL_DASHANG = #{totalDashang,jdbcType=BIGINT},
+      TOTAL_GONGYI = #{totalGongyi,jdbcType=BIGINT}
+    where ASSETS_ID = #{assetsId,jdbcType=VARCHAR}
   </update>
 </mapper>

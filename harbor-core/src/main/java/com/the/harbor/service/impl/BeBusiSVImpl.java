@@ -154,13 +154,18 @@ public class BeBusiSVImpl implements IBeBusiSV {
 
 	@Override
 	public void processDoBeLikesMQ(DoBeLikes doBELikes) {
+		HyBe be = hyBeMapper.selectByPrimaryKey(doBELikes.getBeId());
+		if (be == null) {
+			return;
+		}
 		if (DoBeLikes.HandleType.ZAN.name().equals(doBELikes.getHandleType())) {
 			// 如果是点赞，则记录
 			HyBeLikes record = new HyBeLikes();
 			record.setBeId(doBELikes.getBeId());
 			record.setCreateDate(doBELikes.getTime() == null ? DateUtil.getSysDate() : doBELikes.getTime());
 			record.setLikesId(HarborSeqUtil.createBeLikesId());
-			record.setUserId(doBELikes.getUserId());
+			record.setUserId(be.getUserId());
+			record.setDianzanUserId(doBELikes.getUserId());
 			hyBeLikesMapper.insert(record);
 		} else if (DoBeLikes.HandleType.CANCEL.name().equals(doBELikes.getHandleType())) {
 			// 如果是取消赞，则删除
@@ -204,6 +209,13 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			}
 		}
 
+	}
+
+	@Override
+	public long getBesCount(String userId) {
+		HyBeLikesCriteria sql = new HyBeLikesCriteria();
+		sql.or().andUserIdEqualTo(userId);
+		return hyBeLikesMapper.countByExample(sql);
 	}
 
 }
