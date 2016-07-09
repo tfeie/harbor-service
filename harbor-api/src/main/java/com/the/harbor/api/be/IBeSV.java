@@ -6,12 +6,14 @@ import com.the.harbor.api.be.param.BeCreateReq;
 import com.the.harbor.api.be.param.BeCreateResp;
 import com.the.harbor.api.be.param.BeQueryReq;
 import com.the.harbor.api.be.param.BeQueryResp;
+import com.the.harbor.api.be.param.GiveHBReq;
 import com.the.harbor.api.be.param.QueryMyBeReq;
 import com.the.harbor.api.be.param.QueryMyBeResp;
 import com.the.harbor.api.be.param.QueryOneBeReq;
 import com.the.harbor.api.be.param.QueryOneBeResp;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
+import com.the.harbor.base.vo.Response;
 
 public interface IBeSV {
 
@@ -24,6 +26,10 @@ public interface IBeSV {
 	}
 
 	@interface QueryOneBe {
+
+	}
+
+	@interface GiveHaibei {
 
 	}
 
@@ -68,5 +74,15 @@ public interface IBeSV {
 	 * @throws SystemException
 	 */
 	BeQueryResp queryBes(@NotNull(message = "参数为空") BeQueryReq beQueryReq) throws BusinessException, SystemException;
+
+	/**
+	 * 打赏海贝
+	 * 
+	 * @param giveHBReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	Response giveHaibei(@NotNull(message = "参数为空") GiveHBReq giveHBReq) throws BusinessException, SystemException;
 
 }

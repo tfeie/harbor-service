@@ -22,27 +22,39 @@ import com.the.harbor.api.be.param.BeDetail;
 import com.the.harbor.api.be.param.BeTag;
 import com.the.harbor.api.be.param.DoBeComment;
 import com.the.harbor.api.be.param.DoBeLikes;
+import com.the.harbor.api.be.param.GiveHBReq;
+import com.the.harbor.api.user.param.DoUserAssetsTrade;
+import com.the.harbor.base.enumeration.common.BusiErrorCode;
 import com.the.harbor.base.enumeration.common.Status;
+import com.the.harbor.base.enumeration.hypaymentorder.BusiType;
 import com.the.harbor.base.enumeration.hytags.TagType;
+import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
+import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.redisdata.util.HyBeUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
+import com.the.harbor.commons.util.UUIDUtil;
 import com.the.harbor.dao.mapper.bo.HyBe;
 import com.the.harbor.dao.mapper.bo.HyBeComments;
 import com.the.harbor.dao.mapper.bo.HyBeDetail;
+import com.the.harbor.dao.mapper.bo.HyBeGiveHb;
 import com.the.harbor.dao.mapper.bo.HyBeLikes;
 import com.the.harbor.dao.mapper.bo.HyBeLikesCriteria;
 import com.the.harbor.dao.mapper.bo.HyBeTags;
+import com.the.harbor.dao.mapper.bo.HyUserAssets;
 import com.the.harbor.dao.mapper.interfaces.HyBeCommentsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeDetailMapper;
+import com.the.harbor.dao.mapper.interfaces.HyBeGiveHbMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeLikesMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeTagsMapper;
 import com.the.harbor.service.interfaces.IBeBusiSV;
+import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.HarborSeqUtil;
+import com.the.harbor.util.UserAssetsTradeMQSend;
 
 @Component
 @Transactional
@@ -64,6 +76,12 @@ public class BeBusiSVImpl implements IBeBusiSV {
 
 	@Autowired
 	private transient HyBeCommentsMapper hyBeCommentsMapper;
+
+	@Autowired
+	private transient HyBeGiveHbMapper hyBeGiveHbMapper;
+
+	@Autowired
+	private transient IUserManagerSV userManagerSV;
 
 	@Override
 	public String createBe(BeCreateReq beCreateReq) {
@@ -216,6 +234,44 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		HyBeLikesCriteria sql = new HyBeLikesCriteria();
 		sql.or().andUserIdEqualTo(userId);
 		return hyBeLikesMapper.countByExample(sql);
+	}
+
+	@Override
+	public void giveHaibei(GiveHBReq giveHBReq) {
+		// 判断用户海贝是否足够
+		HyUserAssets userAssets = userManagerSV.getUserAssets(giveHBReq.getFromUserId(), AssetsType.HAIBEI.getValue());
+		if (userAssets == null) {
+			throw new BusinessException(BusiErrorCode.HAIBEI_NOT_ENOUGH.getValue(), "您的海贝数量不足，请充值");
+		}
+		if (userAssets.getBalance() < giveHBReq.getCount()) {
+			throw new BusinessException(BusiErrorCode.HAIBEI_NOT_ENOUGH.getValue(),
+					"您的海贝数量只有" + userAssets.getBalance() + "个，请充值");
+		}
+		String giveId = UUIDUtil.genId32();
+		HyBeGiveHb record = new HyBeGiveHb();
+		record.setGiveId(giveId);
+		record.setBeId(giveHBReq.getBeId());
+		record.setBusiType(BusiType.REWARD_HB_FOR_BE.getValue());
+		record.setPayUserId(giveHBReq.getFromUserId());
+		record.setTargetUserId(giveHBReq.getToUserId());
+		record.setAmount(giveHBReq.getCount());
+		record.setTradeDate(DateUtil.getSysDate());
+		hyBeGiveHbMapper.insert(record);
+		// 发送消息执行两端用户的海贝的赠送与扣减
+		DoUserAssetsTrade t = new DoUserAssetsTrade();
+		t.setAssetsType(AssetsType.HAIBEI.getValue());
+		t.setBusiType(BusiType.REWARD_HB_FOR_BE.getValue());
+		t.setFromUserId(giveHBReq.getFromUserId());
+		t.setHandleType(DoUserAssetsTrade.HandleType.TRANSFER.name());
+		t.setSourceNo(giveId);
+		t.setSummary("用户[" + giveHBReq.getFromUserId() + "]给BE[" + giveHBReq.getBeId() + "]打赏用户["
+				+ giveHBReq.getToUserId() + "]海贝[" + giveHBReq.getCount() + "]");
+		t.setToUserId(giveHBReq.getToUserId());
+		t.setTradeBalance(giveHBReq.getCount());
+		UserAssetsTradeMQSend.sendMQ(t);
+		//记录BE的打赏用户信息
+		HyBeUtil.userRewardBe(giveHBReq.getBeId(), giveHBReq.getFromUserId());
+		
 	}
 
 }

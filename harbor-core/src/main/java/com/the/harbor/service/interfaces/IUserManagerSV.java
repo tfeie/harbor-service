@@ -18,6 +18,7 @@ import com.the.harbor.api.user.param.UserTagQueryReq;
 import com.the.harbor.api.user.param.UserTagQueryResp;
 import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.api.user.param.UserWealthQueryResp;
+import com.the.harbor.dao.mapper.bo.HyUserAssets;
 
 public interface IUserManagerSV {
 
@@ -116,5 +117,7 @@ public interface IUserManagerSV {
 	void process(DoUserAssetsTrade notify);
 
 	UserWealthQueryResp queryUserWealth(String userId);
+
+	HyUserAssets getUserAssets(String userId, String assetsType);
 
 }

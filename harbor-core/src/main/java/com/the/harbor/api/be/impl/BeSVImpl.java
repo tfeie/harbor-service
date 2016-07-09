@@ -23,6 +23,7 @@ import com.the.harbor.api.be.param.BeDetail;
 import com.the.harbor.api.be.param.BeQueryReq;
 import com.the.harbor.api.be.param.BeQueryResp;
 import com.the.harbor.api.be.param.BeTag;
+import com.the.harbor.api.be.param.GiveHBReq;
 import com.the.harbor.api.be.param.QueryMyBeReq;
 import com.the.harbor.api.be.param.QueryMyBeResp;
 import com.the.harbor.api.be.param.QueryOneBeReq;
@@ -38,6 +39,7 @@ import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.base.util.ResponseBuilder;
 import com.the.harbor.base.util.ValidatorUtil;
 import com.the.harbor.base.vo.PageInfo;
+import com.the.harbor.base.vo.Response;
 import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.indices.def.HarborIndex;
@@ -249,6 +251,12 @@ public class BeSVImpl implements IBeSV {
 		resp.setPagInfo(pageInfo);
 		resp.setResponseHeader(responseHeader);
 		return resp;
+	}
+
+	@Override
+	public Response giveHaibei(GiveHBReq giveHBReq) throws BusinessException, SystemException {
+		// TODO Auto-generated method stub
+		return ResponseBuilder.buildSuccessResponse("海贝打赏成功");
 	}
 
 }

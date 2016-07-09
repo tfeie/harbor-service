@@ -825,7 +825,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 				hyUserHbAssetsMapper.insertSelective(hb);
 			}
 
-			// 如果业务类型涉及到海贝交易，且是获得放
+			// 如果业务类型涉及到海贝交易，且被被打赏的，则进行加入
 			if (BusiType.REWARD_HB_FOR_BE.getValue().equals(notify.getBusiType())) {
 				// 我获得别人打赏的海贝
 				HyUserHbAssets hbr = new HyUserHbAssets();
@@ -838,7 +838,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 
 	}
 
-	private HyUserAssets getUserAssets(String userId, String assetsType) {
+	public HyUserAssets getUserAssets(String userId, String assetsType) {
 		HyUserAssetsCriteria sql = new HyUserAssetsCriteria();
 		sql.or().andUserIdEqualTo(userId).andAssetsTypeEqualTo(assetsType);
 		List<HyUserAssets> list = hyUserAssetsMapper.selectByExample(sql);
