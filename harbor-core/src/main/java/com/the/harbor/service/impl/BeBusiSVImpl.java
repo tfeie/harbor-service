@@ -21,6 +21,7 @@ import com.the.harbor.api.be.param.BeCreateReq;
 import com.the.harbor.api.be.param.BeDetail;
 import com.the.harbor.api.be.param.BeTag;
 import com.the.harbor.api.be.param.DoBeComment;
+import com.the.harbor.api.be.param.DoBeIndexRealtimeStat;
 import com.the.harbor.api.be.param.DoBeLikes;
 import com.the.harbor.api.be.param.GiveHBReq;
 import com.the.harbor.api.user.param.DoUserAssetsTrade;
@@ -54,6 +55,7 @@ import com.the.harbor.dao.mapper.interfaces.HyBeTagsMapper;
 import com.the.harbor.service.interfaces.IBeBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.HarborSeqUtil;
+import com.the.harbor.util.IndexRealtimeCountMQSend;
 import com.the.harbor.util.UserAssetsTradeMQSend;
 
 @Component
@@ -275,6 +277,9 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		UserAssetsTradeMQSend.sendMQ(t);
 		// 记录BE的打赏用户信息
 		HyBeUtil.userRewardBe(giveHBReq.getBeId(), giveHBReq.getFromUserId());
+		// 发送索引更新消息
+		IndexRealtimeCountMQSend.sendBeRealtimeIndexUpdateMQ(
+				new DoBeIndexRealtimeStat(giveHBReq.getBeId(), DoBeIndexRealtimeStat.StatType.REWARD.name()));
 
 	}
 
