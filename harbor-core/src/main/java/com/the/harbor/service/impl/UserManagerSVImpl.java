@@ -176,6 +176,15 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		record.setTotalIncome(0);
 		record.setAssetsStatus(AssetsStatus.NORMAL.getValue());
 		hyUserAssetsMapper.insert(record);
+		
+		HyUserHbAssets hb = new HyUserHbAssets();
+		hb.setAssetsId(record.getAssetsId());
+		hb.setUserId(record.getUserId());
+		hb.setTotalDashang(0);
+		hb.setTotalBeishang(0);
+		hb.setTotalGongyi(0);
+		hb.setTotalJiangli(0);
+		hyUserHbAssetsMapper.insertSelective(hb);
 	}
 
 	private HyUser getUserByWeixin(String wxOpenId) {
