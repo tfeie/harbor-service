@@ -1,7 +1,9 @@
 package com.the.harbor.api.go.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -332,9 +334,10 @@ public class GoSVImpl implements IGoSV {
 		SearchHits hits = response.getHits();
 		long total = hits.getTotalHits();
 		List<Go> result = new ArrayList<Go>();
+		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(queryMyGoReq.getUserId());
 		for (SearchHit hit : hits) {
 			Go go = JSON.parseObject(hit.getSourceAsString(), Go.class);
-			this.fillGoInfo(go);
+			this.fillGoInfo(go, createUserInfo);
 			result.add(go);
 		}
 		PageInfo<Go> pageInfo = new PageInfo<Go>();
@@ -368,11 +371,17 @@ public class GoSVImpl implements IGoSV {
 		SearchHits hits = response.getHits();
 		long total = hits.getTotalHits();
 		List<Go> result = new ArrayList<Go>();
+		Map<String, UserViewInfo> tmpMap = new HashMap<String, UserViewInfo>();
 		for (SearchHit hit : hits) {
 			Go go = JSON.parseObject(hit.getSourceAsString(), Go.class);
-			this.fillGoInfo(go);
+			if (!tmpMap.containsKey(go.getUserId())) {
+				UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(go.getUserId());
+				tmpMap.put(go.getUserId(), createUserInfo);
+			}
+			this.fillGoInfo(go, tmpMap.get(go.getUserId()));
 			result.add(go);
 		}
+		tmpMap.clear();
 		PageInfo<Go> pageInfo = new PageInfo<Go>();
 		pageInfo.setCount(Integer.parseInt(total + ""));
 		pageInfo.setPageNo(queryGoReq.getPageNo());
@@ -390,7 +399,7 @@ public class GoSVImpl implements IGoSV {
 	 * 
 	 * @param go
 	 */
-	private void fillGoInfo(Go go) {
+	private void fillGoInfo(Go go, UserViewInfo createUserInfo) {
 		String contentSummary = null;
 		if (!CollectionUtil.isEmpty(go.getGoDetails())) {
 			for (GoDetail detail : go.getGoDetails()) {
@@ -409,7 +418,6 @@ public class GoSVImpl implements IGoSV {
 		go.setOrgModeName(
 				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.ORG_MODE.getValue(), go.getOrgMode()));
 		// 发布用户信息
-		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(go.getUserId());
 		go.setAtCityName(createUserInfo.getAtCityName());
 		go.setEnName(createUserInfo.getEnName());
 		go.setIndustryName(createUserInfo.getIndustryName());
@@ -436,7 +444,8 @@ public class GoSVImpl implements IGoSV {
 			return null;
 		}
 		Go go = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Go.class);
-		this.fillGoInfo(go);
+		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(go.getUserId());
+		this.fillGoInfo(go, createUserInfo);
 		return go;
 	}
 
