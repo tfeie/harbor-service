@@ -1,7 +1,9 @@
 package com.the.harbor.api.be.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -44,7 +46,6 @@ import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
-import com.the.harbor.commons.redisdata.util.HyBeUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
@@ -138,10 +139,12 @@ public class BeSVImpl implements IBeSV {
 				.addSort(sortBuilder).execute().actionGet();
 		SearchHits hits = response.getHits();
 		long total = hits.getTotalHits();
+		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(queryMyBeReq.getUserId());
 		List<Be> result = new ArrayList<Be>();
 		for (SearchHit hit : hits) {
 			Be be = JSON.parseObject(hit.getSourceAsString(), Be.class);
-			this.fillBeInfo(be);
+			// 考虑加载性能
+			this.fillBeInfo(be, createUserInfo);
 			result.add(be);
 		}
 		PageInfo<Be> pageInfo = new PageInfo<Be>();
@@ -165,7 +168,8 @@ public class BeSVImpl implements IBeSV {
 			return null;
 		}
 		Be be = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Be.class);
-		this.fillBeInfo(be);
+		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(be.getUserId());
+		this.fillBeInfo(be, createUserInfo);
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		QueryOneBeResp resp = new QueryOneBeResp();
 		resp.setBe(be);
@@ -173,12 +177,7 @@ public class BeSVImpl implements IBeSV {
 		return resp;
 	}
 
-	/**
-	 * 完善BE信息
-	 * 
-	 * @param be
-	 */
-	private void fillBeInfo(Be be) {
+	private void fillBeInfo(Be be, UserViewInfo createUserInfo) {
 		boolean hastext = false;
 		boolean hasimg = false;
 		String contentSummary = null;
@@ -204,7 +203,7 @@ public class BeSVImpl implements IBeSV {
 		be.setHastext(hastext);
 		be.setCreateTimeInterval(DateUtil.getInterval(be.getCreateDate()));
 		// 发布用户信息
-		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(be.getUserId());
+
 		be.setAtCityName(createUserInfo.getAtCityName());
 		be.setEnName(createUserInfo.getEnName());
 		be.setIndustryName(createUserInfo.getIndustryName());
@@ -212,10 +211,6 @@ public class BeSVImpl implements IBeSV {
 		be.setWxHeadimg(createUserInfo.getWxHeadimg());
 		be.setUserStatusName(createUserInfo.getUserStatusName());
 		be.setAbroadCountryName(createUserInfo.getAbroadCountryName());
-
-		be.setCommentCount(HyBeUtil.getBeCommentsCount(be.getBeId()));
-		be.setDianzanCount(HyBeUtil.getBeDianzanCount(be.getBeId()));
-		be.setGiveHaibeiCount(HyBeUtil.getRewardUserCount(be.getBeId()));
 	}
 
 	@Override
@@ -236,11 +231,17 @@ public class BeSVImpl implements IBeSV {
 		SearchHits hits = response.getHits();
 		long total = hits.getTotalHits();
 		List<Be> result = new ArrayList<Be>();
+		Map<String, UserViewInfo> tmpMap = new HashMap<String, UserViewInfo>();
 		for (SearchHit hit : hits) {
 			Be be = JSON.parseObject(hit.getSourceAsString(), Be.class);
-			this.fillBeInfo(be);
+			if (!tmpMap.containsKey(be.getUserId())) {
+				UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(be.getUserId());
+				tmpMap.put(be.getUserId(), createUserInfo);
+			}
+			this.fillBeInfo(be, tmpMap.get(be.getUserId()));
 			result.add(be);
 		}
+		tmpMap.clear();
 		PageInfo<Be> pageInfo = new PageInfo<Be>();
 		pageInfo.setCount(Integer.parseInt(total + ""));
 		pageInfo.setPageNo(beQueryReq.getPageNo());

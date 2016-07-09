@@ -81,6 +81,8 @@
 	<bean id="UserInteractionListener" class="com.the.harbor.mnslistener.UserInteractionListener" />
 	<bean id="NotifyListener" class="com.the.harbor.mnslistener.NotifyListener" />
 	<bean id="UserAssetsTradeListener" class="com.the.harbor.mnslistener.UserAssetsTradeListener" />
+	<bean id="GoIndexRealtimeCountListener" class="com.the.harbor.mnslistener.GoIndexRealtimeCountListener" />
+	<bean id="BeIndexRealtimeCountListener" class="com.the.harbor.mnslistener.BeIndexRealtimeCountListener" />
 
 
 	<!-- 设定注解扫描基础包 -->
