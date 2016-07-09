@@ -101,7 +101,11 @@ public class NotifyListener implements InitializingBean {
 				LOG.error("系统通知消息消费失败", ex);
 			}
 			// 如果记录入库成功，则需要从MNS删除消息
-			sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
+			try {
+				sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
+			} catch (Exception ex) {
+				LOG.error("消息删除失败", ex);
+			}
 		}
 	}
 

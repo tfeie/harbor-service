@@ -76,7 +76,8 @@ public class GoIndexBuildListener implements InitializingBean {
 	}
 
 	public static void WorkerFunc(int workerId) {
-		MessageReceiver receiver = new MessageReceiver(workerId, sMNSClient, GlobalSettings.getGoIndexBuildQueueName());
+		String queueName = GlobalSettings.getGoIndexBuildQueueName();
+		MessageReceiver receiver = new MessageReceiver(workerId, sMNSClient, queueName);
 		while (true) {
 			Message message = receiver.receiveMessage();
 			LOG.info("Thread" + workerId + " GOT ONE MESSAGE! " + message.getMessageId());
@@ -92,10 +93,10 @@ public class GoIndexBuildListener implements InitializingBean {
 				success = false;
 				LOG.error("GO索引构建MNS消息失败", ex);
 			}
-			if (success) {
-				// 如果记录入库成功，则需要从MNS删除消息
-				sMNSClient.getQueueRef(GlobalSettings.getGoIndexBuildQueueName())
-						.deleteMessage(message.getReceiptHandle());
+			try {
+				sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
+			} catch (Exception ex) {
+				LOG.error("消息删除失败", ex);
 			}
 		}
 	}

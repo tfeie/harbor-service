@@ -100,7 +100,11 @@ public class SMSRecordListener implements InitializingBean {
 				success = false;
 				LOG.error("短信发送记录MNS消息失败", ex);
 			}
-			sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
+			try {
+				sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
+			} catch (Exception ex) {
+				LOG.error("消息删除失败", ex);
+			}
 		}
 	}
 
