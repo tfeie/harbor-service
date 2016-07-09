@@ -99,4 +99,11 @@ public interface IUserManagerSV {
 	 */
 	void processDoUserFriend(DoUserFriend doUserFriend);
 
+	/**
+	 * 创建虚拟账户
+	 * 
+	 * @param userId
+	 */
+	void createDefaultUserAssets(String userId);
+
 }

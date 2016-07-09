@@ -36,6 +36,9 @@ import com.the.harbor.base.enumeration.hyuser.AccessPermission;
 import com.the.harbor.base.enumeration.hyuser.MemberLevel;
 import com.the.harbor.base.enumeration.hyuser.UserStatus;
 import com.the.harbor.base.enumeration.hyuser.UserType;
+import com.the.harbor.base.enumeration.hyuserassets.AssetsStatus;
+import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
+import com.the.harbor.base.enumeration.hyuserassets.AssetsUnit;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
@@ -46,8 +49,10 @@ import com.the.harbor.commons.redisdata.util.HyUserUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
+import com.the.harbor.commons.util.UUIDUtil;
 import com.the.harbor.constants.HarborErrorCodeConstants;
 import com.the.harbor.dao.mapper.bo.HyUser;
+import com.the.harbor.dao.mapper.bo.HyUserAssets;
 import com.the.harbor.dao.mapper.bo.HyUserCriteria;
 import com.the.harbor.dao.mapper.bo.HyUserFans;
 import com.the.harbor.dao.mapper.bo.HyUserFansCriteria;
@@ -55,6 +60,8 @@ import com.the.harbor.dao.mapper.bo.HyUserFriend;
 import com.the.harbor.dao.mapper.bo.HyUserFriendCriteria;
 import com.the.harbor.dao.mapper.bo.HyUserTags;
 import com.the.harbor.dao.mapper.bo.HyUserTagsCriteria;
+import com.the.harbor.dao.mapper.interfaces.HyUserAssetsMapper;
+import com.the.harbor.dao.mapper.interfaces.HyUserAssetsTradeMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserFansMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserFriendMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserMapper;
@@ -77,6 +84,12 @@ public class UserManagerSVImpl implements IUserManagerSV {
 
 	@Autowired
 	private transient HyUserFriendMapper hyUserFriendMapper;
+
+	@Autowired
+	private transient HyUserAssetsMapper hyUserAssetsMapper;
+
+	@Autowired
+	private transient HyUserAssetsTradeMapper hyUserAssetsTradeMapper;
 
 	@Override
 	public String userRegister(UserRegReq userRegReq) {
@@ -110,7 +123,42 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		if (success == 0) {
 			throw new SystemException("注册失败,请稍候重试");
 		}
+		// 初始化资产信息
+		this.createDefaultUserAssets(user.getUserId());
 		return user.getUserId();
+	}
+
+	public void createDefaultUserAssets(String userId) {
+		this.createDefaultUserCashAssets(userId);
+		this.createDefaultUserHaibeiAssets(userId);
+	}
+
+	private void createDefaultUserCashAssets(String userId) {
+		HyUserAssets record = new HyUserAssets();
+		record.setAssetsId(UUIDUtil.genId32());
+		record.setUserId(userId);
+		record.setAssetsType(AssetsType.CASH.getValue());
+		record.setAssetsUnit(AssetsUnit.FEN.getValue());
+		record.setBalance(0l);
+		record.setCreateDate(DateUtil.getSysDate());
+		record.setTotalExpenditure(0);
+		record.setTotalIncome(0);
+		record.setAssetsStatus(AssetsStatus.NORMAL.getValue());
+		hyUserAssetsMapper.insert(record);
+	}
+
+	private void createDefaultUserHaibeiAssets(String userId) {
+		HyUserAssets record = new HyUserAssets();
+		record.setAssetsId(UUIDUtil.genId32());
+		record.setUserId(userId);
+		record.setAssetsType(AssetsType.HAIBEI.getValue());
+		record.setAssetsUnit(AssetsUnit.GE.getValue());
+		record.setBalance(0l);
+		record.setCreateDate(DateUtil.getSysDate());
+		record.setTotalExpenditure(0);
+		record.setTotalIncome(0);
+		record.setAssetsStatus(AssetsStatus.NORMAL.getValue());
+		hyUserAssetsMapper.insert(record);
 	}
 
 	private HyUser getUserByWeixin(String wxOpenId) {

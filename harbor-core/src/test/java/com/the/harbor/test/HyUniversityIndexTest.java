@@ -24,7 +24,10 @@ public class HyUniversityIndexTest {
 
 	@Test
 	public void buildUniversityIndex() {
-		builder.buildIndex();
+		for(String userId:new String[]{"hy00000063","hy00000064","hy00000065","hy00000072","hy00000082","hy00000092"}){
+			userSV.createDefaultUserAssets(userId);
+		}
+		
 	}
 
 	@Test
