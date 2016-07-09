@@ -778,7 +778,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 					// 我打赏别人海贝
 					HyUserHbAssets hbr = new HyUserHbAssets();
 					hbr.setAssetsId(assets.getAssetsId());
-					hbr.setTotalDashang(hbr.getTotalDashang() - notify.getTradeBalance());
+					hbr.setTotalDashang(hbr.getTotalDashang() +notify.getTradeBalance());
 					hyUserHbAssetsMapper.updateByPrimaryKeySelective(hbr);
 				}
 			}
