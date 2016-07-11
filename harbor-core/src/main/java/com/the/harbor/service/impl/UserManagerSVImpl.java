@@ -577,6 +577,14 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		}
 		return userInfo;
 	}
+	
+	public UserViewInfo getUserViewInfoFromDBByUserId(String userId) {
+		HyUser hyUser = this.getUserInfo(userId);
+		UserViewInfo userInfo = this.convert(hyUser);
+		return userInfo;
+	}
+
+		
 
 	private UserViewInfo getUserViewInfoFromCacheByUserId(String userId) {
 		UserViewInfo userInfo = null;

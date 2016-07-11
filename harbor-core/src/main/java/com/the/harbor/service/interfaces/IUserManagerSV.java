@@ -119,5 +119,7 @@ public interface IUserManagerSV {
 	UserWealthQueryResp queryUserWealth(String userId);
 
 	HyUserAssets getUserAssets(String userId, String assetsType);
+	
+	UserViewInfo getUserViewInfoFromDBByUserId(String userId);
 
 }

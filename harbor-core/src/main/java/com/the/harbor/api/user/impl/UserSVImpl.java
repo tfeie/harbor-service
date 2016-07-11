@@ -255,7 +255,7 @@ public class UserSVImpl implements IUserSV {
 
 	private void storeUserInfo2Redis(String userId) {
 		try {
-			UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(userId);
+			UserViewInfo userInfo = userManagerSV.getUserViewInfoFromDBByUserId(userId);
 			if (userInfo != null) {
 				HyUserUtil.storeUserInfo2Redis(userId, JSON.toJSONString(userInfo));
 				HyUserUtil.buildOpenIdAndUserIdMapped(userInfo.getWxOpenid(), userId);
