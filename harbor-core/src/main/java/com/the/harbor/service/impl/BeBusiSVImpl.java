@@ -234,10 +234,10 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			if (StringUtil.isBlank(doBeComment.getParentUserId())) {
 				// 被评论发为BE的作者
 				accepterId = be.getUserId();
-				content = enName + "评论了您的动态[" + be.getTitle() + "]，点击查看..";
+				content = enName + "评论了您的BE,点击查看..";
 			} else {
 				accepterId = doBeComment.getParentUserId();
-				content = enName + "在动态[" + be.getTitle() + "]中回复了您，点击查看..";
+				content = enName + "BE有新的回复,点击查看..";
 			}
 			if (!doBeComment.getUserId().equals(accepterId)) {
 				// 只有当评论的发表者和接受者不是一个人的时候，才会给接受者发送系统通知
