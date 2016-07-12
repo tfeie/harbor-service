@@ -2,6 +2,8 @@ package com.the.harbor.service.impl;
 
 import java.sql.Timestamp;
 
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -27,12 +29,20 @@ import com.the.harbor.api.be.param.GiveHBReq;
 import com.the.harbor.api.user.param.DoUserAssetsTrade;
 import com.the.harbor.base.enumeration.common.BusiErrorCode;
 import com.the.harbor.base.enumeration.common.Status;
+import com.the.harbor.base.enumeration.hynotify.AccepterType;
+import com.the.harbor.base.enumeration.hynotify.NotifyType;
+import com.the.harbor.base.enumeration.hynotify.SenderType;
 import com.the.harbor.base.enumeration.hypaymentorder.BusiType;
 import com.the.harbor.base.enumeration.hytags.TagType;
+import com.the.harbor.base.enumeration.hyuser.SystemUser;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
+import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
+import com.the.harbor.commons.indices.def.HarborIndex;
+import com.the.harbor.commons.indices.def.HarborIndexType;
+import com.the.harbor.commons.redisdata.def.DoNotify;
 import com.the.harbor.commons.redisdata.util.HyBeUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
@@ -56,6 +66,7 @@ import com.the.harbor.service.interfaces.IBeBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.HarborSeqUtil;
 import com.the.harbor.util.IndexRealtimeCountMQSend;
+import com.the.harbor.util.NotifyMQSend;
 import com.the.harbor.util.UserAssetsTradeMQSend;
 
 @Component
@@ -199,6 +210,10 @@ public class BeBusiSVImpl implements IBeBusiSV {
 
 	@Override
 	public void processDoBeComment(DoBeComment doBeComment) {
+		Be be = this.queryBe(doBeComment.getBeId());
+		if (be == null) {
+			throw new BusinessException("BE[" + doBeComment.getBeId() + "]索引不存在");
+		}
 		if (DoBeComment.HandleType.PUBLISH.name().equals(doBeComment.getHandleType())) {
 			// 如果是点赞，则记录
 			HyBeComments record = new HyBeComments();
@@ -211,11 +226,40 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			record.setUserId(doBeComment.getUserId());
 			hyBeCommentsMapper.insert(record);
 
+			// 给被评论方发个消息
+			String accepterId = null;
+			String content = null;
+			// 发表评论的人
+			String enName = userManagerSV.getUserViewInfoByUserId(doBeComment.getUserId()).getEnName();
+			if (StringUtil.isBlank(doBeComment.getParentUserId())) {
+				// 被评论发为BE的作者
+				accepterId = be.getUserId();
+				content = enName + "评论了您的动态[" + be.getTitle() + "]，点击查看..";
+			} else {
+				accepterId = doBeComment.getParentUserId();
+				content = enName + "在动态[" + be.getTitle() + "]中回复了您，点击查看..";
+			}
+			if (!doBeComment.getUserId().equals(accepterId)) {
+				// 只有当评论的发表者和接受者不是一个人的时候，才会给接受者发送系统通知
+				DoNotify notify = new DoNotify();
+				notify.setHandleType(DoNotify.HandleType.PUBLISH.name());
+				notify.setNotifyId(UUIDUtil.genId32());
+				notify.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+				notify.setSenderType(SenderType.SYSTEM.getValue());
+				notify.setSenderId(SystemUser.SYSTEM.getValue());
+				notify.setAccepterType(AccepterType.USER.getValue());
+				notify.setAccepterId(accepterId);
+				notify.setTitle("Be有新评论啦~");
+				notify.setContent(content);
+				notify.setLink("../be/detail.html?beId=" + be.getBeId());
+				NotifyMQSend.sendNotifyMQ(notify);
+			}
 			// 写入REDIS关系
 			BeComment b = new BeComment();
 			BeanUtils.copyProperties(record, b);
 			HyBeUtil.recordBeCommentId(record.getBeId(), record.getCommentId());
 			HyBeUtil.recordBeComment(record.getCommentId(), JSON.toJSONString(b));
+
 		} else if (DoBeComment.HandleType.CANCEL.name().equals(doBeComment.getHandleType())) {
 			// 如果是取消赞，则删除
 			if (!StringUtil.isBlank(doBeComment.getCommentId())) {
@@ -281,6 +325,17 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		IndexRealtimeCountMQSend.sendBeRealtimeIndexUpdateMQ(
 				new DoBeIndexRealtimeStat(giveHBReq.getBeId(), DoBeIndexRealtimeStat.StatType.REWARD.name()));
 
+	}
+
+	private Be queryBe(String beId) {
+		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
+				.setTypes(HarborIndexType.HY_BE.getValue()).setQuery(QueryBuilders.termQuery("_id", beId)).execute()
+				.actionGet();
+		if (response.getHits().totalHits() == 0) {
+			return null;
+		}
+		Be be = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Be.class);
+		return be;
 	}
 
 }
