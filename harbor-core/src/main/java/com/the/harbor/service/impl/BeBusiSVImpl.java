@@ -245,8 +245,8 @@ public class BeBusiSVImpl implements IBeBusiSV {
 				notify.setHandleType(DoNotify.HandleType.PUBLISH.name());
 				notify.setNotifyId(UUIDUtil.genId32());
 				notify.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
-				notify.setSenderType(SenderType.SYSTEM.getValue());
-				notify.setSenderId(SystemUser.SYSTEM.getValue());
+				notify.setSenderType(SenderType.USER.getValue());
+				notify.setSenderId(doBeComment.getUserId());
 				notify.setAccepterType(AccepterType.USER.getValue());
 				notify.setAccepterId(accepterId);
 				notify.setTitle("Be有新评论啦~");
