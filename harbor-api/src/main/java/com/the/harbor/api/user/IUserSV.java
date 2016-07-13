@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
+import com.the.harbor.api.user.param.UserInfo;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberQuery;
 import com.the.harbor.api.user.param.UserMemberRenewalReq;
@@ -202,4 +203,11 @@ public interface IUserSV {
 	 * @throws SystemException
 	 */
 	List<UserViewInfo> queryUserViewInfosByStatus(String status) throws BusinessException, SystemException;;
+	
+	/**
+	 * 更新用户资料
+	 * @param user
+	 * @return
+	 */
+	Response updateUserInfo(UserInfo user);
 }
