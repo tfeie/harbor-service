@@ -530,12 +530,18 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			record.setFavoriteId(HarborSeqUtil.createGoFavoriteId());
 			record.setUserId(doGoFavorite.getUserId());
 			hyGoFavoriteMapper.insert(record);
+			
+			//记录用户收藏行为
+			HyGoUtil.userFavorGo(doGoFavorite.getUserId(), doGoFavorite.getGoId());
 		} else if (DoGoFavorite.HandleType.CANCEL.name().equals(doGoFavorite.getHandleType())) {
 			// 如果是取消收藏，则删除
 			if (!StringUtil.isBlank(doGoFavorite.getUserId()) && !StringUtil.isBlank(doGoFavorite.getGoId())) {
 				HyGoFavoriteCriteria sql = new HyGoFavoriteCriteria();
 				sql.or().andUserIdEqualTo(doGoFavorite.getUserId()).andGoIdEqualTo(doGoFavorite.getGoId());
 				hyGoFavoriteMapper.deleteByExample(sql);
+				
+				//记录用户取消收藏
+				HyGoUtil.userCancelFavorGo(doGoFavorite.getUserId(), doGoFavorite.getGoId());
 			}
 		}
 	}
