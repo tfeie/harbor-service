@@ -23,8 +23,10 @@ import com.the.harbor.api.be.param.BeCreateReq;
 import com.the.harbor.api.be.param.BeDetail;
 import com.the.harbor.api.be.param.BeTag;
 import com.the.harbor.api.be.param.DoBeComment;
+import com.the.harbor.api.be.param.DoBeFavorite;
 import com.the.harbor.api.be.param.DoBeIndexRealtimeStat;
 import com.the.harbor.api.be.param.DoBeLikes;
+import com.the.harbor.api.be.param.DoBeView;
 import com.the.harbor.api.be.param.GiveHBReq;
 import com.the.harbor.api.user.param.DoUserAssetsTrade;
 import com.the.harbor.base.enumeration.common.BusiErrorCode;
@@ -34,7 +36,6 @@ import com.the.harbor.base.enumeration.hynotify.NotifyType;
 import com.the.harbor.base.enumeration.hynotify.SenderType;
 import com.the.harbor.base.enumeration.hypaymentorder.BusiType;
 import com.the.harbor.base.enumeration.hytags.TagType;
-import com.the.harbor.base.enumeration.hyuser.SystemUser;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
@@ -51,17 +52,22 @@ import com.the.harbor.commons.util.UUIDUtil;
 import com.the.harbor.dao.mapper.bo.HyBe;
 import com.the.harbor.dao.mapper.bo.HyBeComments;
 import com.the.harbor.dao.mapper.bo.HyBeDetail;
+import com.the.harbor.dao.mapper.bo.HyBeFavorite;
+import com.the.harbor.dao.mapper.bo.HyBeFavoriteCriteria;
 import com.the.harbor.dao.mapper.bo.HyBeGiveHb;
 import com.the.harbor.dao.mapper.bo.HyBeLikes;
 import com.the.harbor.dao.mapper.bo.HyBeLikesCriteria;
 import com.the.harbor.dao.mapper.bo.HyBeTags;
+import com.the.harbor.dao.mapper.bo.HyBeView;
 import com.the.harbor.dao.mapper.bo.HyUserAssets;
 import com.the.harbor.dao.mapper.interfaces.HyBeCommentsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeDetailMapper;
+import com.the.harbor.dao.mapper.interfaces.HyBeFavoriteMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeGiveHbMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeLikesMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeTagsMapper;
+import com.the.harbor.dao.mapper.interfaces.HyBeViewMapper;
 import com.the.harbor.service.interfaces.IBeBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.HarborSeqUtil;
@@ -95,6 +101,12 @@ public class BeBusiSVImpl implements IBeBusiSV {
 
 	@Autowired
 	private transient IUserManagerSV userManagerSV;
+
+	@Autowired
+	private transient HyBeViewMapper hyBeViewMapper;
+
+	@Autowired
+	private transient HyBeFavoriteMapper hyBeFavoriteMapper;
 
 	@Override
 	public String createBe(BeCreateReq beCreateReq) {
@@ -336,6 +348,42 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		}
 		Be be = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Be.class);
 		return be;
+	}
+
+	@Override
+	public void processDoBeFavoriteMQ(DoBeFavorite doBeFavorite) {
+		if (DoBeFavorite.HandleType.DO.name().equals(doBeFavorite.getHandleType())) {
+			// 如果是收藏，则记录
+			HyBeFavorite record = new HyBeFavorite();
+			record.setBeId(doBeFavorite.getBeId());
+			record.setCreateDate(doBeFavorite.getTime() == null ? DateUtil.getSysDate() : doBeFavorite.getTime());
+			record.setFavoriteId(UUIDUtil.genId32());
+			record.setUserId(doBeFavorite.getUserId());
+			hyBeFavoriteMapper.insert(record);
+
+			// 记录用户收藏行为
+			HyBeUtil.userFavorBe(doBeFavorite.getUserId(), doBeFavorite.getBeId());
+		} else if (DoBeFavorite.HandleType.CANCEL.name().equals(doBeFavorite.getHandleType())) {
+			// 如果是取消收藏，则删除
+			if (!StringUtil.isBlank(doBeFavorite.getUserId()) && !StringUtil.isBlank(doBeFavorite.getBeId())) {
+				HyBeFavoriteCriteria sql = new HyBeFavoriteCriteria();
+				sql.or().andUserIdEqualTo(doBeFavorite.getUserId()).andBeIdEqualTo(doBeFavorite.getBeId());
+				hyBeFavoriteMapper.deleteByExample(sql);
+
+				// 记录用户取消收藏
+				HyBeUtil.userCancelFavorBe(doBeFavorite.getUserId(), doBeFavorite.getBeId());
+			}
+		}
+	}
+
+	@Override
+	public void processDoBeView(DoBeView doBeView) {
+		HyBeView record = new HyBeView();
+		record.setCreateDate(doBeView.getTime() == null ? DateUtil.getSysDate() : doBeView.getTime());
+		record.setViewId(UUIDUtil.genId32());
+		record.setUserId(doBeView.getUserId());
+		record.setBeId(doBeView.getBeId());
+		hyBeViewMapper.insert(record);
 	}
 
 }

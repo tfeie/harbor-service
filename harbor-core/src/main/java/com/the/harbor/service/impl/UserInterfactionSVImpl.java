@@ -8,8 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
 import com.the.harbor.api.be.param.DoBeComment;
+import com.the.harbor.api.be.param.DoBeFavorite;
 import com.the.harbor.api.be.param.DoBeIndexRealtimeStat;
 import com.the.harbor.api.be.param.DoBeLikes;
+import com.the.harbor.api.be.param.DoBeView;
 import com.the.harbor.api.go.param.DoGoComment;
 import com.the.harbor.api.go.param.DoGoFavorite;
 import com.the.harbor.api.go.param.DoGoIndexRealtimeStat;
@@ -68,6 +70,16 @@ public class UserInterfactionSVImpl implements IUserInterfactionSV {
 			// 发送索引更新消息
 			IndexRealtimeCountMQSend.sendGoRealtimeIndexUpdateMQ(
 					new DoGoIndexRealtimeStat(doGoView.getGoId(), DoGoIndexRealtimeStat.StatType.VIEW.name()));
+
+		} else if (MQType.MQ_HY_BE_FAVORITE.getValue().equals(mqType)) {
+			// BE收藏行为
+			DoBeFavorite doBeFavorite = JSONObject.parseObject(mnsBody, DoBeFavorite.class);
+			beBusiSV.processDoBeFavoriteMQ(doBeFavorite);
+
+		} else if (MQType.MQ_HY_BE_VIEWS.getValue().equals(mqType)) {
+			// BE浏览行为
+			DoBeView doBeView = JSONObject.parseObject(mnsBody, DoBeView.class);
+			beBusiSV.processDoBeView(doBeView);
 
 		} else if (MQType.MQ_HY_BE_COMMENT.getValue().equals(mqType)) {
 			// BE评论
