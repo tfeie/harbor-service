@@ -211,6 +211,15 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			record.setUserId(be.getUserId());
 			record.setDianzanUserId(doBELikes.getUserId());
 			hyBeLikesMapper.insert(record);
+			
+			// 发送用户自动收藏的消息
+			if (!HyBeUtil.checkUserBeFavorite(be.getBeId(), doBELikes.getUserId())) {
+				DoBeFavorite body = new DoBeFavorite();
+				body.setHandleType(DoBeFavorite.HandleType.DO.name());
+				body.setBeId(be.getBeId());
+				body.setUserId(doBELikes.getUserId());
+				BeFavorMQSend.sendNotifyMQ(body);
+			}
 		} else if (DoBeLikes.HandleType.CANCEL.name().equals(doBELikes.getHandleType())) {
 			// 如果是取消赞，则删除
 			if (!StringUtil.isBlank(doBELikes.getUserId()) && !StringUtil.isBlank(doBELikes.getBeId())) {
