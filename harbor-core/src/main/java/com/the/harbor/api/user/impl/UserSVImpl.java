@@ -64,6 +64,12 @@ public class UserSVImpl implements IUserSV {
 		userManagerSV.submitUserCertification(userCertificationReq);
 		return ResponseBuilder.buildSuccessResponse("认证材料提交成功");
 	}
+	
+	@Override
+	public Response updateUserInfo(UserInfo user) {
+		userManagerSV.updateUserInfo(user);
+		return ResponseBuilder.buildSuccessResponse("更新用户资料成功");
+	}
 
 	@Override
 	public Response submitUserSelectedSystemTags(UserSystemTagSubmitReq userSystemTagReq)

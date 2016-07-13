@@ -7,6 +7,7 @@ import com.the.harbor.api.user.param.DoUserFans;
 import com.the.harbor.api.user.param.DoUserFriend;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
+import com.the.harbor.api.user.param.UserInfo;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberRenewalReq;
 import com.the.harbor.api.user.param.UserMemberRenewalResp;
@@ -129,4 +130,5 @@ public interface IUserManagerSV {
 	 */
 	List<UserViewInfo> getUserViewInfosByStatus(String status);
 
+	void updateUserInfo(UserInfo user);
 }

@@ -17,6 +17,7 @@ import com.the.harbor.api.user.param.DoUserFans;
 import com.the.harbor.api.user.param.DoUserFriend;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
+import com.the.harbor.api.user.param.UserInfo;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberRenewalReq;
 import com.the.harbor.api.user.param.UserMemberRenewalResp;
@@ -220,6 +221,16 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		int n = hyUserMapper.updateByPrimaryKeySelective(u);
 		if (n == 0) {
 			throw new SystemException("认证材料提交失败,请稍候重试");
+		}
+	}
+	
+	@Override
+	public void updateUserInfo(UserInfo user){
+		HyUser hyUser = new HyUser();
+		BeanUtils.copyProperties(user, hyUser);
+		int n = hyUserMapper.updateByPrimaryKeySelective(hyUser);
+		if (n == 0) {
+			throw new SystemException("更新用户资料失败,请稍候重试");
 		}
 	}
 
