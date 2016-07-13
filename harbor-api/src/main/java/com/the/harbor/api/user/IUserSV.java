@@ -1,5 +1,7 @@
 package com.the.harbor.api.user;
 
+import java.util.List;
+
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
@@ -13,6 +15,7 @@ import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
 import com.the.harbor.api.user.param.UserTagQueryReq;
 import com.the.harbor.api.user.param.UserTagQueryResp;
+import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.api.user.param.UserViewResp;
 import com.the.harbor.api.user.param.UserWealthQueryReq;
 import com.the.harbor.api.user.param.UserWealthQueryResp;
@@ -191,4 +194,12 @@ public interface IUserSV {
 	 */
 	UserWealthQueryResp queryUserWealth(UserWealthQueryReq req) throws BusinessException, SystemException;
 
+	/**
+	 * 根据用户状态查询信息
+	 * @param status
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	List<UserViewInfo> getUserViewInfosByStatus(String status) throws BusinessException, SystemException;;
 }
