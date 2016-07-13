@@ -70,6 +70,7 @@ import com.the.harbor.dao.mapper.interfaces.HyBeTagsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeViewMapper;
 import com.the.harbor.service.interfaces.IBeBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
+import com.the.harbor.util.BeFavorMQSend;
 import com.the.harbor.util.HarborSeqUtil;
 import com.the.harbor.util.IndexRealtimeCountMQSend;
 import com.the.harbor.util.NotifyMQSend;
@@ -336,7 +337,14 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		// 发送索引更新消息
 		IndexRealtimeCountMQSend.sendBeRealtimeIndexUpdateMQ(
 				new DoBeIndexRealtimeStat(giveHBReq.getBeId(), DoBeIndexRealtimeStat.StatType.REWARD.name()));
-
+		// 发送用户自动收藏的消息
+		if (!HyBeUtil.checkUserBeFavorite(be.getBeId(), giveHBReq.getFromUserId())) {
+			DoBeFavorite body = new DoBeFavorite();
+			body.setHandleType(DoBeFavorite.HandleType.DO.name());
+			body.setBeId(be.getBeId());
+			body.setUserId(giveHBReq.getFromUserId());
+			BeFavorMQSend.sendNotifyMQ(body);
+		}
 	}
 
 	private Be queryBe(String beId) {
