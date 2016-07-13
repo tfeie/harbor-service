@@ -550,7 +550,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		HyUserCriteria sql = new HyUserCriteria();
 		
 		sql.or().andUserStatusEqualTo(status);
-		if("10".equals(status)){
+		if(UserStatus.UNAUTHORIZED.getValue().equals(status)){
 			sql.or().andIdcardPhotoIsNotNull();
 			sql.or().andOverseasPhotoIsNotNull();
 		}
