@@ -201,5 +201,5 @@ public interface IUserSV {
 	 * @throws BusinessException
 	 * @throws SystemException
 	 */
-	List<UserViewInfo> getUserViewInfosByStatus(String status) throws BusinessException, SystemException;;
+	List<UserViewInfo> queryUserViewInfosByStatus(String status) throws BusinessException, SystemException;;
 }
