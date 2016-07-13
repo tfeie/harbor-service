@@ -252,6 +252,15 @@ public class UserSVImpl implements IUserSV {
 		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("查询成功"));
 		return resp;
 	}
+	
+	@Override
+	public List<UserViewInfo> queryUserViewInfosByStatus(String status) {
+		if (StringUtil.isBlank(status)) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "用户状态为空");
+		}
+		return userManagerSV.getUserViewInfosByStatus(status);
+	}
+
 
 	private void storeUserInfo2Redis(String userId) {
 		try {

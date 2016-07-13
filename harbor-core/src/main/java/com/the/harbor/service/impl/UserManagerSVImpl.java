@@ -541,6 +541,30 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	public UserViewInfo getUserViewInfoByOpenId(String openId) {
 		return this.getUserViewInfoFromCacheByOpenId(openId);
 	}
+	
+	@Override
+	public List<UserViewInfo> getUserViewInfosByStatus(String status) {
+		if (StringUtil.isBlank(status)) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "用户状态USER_STATUS不能为空");
+		}
+		HyUserCriteria sql = new HyUserCriteria();
+		
+		sql.or().andUserStatusEqualTo(status);
+		if("10".equals(status)){
+			sql.or().andIdcardPhotoIsNotNull();
+			sql.or().andOverseasPhotoIsNotNull();
+		}
+		List<HyUser> users = hyUserMapper.selectByExample(sql);
+		if(CollectionUtil.isEmpty(users)) {
+			return null;
+		}
+		List<UserViewInfo> userViewList = new ArrayList<UserViewInfo>();
+		for(HyUser user: users){
+			UserViewInfo userView = convert(user);
+			userViewList.add(userView);
+		}
+		return userViewList;
+	}
 
 	private UserViewInfo convert(HyUser hyUser) {
 		UserViewInfo userInfo = null;

@@ -121,5 +121,12 @@ public interface IUserManagerSV {
 	HyUserAssets getUserAssets(String userId, String assetsType);
 	
 	UserViewInfo getUserViewInfoFromDBByUserId(String userId);
+	
+	/**
+	 * 根据状态查询用户
+	 * @param status
+	 * @return
+	 */
+	List<UserViewInfo> getUserViewInfosByStatus(String status);
 
 }
