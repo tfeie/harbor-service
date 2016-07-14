@@ -9,6 +9,8 @@ import com.the.harbor.api.be.param.BeQueryResp;
 import com.the.harbor.api.be.param.GiveHBReq;
 import com.the.harbor.api.be.param.QueryMyBeReq;
 import com.the.harbor.api.be.param.QueryMyBeResp;
+import com.the.harbor.api.be.param.QueryMyFavorBeReq;
+import com.the.harbor.api.be.param.QueryMyFavorBeResp;
 import com.the.harbor.api.be.param.QueryOneBeReq;
 import com.the.harbor.api.be.param.QueryOneBeResp;
 import com.the.harbor.base.exception.BusinessException;
@@ -33,6 +35,10 @@ public interface IBeSV {
 
 	}
 
+	@interface QueryMyFavorBe {
+
+	}
+
 	/**
 	 * 发布一个BE
 	 * 
@@ -52,6 +58,17 @@ public interface IBeSV {
 	 * @throws SystemException
 	 */
 	QueryMyBeResp queryMyBe(@NotNull(message = "参数为空") QueryMyBeReq queryMyBeReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 查询我收藏的BE
+	 * 
+	 * @param queryMyFavorBeReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	QueryMyFavorBeResp queryMyFavorBe(@NotNull(message = "参数为空") QueryMyFavorBeReq queryMyFavorBeReq)
 			throws BusinessException, SystemException;
 
 	/**

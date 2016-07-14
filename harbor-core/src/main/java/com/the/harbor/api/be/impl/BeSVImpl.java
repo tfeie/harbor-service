@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -28,6 +29,8 @@ import com.the.harbor.api.be.param.BeTag;
 import com.the.harbor.api.be.param.GiveHBReq;
 import com.the.harbor.api.be.param.QueryMyBeReq;
 import com.the.harbor.api.be.param.QueryMyBeResp;
+import com.the.harbor.api.be.param.QueryMyFavorBeReq;
+import com.the.harbor.api.be.param.QueryMyFavorBeResp;
 import com.the.harbor.api.be.param.QueryOneBeReq;
 import com.the.harbor.api.be.param.QueryOneBeResp;
 import com.the.harbor.api.user.param.UserViewInfo;
@@ -46,6 +49,7 @@ import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
+import com.the.harbor.commons.redisdata.util.HyBeUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
@@ -258,6 +262,42 @@ public class BeSVImpl implements IBeSV {
 	public Response giveHaibei(GiveHBReq giveHBReq) throws BusinessException, SystemException {
 		beBusiSV.giveHaibei(giveHBReq);
 		return ResponseBuilder.buildSuccessResponse("海贝打赏成功");
+	}
+
+	@Override
+	public QueryMyFavorBeResp queryMyFavorBe(QueryMyFavorBeReq queryMyFavorBeReq)
+			throws BusinessException, SystemException {
+		long total = HyBeUtil.getUserFavorBesCount(queryMyFavorBeReq.getUserId());
+		Set<String> beIds = HyBeUtil.getUserFavorBesPage(queryMyFavorBeReq.getUserId(), queryMyFavorBeReq.getPageNo(),
+				queryMyFavorBeReq.getPageSize(), false);
+		List<Be> result = new ArrayList<Be>();
+		for(String beId:beIds){
+			result.add(this.getBe(beId));
+		}
+		PageInfo<Be> pageInfo = new PageInfo<Be>();
+		pageInfo.setCount(Integer.parseInt(total + ""));
+		pageInfo.setPageNo(queryMyFavorBeReq.getPageNo());
+		pageInfo.setPageSize(queryMyFavorBeReq.getPageSize());
+		pageInfo.setResult(result);
+		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
+		QueryMyFavorBeResp resp = new QueryMyFavorBeResp();
+		resp.setPagInfo(pageInfo);
+		resp.setResponseHeader(responseHeader);
+		return resp;
+	}
+	
+	
+	private Be getBe(String beId){
+		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
+				.setTypes(HarborIndexType.HY_BE.getValue())
+				.setQuery(QueryBuilders.termQuery("_id", beId)).execute().actionGet();
+		if (response.getHits().totalHits() == 0) {
+			return null;
+		}
+		Be be = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Be.class);
+		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(be.getUserId());
+		this.fillBeInfo(be, createUserInfo);
+		return be;
 	}
 
 }
