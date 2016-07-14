@@ -131,5 +131,5 @@ public interface IUserManagerSV {
 	 */
 	List<UserViewInfo> getUnAuthUsers();
 
-	void submitUserAuthInfo(UserAuthReq userStatusReq);
+	String submitUserAuthInfo(UserAuthReq userStatusReq);
 }

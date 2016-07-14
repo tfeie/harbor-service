@@ -232,7 +232,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	}
 	
 	@Override
-	public void submitUserAuthInfo(UserAuthReq userStatusReq){
+	public String submitUserAuthInfo(UserAuthReq userStatusReq){
 		HyUser user = this.getUserInfo(userStatusReq.getUserId());
 		if (user == null) {
 			throw new BusinessException("USER_00001", "请先注册后再认证");
@@ -249,7 +249,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		if (n == 0) {
 			throw new SystemException("认证失败,请稍候重试");
 		}
-		
+
 		// 认证不通过，发通知消息
 		if(UserStatus.AUTHORIZED_FAILURE.getValue().equals(userStatusReq.getStatus())){
 			Log.debug("审核不通过，发通知消息");
@@ -267,6 +267,8 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			
 			NotifyMQSend.sendNotifyMQ(notify);
 		}
+		
+		return userStatusReq.getUserId();
 	}
 
 	@Override

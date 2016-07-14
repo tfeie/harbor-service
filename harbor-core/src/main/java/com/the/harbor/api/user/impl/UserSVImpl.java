@@ -68,7 +68,8 @@ public class UserSVImpl implements IUserSV {
 	
 	@Override
 	public Response submitUserAuthInfo(UserAuthReq userStatusReq) {
-		userManagerSV.submitUserAuthInfo(userStatusReq);
+		String userId = userManagerSV.submitUserAuthInfo(userStatusReq);
+		this.storeUserInfo2Redis(userId);
 		return ResponseBuilder.buildSuccessResponse("用户认证成功");
 	}
 
