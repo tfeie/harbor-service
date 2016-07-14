@@ -91,6 +91,7 @@ import com.the.harbor.dao.mapper.interfaces.HyGoViewMapper;
 import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IPaymentBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
+import com.the.harbor.util.GoFavorMQSend;
 import com.the.harbor.util.HarborSeqUtil;
 import com.the.harbor.util.NotifyMQSend;
 import com.the.harbor.util.UserAssetsTradeMQSend;
@@ -259,6 +260,15 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		record.setCreateDate(sysdate);
 		record.setStsDate(sysdate);
 		hyGoOrderMapper.insert(record);
+
+		// 发送用户自动收藏的消息
+		if (!HyGoUtil.checkUserGoFavorite(goOrderCreateReq.getGoId(), goOrderCreateReq.getUserId())) {
+			DoGoFavorite body = new DoGoFavorite();
+			body.setHandleType(DoGoFavorite.HandleType.DO.name());
+			body.setGoId(goOrderCreateReq.getGoId());
+			body.setUserId(goOrderCreateReq.getUserId());
+			GoFavorMQSend.sendNotifyMQ(body);
+		}
 		return orderId;
 	}
 
@@ -528,7 +538,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 	@Override
 	public void processDoGoFavoriteMQ(DoGoFavorite doGoFavorite) {
 		Go go = this.getGoInfo(doGoFavorite.getGoId());
-		if(go==null){
+		if (go == null) {
 			return;
 		}
 		if (DoGoFavorite.HandleType.DO.name().equals(doGoFavorite.getHandleType())) {
@@ -539,18 +549,18 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			record.setFavoriteId(HarborSeqUtil.createGoFavoriteId());
 			record.setUserId(doGoFavorite.getUserId());
 			hyGoFavoriteMapper.insert(record);
-			
-			//记录用户收藏行为
-			HyGoUtil.userFavorGo(doGoFavorite.getUserId(), go.getGoType(),doGoFavorite.getGoId());
+
+			// 记录用户收藏行为
+			HyGoUtil.userFavorGo(doGoFavorite.getUserId(), go.getGoType(), doGoFavorite.getGoId());
 		} else if (DoGoFavorite.HandleType.CANCEL.name().equals(doGoFavorite.getHandleType())) {
 			// 如果是取消收藏，则删除
 			if (!StringUtil.isBlank(doGoFavorite.getUserId()) && !StringUtil.isBlank(doGoFavorite.getGoId())) {
 				HyGoFavoriteCriteria sql = new HyGoFavoriteCriteria();
 				sql.or().andUserIdEqualTo(doGoFavorite.getUserId()).andGoIdEqualTo(doGoFavorite.getGoId());
 				hyGoFavoriteMapper.deleteByExample(sql);
-				
-				//记录用户取消收藏
-				HyGoUtil.userCancelFavorGo(doGoFavorite.getUserId(),go.getGoType(), doGoFavorite.getGoId());
+
+				// 记录用户取消收藏
+				HyGoUtil.userCancelFavorGo(doGoFavorite.getUserId(), go.getGoType(), doGoFavorite.getGoId());
 			}
 		}
 	}
@@ -705,6 +715,16 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		resp.setOrderId(orderId);
 		resp.setPayAmount(payAmount);
 		resp.setPayOrderId(payOrderId);
+
+		// 报名成功，需要将获得先收藏
+		// 发送用户自动收藏的消息
+		if (!HyGoUtil.checkUserGoFavorite(goId, userId)) {
+			DoGoFavorite body = new DoGoFavorite();
+			body.setHandleType(DoGoFavorite.HandleType.DO.name());
+			body.setGoId(goId);
+			body.setUserId(userId);
+			GoFavorMQSend.sendNotifyMQ(body);
+		}
 		return resp;
 	}
 
@@ -870,8 +890,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		}
 		return false;
 	}
-	
-	
+
 	private Go getGoInfo(String goId) {
 		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_GO_DB.getValue())
 				.setTypes(HarborIndexType.HY_GO.getValue()).setQuery(QueryBuilders.termQuery("_id", goId)).execute()
