@@ -18,6 +18,7 @@ import com.the.harbor.api.user.param.UserMemberRenewalReq;
 import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserQueryResp;
 import com.the.harbor.api.user.param.UserRegReq;
+import com.the.harbor.api.user.param.UserAuthReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
@@ -66,9 +67,9 @@ public class UserSVImpl implements IUserSV {
 	}
 	
 	@Override
-	public Response updateUserInfo(UserInfo user) {
-		userManagerSV.updateUserInfo(user);
-		return ResponseBuilder.buildSuccessResponse("更新用户资料成功");
+	public Response submitUserAuthInfo(UserAuthReq userStatusReq) {
+		userManagerSV.submitUserAuthInfo(userStatusReq);
+		return ResponseBuilder.buildSuccessResponse("用户认证成功");
 	}
 
 	@Override
@@ -260,11 +261,8 @@ public class UserSVImpl implements IUserSV {
 	}
 	
 	@Override
-	public List<UserViewInfo> queryUserViewInfosByStatus(String status) {
-		if (StringUtil.isBlank(status)) {
-			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "用户状态为空");
-		}
-		return userManagerSV.getUserViewInfosByStatus(status);
+	public List<UserViewInfo> queryUnAuthUsers() {
+		return userManagerSV.getUnAuthUsers();
 	}
 
 

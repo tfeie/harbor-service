@@ -22,6 +22,7 @@ import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberRenewalReq;
 import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserRegReq;
+import com.the.harbor.api.user.param.UserAuthReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserTag;
@@ -225,12 +226,22 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	}
 	
 	@Override
-	public void updateUserInfo(UserInfo user){
-		HyUser hyUser = new HyUser();
-		BeanUtils.copyProperties(user, hyUser);
-		int n = hyUserMapper.updateByPrimaryKeySelective(hyUser);
+	public void submitUserAuthInfo(UserAuthReq userStatusReq){
+		HyUser user = this.getUserInfo(userStatusReq.getUserId());
+		if (user == null) {
+			throw new BusinessException("USER_00001", "请先注册后再认证");
+		}
+		if (UserStatus.AUTHORIZED_SUCCESS.getValue().equals(user.getUserStatus())) {
+			throw new BusinessException("USER_00002", "您的资料已经认证通过");
+		}
+		HyUser u = new HyUser();
+		u.setUserId(user.getUserId());
+		u.setCertificationDate(DateUtil.getSysDate());
+		u.setCertRemark(userStatusReq.getRemark());
+		u.setUserStatus(userStatusReq.getStatus());
+		int n = hyUserMapper.updateByPrimaryKeySelective(u);
 		if (n == 0) {
-			throw new SystemException("更新用户资料失败,请稍候重试");
+			throw new SystemException("认证失败,请稍候重试");
 		}
 	}
 
@@ -554,17 +565,10 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	}
 	
 	@Override
-	public List<UserViewInfo> getUserViewInfosByStatus(String status) {
-		if (StringUtil.isBlank(status)) {
-			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "用户状态USER_STATUS不能为空");
-		}
+	public List<UserViewInfo> getUnAuthUsers() {
 		HyUserCriteria sql = new HyUserCriteria();
 		
-		sql.or().andUserStatusEqualTo(status);
-		if(UserStatus.UNAUTHORIZED.getValue().equals(status)){
-			sql.or().andIdcardPhotoIsNotNull();
-			sql.or().andOverseasPhotoIsNotNull();
-		}
+		sql.or().andUserStatusEqualTo(UserStatus.UNAUTHORIZED.getValue());
 		List<HyUser> users = hyUserMapper.selectByExample(sql);
 		if(CollectionUtil.isEmpty(users)) {
 			return null;

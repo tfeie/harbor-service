@@ -12,6 +12,7 @@ import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberRenewalReq;
 import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserRegReq;
+import com.the.harbor.api.user.param.UserAuthReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserTag;
@@ -124,11 +125,11 @@ public interface IUserManagerSV {
 	UserViewInfo getUserViewInfoFromDBByUserId(String userId);
 	
 	/**
-	 * 根据状态查询用户
+	 * 查询未认证的用户
 	 * @param status
 	 * @return
 	 */
-	List<UserViewInfo> getUserViewInfosByStatus(String status);
+	List<UserViewInfo> getUnAuthUsers();
 
-	void updateUserInfo(UserInfo user);
+	void submitUserAuthInfo(UserAuthReq userStatusReq);
 }
