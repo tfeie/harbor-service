@@ -4,14 +4,13 @@ import java.util.List;
 
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
-import com.the.harbor.api.user.param.UserInfo;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberQuery;
 import com.the.harbor.api.user.param.UserMemberRenewalReq;
 import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserQueryResp;
 import com.the.harbor.api.user.param.UserRegReq;
-import com.the.harbor.api.user.param.UserStatusReq;
+import com.the.harbor.api.user.param.UserAuthReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
@@ -61,7 +60,7 @@ public interface IUserSV {
 
 	}
 	
-	@interface UserStatus{
+	@interface UserAuth{
 		
 	}
 
@@ -201,18 +200,18 @@ public interface IUserSV {
 	UserWealthQueryResp queryUserWealth(UserWealthQueryReq req) throws BusinessException, SystemException;
 
 	/**
-	 * 查询已申请认证的用户
+	 * 查询未认证的用户
 	 * @param status
 	 * @return
 	 * @throws BusinessException
 	 * @throws SystemException
 	 */
-	List<UserViewInfo> queryUserViewInfosByStatus() throws BusinessException, SystemException;;
+	List<UserViewInfo> queryUnAuthUsers() throws BusinessException, SystemException;;
 	
 	/**
-	 * 更新用户认证状态
+	 * 提交用认证信息
 	 * @param user
 	 * @return
 	 */
-	Response updateUserInfo(UserStatusReq userStatusReq);
+	Response submitUserAuthInfo(UserAuthReq userStatusReq);
 }
