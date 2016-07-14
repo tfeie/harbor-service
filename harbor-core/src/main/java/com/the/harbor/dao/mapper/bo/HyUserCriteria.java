@@ -2514,6 +2514,76 @@ public class HyUserCriteria {
             addCriterion("HOME_PAGE_BG not between", value1, value2, "homePageBg");
             return (Criteria) this;
         }
+
+        public Criteria andAuthStsIsNull() {
+            addCriterion("AUTH_STS is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthStsIsNotNull() {
+            addCriterion("AUTH_STS is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthStsEqualTo(String value) {
+            addCriterion("AUTH_STS =", value, "authSts");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthStsNotEqualTo(String value) {
+            addCriterion("AUTH_STS <>", value, "authSts");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthStsGreaterThan(String value) {
+            addCriterion("AUTH_STS >", value, "authSts");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthStsGreaterThanOrEqualTo(String value) {
+            addCriterion("AUTH_STS >=", value, "authSts");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthStsLessThan(String value) {
+            addCriterion("AUTH_STS <", value, "authSts");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthStsLessThanOrEqualTo(String value) {
+            addCriterion("AUTH_STS <=", value, "authSts");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthStsLike(String value) {
+            addCriterion("AUTH_STS like", value, "authSts");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthStsNotLike(String value) {
+            addCriterion("AUTH_STS not like", value, "authSts");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthStsIn(List<String> values) {
+            addCriterion("AUTH_STS in", values, "authSts");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthStsNotIn(List<String> values) {
+            addCriterion("AUTH_STS not in", values, "authSts");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthStsBetween(String value1, String value2) {
+            addCriterion("AUTH_STS between", value1, value2, "authSts");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthStsNotBetween(String value1, String value2) {
+            addCriterion("AUTH_STS not between", value1, value2, "authSts");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

@@ -77,6 +77,8 @@ public class UserInfo implements Serializable {
 
 	private String homePageBg;
 
+	private String authSts;
+
 	public String getUserId() {
 		return userId;
 	}
@@ -355,6 +357,14 @@ public class UserInfo implements Serializable {
 
 	public void setHomePageBg(String homePageBg) {
 		this.homePageBg = homePageBg;
+	}
+
+	public String getAuthSts() {
+		return authSts;
+	}
+
+	public void setAuthSts(String authSts) {
+		this.authSts = authSts;
 	}
 
 }

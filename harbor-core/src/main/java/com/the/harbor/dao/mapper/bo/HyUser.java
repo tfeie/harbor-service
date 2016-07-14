@@ -73,6 +73,8 @@ public class HyUser {
 
     private String homePageBg;
 
+    private String authSts;
+
     public String getUserId() {
         return userId;
     }
@@ -351,5 +353,13 @@ public class HyUser {
 
     public void setHomePageBg(String homePageBg) {
         this.homePageBg = homePageBg == null ? null : homePageBg.trim();
+    }
+
+    public String getAuthSts() {
+        return authSts;
+    }
+
+    public void setAuthSts(String authSts) {
+        this.authSts = authSts == null ? null : authSts.trim();
     }
 }

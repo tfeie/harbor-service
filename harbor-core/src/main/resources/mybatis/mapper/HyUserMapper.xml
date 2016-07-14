@@ -37,6 +37,7 @@
     <result column="WX_NICKNAME" property="wxNickname" jdbcType="VARCHAR" />
     <result column="CERT_REMARK" property="certRemark" jdbcType="VARCHAR" />
     <result column="HOME_PAGE_BG" property="homePageBg" jdbcType="VARCHAR" />
+    <result column="AUTH_STS" property="authSts" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -101,7 +102,7 @@
     ABROAD_UNIVERSITY, AT_COUNTRY, AT_PROVINCE, AT_CITY, SIGNATURE, MOBILE_PHONE, EMAIL, 
     MARITAL_STATUS, CONSTELLATION, COMPANY, INDUSTRY, TITLE, REG_DATE, USER_STATUS, IDCARD_PHOTO, 
     OVERSEAS_PHOTO, SUBMIT_CERT_DATE, CERTIFICATION_DATE, ACCESS_PERMISSION, UPDATE_DATE, 
-    MEMBER_LEVEL, EFF_DATE, EXP_DATE, WX_NICKNAME, CERT_REMARK, HOME_PAGE_BG
+    MEMBER_LEVEL, EFF_DATE, EXP_DATE, WX_NICKNAME, CERT_REMARK, HOME_PAGE_BG, AUTH_STS
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyUserCriteria" >
     select
@@ -149,7 +150,8 @@
       OVERSEAS_PHOTO, SUBMIT_CERT_DATE, CERTIFICATION_DATE, 
       ACCESS_PERMISSION, UPDATE_DATE, MEMBER_LEVEL, 
       EFF_DATE, EXP_DATE, WX_NICKNAME, 
-      CERT_REMARK, HOME_PAGE_BG)
+      CERT_REMARK, HOME_PAGE_BG, AUTH_STS
+      )
     values (#{userId,jdbcType=VARCHAR}, #{userType,jdbcType=VARCHAR}, #{hyId,jdbcType=VARCHAR}, 
       #{enName,jdbcType=VARCHAR}, #{chName,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR}, 
       #{wxOpenid,jdbcType=VARCHAR}, #{wxHeadimg,jdbcType=VARCHAR}, #{abroadCountry,jdbcType=VARCHAR}, 
@@ -161,7 +163,8 @@
       #{overseasPhoto,jdbcType=VARCHAR}, #{submitCertDate,jdbcType=TIMESTAMP}, #{certificationDate,jdbcType=TIMESTAMP}, 
       #{accessPermission,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, #{memberLevel,jdbcType=VARCHAR}, 
       #{effDate,jdbcType=TIMESTAMP}, #{expDate,jdbcType=TIMESTAMP}, #{wxNickname,jdbcType=VARCHAR}, 
-      #{certRemark,jdbcType=VARCHAR}, #{homePageBg,jdbcType=VARCHAR})
+      #{certRemark,jdbcType=VARCHAR}, #{homePageBg,jdbcType=VARCHAR}, #{authSts,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyUser" >
     insert into hy_user
@@ -271,6 +274,9 @@
       <if test="homePageBg != null" >
         HOME_PAGE_BG,
       </if>
+      <if test="authSts != null" >
+        AUTH_STS,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="userId != null" >
@@ -377,6 +383,9 @@
       </if>
       <if test="homePageBg != null" >
         #{homePageBg,jdbcType=VARCHAR},
+      </if>
+      <if test="authSts != null" >
+        #{authSts,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -494,6 +503,9 @@
       <if test="record.homePageBg != null" >
         HOME_PAGE_BG = #{record.homePageBg,jdbcType=VARCHAR},
       </if>
+      <if test="record.authSts != null" >
+        AUTH_STS = #{record.authSts,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -535,7 +547,8 @@
       EXP_DATE = #{record.expDate,jdbcType=TIMESTAMP},
       WX_NICKNAME = #{record.wxNickname,jdbcType=VARCHAR},
       CERT_REMARK = #{record.certRemark,jdbcType=VARCHAR},
-      HOME_PAGE_BG = #{record.homePageBg,jdbcType=VARCHAR}
+      HOME_PAGE_BG = #{record.homePageBg,jdbcType=VARCHAR},
+      AUTH_STS = #{record.authSts,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -645,6 +658,9 @@
       <if test="homePageBg != null" >
         HOME_PAGE_BG = #{homePageBg,jdbcType=VARCHAR},
       </if>
+      <if test="authSts != null" >
+        AUTH_STS = #{authSts,jdbcType=VARCHAR},
+      </if>
     </set>
     where USER_ID = #{userId,jdbcType=VARCHAR}
   </update>
@@ -683,7 +699,8 @@
       EXP_DATE = #{expDate,jdbcType=TIMESTAMP},
       WX_NICKNAME = #{wxNickname,jdbcType=VARCHAR},
       CERT_REMARK = #{certRemark,jdbcType=VARCHAR},
-      HOME_PAGE_BG = #{homePageBg,jdbcType=VARCHAR}
+      HOME_PAGE_BG = #{homePageBg,jdbcType=VARCHAR},
+      AUTH_STS = #{authSts,jdbcType=VARCHAR}
     where USER_ID = #{userId,jdbcType=VARCHAR}
   </update>
 </mapper>

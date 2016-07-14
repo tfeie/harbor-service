@@ -25,6 +25,8 @@ public class UserViewInfo extends UserInfo {
 	private String industryName;
 
 	private String userStatusName;
+	
+	  private String authStsName;
 
 	public String getUserTypeName() {
 		return userTypeName;
@@ -89,5 +91,15 @@ public class UserViewInfo extends UserInfo {
 	public void setUserStatusName(String userStatusName) {
 		this.userStatusName = userStatusName;
 	}
+
+	public String getAuthStsName() {
+		return authStsName;
+	}
+
+	public void setAuthStsName(String authStsName) {
+		this.authStsName = authStsName;
+	}
+	
+	
 
 }

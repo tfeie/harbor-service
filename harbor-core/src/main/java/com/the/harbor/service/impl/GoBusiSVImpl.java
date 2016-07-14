@@ -3,6 +3,8 @@ package com.the.harbor.service.impl;
 import java.sql.Timestamp;
 import java.util.List;
 
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -55,7 +57,10 @@ import com.the.harbor.base.enumeration.hyuser.SystemUser;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
+import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
+import com.the.harbor.commons.indices.def.HarborIndex;
+import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.def.DoNotify;
 import com.the.harbor.commons.redisdata.util.HyGoUtil;
 import com.the.harbor.commons.util.AmountUtils;
@@ -522,6 +527,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 	@Override
 	public void processDoGoFavoriteMQ(DoGoFavorite doGoFavorite) {
+		Go go = this.getGoInfo(doGoFavorite.getGoId());
+		if(go==null){
+			return;
+		}
 		if (DoGoFavorite.HandleType.DO.name().equals(doGoFavorite.getHandleType())) {
 			// 如果是收藏，则记录
 			HyGoFavorite record = new HyGoFavorite();
@@ -532,7 +541,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			hyGoFavoriteMapper.insert(record);
 			
 			//记录用户收藏行为
-			HyGoUtil.userFavorGo(doGoFavorite.getUserId(), doGoFavorite.getGoId());
+			HyGoUtil.userFavorGo(doGoFavorite.getUserId(), go.getGoType(),doGoFavorite.getGoId());
 		} else if (DoGoFavorite.HandleType.CANCEL.name().equals(doGoFavorite.getHandleType())) {
 			// 如果是取消收藏，则删除
 			if (!StringUtil.isBlank(doGoFavorite.getUserId()) && !StringUtil.isBlank(doGoFavorite.getGoId())) {
@@ -541,7 +550,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				hyGoFavoriteMapper.deleteByExample(sql);
 				
 				//记录用户取消收藏
-				HyGoUtil.userCancelFavorGo(doGoFavorite.getUserId(), doGoFavorite.getGoId());
+				HyGoUtil.userCancelFavorGo(doGoFavorite.getUserId(),go.getGoType(), doGoFavorite.getGoId());
 			}
 		}
 	}
@@ -860,6 +869,18 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			return o.getUserId().equals(checkUserOrderGoReq.getUserId());
 		}
 		return false;
+	}
+	
+	
+	private Go getGoInfo(String goId) {
+		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_GO_DB.getValue())
+				.setTypes(HarborIndexType.HY_GO.getValue()).setQuery(QueryBuilders.termQuery("_id", goId)).execute()
+				.actionGet();
+		if (response.getHits().totalHits() == 0) {
+			return null;
+		}
+		Go go = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Go.class);
+		return go;
 	}
 
 }

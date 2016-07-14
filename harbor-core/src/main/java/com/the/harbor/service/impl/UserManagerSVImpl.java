@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.mortbay.log.Log;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,14 +15,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.the.harbor.api.user.param.DoUserAssetsTrade;
 import com.the.harbor.api.user.param.DoUserFans;
 import com.the.harbor.api.user.param.DoUserFriend;
+import com.the.harbor.api.user.param.UserAuthReq;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
-import com.the.harbor.api.user.param.UserInfo;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberRenewalReq;
 import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserRegReq;
-import com.the.harbor.api.user.param.UserAuthReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserTag;
@@ -42,6 +40,7 @@ import com.the.harbor.base.enumeration.hypaymentorder.BusiType;
 import com.the.harbor.base.enumeration.hytags.TagCat;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.enumeration.hyuser.AccessPermission;
+import com.the.harbor.base.enumeration.hyuser.AuthSts;
 import com.the.harbor.base.enumeration.hyuser.MemberLevel;
 import com.the.harbor.base.enumeration.hyuser.SystemUser;
 import com.the.harbor.base.enumeration.hyuser.UserStatus;
@@ -144,6 +143,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		user.setUserStatus(UserStatus.UNAUTHORIZED.getValue());
 		user.setAccessPermission(AccessPermission.ALL_ALLOWED.getValue());
 		user.setMemberLevel(MemberLevel.NOT.getValue());
+		user.setAuthSts(AuthSts.NOT_APPLY.getValue());
 		int success = hyUserMapper.insertSelective(user);
 		if (success == 0) {
 			throw new SystemException("注册失败,请稍候重试");
@@ -184,7 +184,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		record.setTotalIncome(0);
 		record.setAssetsStatus(AssetsStatus.NORMAL.getValue());
 		hyUserAssetsMapper.insert(record);
-		
+
 		HyUserHbAssets hb = new HyUserHbAssets();
 		hb.setAssetsId(record.getAssetsId());
 		hb.setUserId(record.getUserId());
@@ -225,49 +225,55 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		u.setCertificationDate(null);
 		u.setSubmitCertDate(DateUtil.getSysDate());
 		u.setUserStatus(UserStatus.UNAUTHORIZED.getValue());
+		u.setAuthSts(AuthSts.SUBMITTED_APPLY.getValue());
 		int n = hyUserMapper.updateByPrimaryKeySelective(u);
 		if (n == 0) {
 			throw new SystemException("认证材料提交失败,请稍候重试");
 		}
 	}
-	
+
 	@Override
-	public String submitUserAuthInfo(UserAuthReq userStatusReq){
+	public String submitUserAuthInfo(UserAuthReq userStatusReq) {
 		HyUser user = this.getUserInfo(userStatusReq.getUserId());
 		if (user == null) {
-			throw new BusinessException("USER_00001", "请先注册后再认证");
+			throw new BusinessException("请先注册后再认证");
 		}
 		if (UserStatus.AUTHORIZED_SUCCESS.getValue().equals(user.getUserStatus())) {
-			throw new BusinessException("USER_00002", "您的资料已经认证通过");
+			throw new BusinessException("已经认证通过");
 		}
 		HyUser u = new HyUser();
 		u.setUserId(user.getUserId());
 		u.setCertificationDate(DateUtil.getSysDate());
 		u.setCertRemark(userStatusReq.getRemark());
-		u.setUserStatus(userStatusReq.getStatus());
-		int n = hyUserMapper.updateByPrimaryKeySelective(u);
-		if (n == 0) {
-			throw new SystemException("认证失败,请稍候重试");
-		}
 
-		// 认证不通过，发通知消息
-		if(UserStatus.AUTHORIZED_FAILURE.getValue().equals(userStatusReq.getStatus())){
-			Log.debug("审核不通过，发通知消息");
-			DoNotify notify = new DoNotify();
-			notify.setHandleType(DoNotify.HandleType.PUBLISH.name());
-			notify.setNotifyId(UUIDUtil.genId32());
-			notify.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
-			notify.setSenderType(SenderType.SYSTEM.getValue());
-			notify.setSenderId(userStatusReq.getUserId());
-			notify.setAccepterType(AccepterType.USER.getValue());
-			notify.setAccepterId(userStatusReq.getUserId());
-			notify.setTitle("审核结果");
-			notify.setContent("审核未通过：" + userStatusReq.getRemark());
-			notify.setLink("../user/toApplyCertficate.html");
-			
-			NotifyMQSend.sendNotifyMQ(notify);
+		String content = "";
+		String link = null;
+		if (AuthSts.AUTH_PASS.getValue().equals(userStatusReq.getStatus())) {
+			u.setUserStatus(UserStatus.AUTHORIZED_SUCCESS.getValue());
+			content = "您提交的认证材料审核通过";
+		} else if (AuthSts.AUTH_FAILURE.getValue().equals(userStatusReq.getStatus())) {
+			u.setUserStatus(UserStatus.AUTHORIZED_FAILURE.getValue());
+			content = "您提交的认证材料审核未通过:" + userStatusReq.getRemark();
+			link = "../user/toApplyCertficate.html";
 		}
-		
+		u.setAuthSts(userStatusReq.getStatus());
+		hyUserMapper.updateByPrimaryKeySelective(u);
+
+		// 审核通过与否得要发送消息
+		DoNotify notify = new DoNotify();
+		notify.setHandleType(DoNotify.HandleType.PUBLISH.name());
+		notify.setNotifyId(UUIDUtil.genId32());
+		notify.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+		notify.setSenderType(SenderType.SYSTEM.getValue());
+		notify.setSenderId(userStatusReq.getUserId());
+		notify.setAccepterType(AccepterType.USER.getValue());
+		notify.setAccepterId(userStatusReq.getUserId());
+		notify.setTitle("您的认证申请审核结果");
+		notify.setContent(content);
+		notify.setLink(link);
+
+		NotifyMQSend.sendNotifyMQ(notify);
+
 		return userStatusReq.getUserId();
 	}
 
@@ -589,18 +595,17 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	public UserViewInfo getUserViewInfoByOpenId(String openId) {
 		return this.getUserViewInfoFromCacheByOpenId(openId);
 	}
-	
+
 	@Override
 	public List<UserViewInfo> getUnAuthUsers() {
 		HyUserCriteria sql = new HyUserCriteria();
-		
-		sql.or().andUserStatusEqualTo(UserStatus.UNAUTHORIZED.getValue());
+		sql.or().andAuthStsEqualTo(AuthSts.SUBMITTED_APPLY.getValue());
 		List<HyUser> users = hyUserMapper.selectByExample(sql);
-		if(CollectionUtil.isEmpty(users)) {
+		if (CollectionUtil.isEmpty(users)) {
 			return null;
 		}
 		List<UserViewInfo> userViewList = new ArrayList<UserViewInfo>();
-		for(HyUser user: users){
+		for (HyUser user : users) {
 			UserViewInfo userView = convert(user);
 			userViewList.add(userView);
 		}
@@ -638,18 +643,19 @@ public class UserManagerSVImpl implements IUserManagerSV {
 						ParamCode.USER_STATUS.getValue(), UserStatus.UNAUTHORIZED.getValue());
 				userInfo.setUserStatusName(userStatus);
 			}
+			String authStsName = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(), ParamCode.AUTH_STS.getValue(),
+					hyUser.getAuthSts());
+			userInfo.setAuthStsName(authStsName);
 
 		}
 		return userInfo;
 	}
-	
+
 	public UserViewInfo getUserViewInfoFromDBByUserId(String userId) {
 		HyUser hyUser = this.getUserInfo(userId);
 		UserViewInfo userInfo = this.convert(hyUser);
 		return userInfo;
 	}
-
-		
 
 	private UserViewInfo getUserViewInfoFromCacheByUserId(String userId) {
 		UserViewInfo userInfo = null;
@@ -860,7 +866,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 					// 我打赏别人海贝
 					HyUserHbAssets hbr = new HyUserHbAssets();
 					hbr.setAssetsId(assets.getAssetsId());
-					hbr.setTotalDashang(hbr.getTotalDashang() +notify.getTradeBalance());
+					hbr.setTotalDashang(hbr.getTotalDashang() + notify.getTradeBalance());
 					hyUserHbAssetsMapper.updateByPrimaryKeySelective(hbr);
 				}
 			}
