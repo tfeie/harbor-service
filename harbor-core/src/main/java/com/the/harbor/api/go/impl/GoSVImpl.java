@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -43,6 +44,8 @@ import com.the.harbor.api.go.param.GroupApplyReq;
 import com.the.harbor.api.go.param.GroupApplyResp;
 import com.the.harbor.api.go.param.QueryGoReq;
 import com.the.harbor.api.go.param.QueryGoResp;
+import com.the.harbor.api.go.param.QueryMyFavorGoReq;
+import com.the.harbor.api.go.param.QueryMyFavorGoResp;
 import com.the.harbor.api.go.param.QueryMyGoReq;
 import com.the.harbor.api.go.param.QueryMyGoResp;
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
@@ -68,6 +71,7 @@ import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
+import com.the.harbor.commons.redisdata.util.HyGoUtil;
 import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
@@ -474,6 +478,28 @@ public class GoSVImpl implements IGoSV {
 		CheckUserOrderGoResp resp = new CheckUserOrderGoResp();
 		resp.setResponseHeader(responseHeader);
 		resp.setCheckflag(check);
+		return resp;
+	}
+
+	@Override
+	public QueryMyFavorGoResp queryMyFavorGoes(QueryMyFavorGoReq queryMyGoReq)
+			throws BusinessException, SystemException {
+		long total = HyGoUtil.getUserFavorGoesCount(queryMyGoReq.getUserId(), queryMyGoReq.getGoType());
+		Set<String> goIds = HyGoUtil.getUserFavorGoesPage(queryMyGoReq.getUserId(), queryMyGoReq.getGoType(),
+				queryMyGoReq.getPageNo(), queryMyGoReq.getPageSize(), false);
+		List<Go> result = new ArrayList<Go>();
+		for (String goId : goIds) {
+			result.add(this.getGoInfo(goId));
+		}
+		PageInfo<Go> pageInfo = new PageInfo<Go>();
+		pageInfo.setCount(Integer.parseInt(total + ""));
+		pageInfo.setPageNo(queryMyGoReq.getPageNo());
+		pageInfo.setPageSize(queryMyGoReq.getPageSize());
+		pageInfo.setResult(result);
+		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
+		QueryMyFavorGoResp resp = new QueryMyFavorGoResp();
+		resp.setPagInfo(pageInfo);
+		resp.setResponseHeader(responseHeader);
 		return resp;
 	}
 

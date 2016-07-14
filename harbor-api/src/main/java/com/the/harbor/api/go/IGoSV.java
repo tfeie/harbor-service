@@ -22,6 +22,8 @@ import com.the.harbor.api.go.param.GroupApplyReq;
 import com.the.harbor.api.go.param.GroupApplyResp;
 import com.the.harbor.api.go.param.QueryGoReq;
 import com.the.harbor.api.go.param.QueryGoResp;
+import com.the.harbor.api.go.param.QueryMyFavorGoReq;
+import com.the.harbor.api.go.param.QueryMyFavorGoResp;
 import com.the.harbor.api.go.param.QueryMyGoReq;
 import com.the.harbor.api.go.param.QueryMyGoResp;
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
@@ -93,6 +95,10 @@ public interface IGoSV {
 	}
 
 	@interface CheckUserOrderGo {
+
+	}
+
+	@interface QueryMyFavorGoes {
 
 	}
 
@@ -226,6 +232,9 @@ public interface IGoSV {
 	 * @throws SystemException
 	 */
 	QueryMyGoResp queryMyGoes(@NotNull(message = "参数为空") QueryMyGoReq queryMyGoReq)
+			throws BusinessException, SystemException;
+
+	QueryMyFavorGoResp queryMyFavorGoes(@NotNull(message = "参数为空") QueryMyFavorGoReq queryMyGoReq)
 			throws BusinessException, SystemException;
 
 	/**
