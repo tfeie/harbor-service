@@ -11,6 +11,7 @@ import com.the.harbor.api.user.param.UserMemberRenewalReq;
 import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserQueryResp;
 import com.the.harbor.api.user.param.UserRegReq;
+import com.the.harbor.api.user.param.UserStatusReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
@@ -58,6 +59,10 @@ public interface IUserSV {
 
 	@interface QueryUserWealth {
 
+	}
+	
+	@interface UserStatus{
+		
 	}
 
 	/**
@@ -196,18 +201,18 @@ public interface IUserSV {
 	UserWealthQueryResp queryUserWealth(UserWealthQueryReq req) throws BusinessException, SystemException;
 
 	/**
-	 * 根据用户状态查询信息
+	 * 查询已申请认证的用户
 	 * @param status
 	 * @return
 	 * @throws BusinessException
 	 * @throws SystemException
 	 */
-	List<UserViewInfo> queryUserViewInfosByStatus(String status) throws BusinessException, SystemException;;
+	List<UserViewInfo> queryUserViewInfosByStatus() throws BusinessException, SystemException;;
 	
 	/**
-	 * 更新用户资料
+	 * 更新用户认证状态
 	 * @param user
 	 * @return
 	 */
-	Response updateUserInfo(UserInfo user);
+	Response updateUserInfo(UserStatusReq userStatusReq);
 }
