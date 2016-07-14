@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.mortbay.log.Log;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,9 @@ import com.the.harbor.base.constants.ExceptCodeConstants;
 import com.the.harbor.base.enumeration.common.Status;
 import com.the.harbor.base.enumeration.dict.ParamCode;
 import com.the.harbor.base.enumeration.dict.TypeCode;
+import com.the.harbor.base.enumeration.hynotify.AccepterType;
+import com.the.harbor.base.enumeration.hynotify.NotifyType;
+import com.the.harbor.base.enumeration.hynotify.SenderType;
 import com.the.harbor.base.enumeration.hypaymentorder.BusiType;
 import com.the.harbor.base.enumeration.hytags.TagCat;
 import com.the.harbor.base.enumeration.hytags.TagType;
@@ -49,6 +53,7 @@ import com.the.harbor.base.enumeration.hyuserassets.TradeType;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
+import com.the.harbor.commons.redisdata.def.DoNotify;
 import com.the.harbor.commons.redisdata.util.HyCountryUtil;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
 import com.the.harbor.commons.redisdata.util.HyIndustryUtil;
@@ -81,6 +86,7 @@ import com.the.harbor.dao.mapper.interfaces.HyUserTagsMapper;
 import com.the.harbor.service.interfaces.IBeBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.HarborSeqUtil;
+import com.the.harbor.util.NotifyMQSend;
 
 @Component
 @Transactional
@@ -242,6 +248,24 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		int n = hyUserMapper.updateByPrimaryKeySelective(u);
 		if (n == 0) {
 			throw new SystemException("认证失败,请稍候重试");
+		}
+		
+		// 认证不通过，发通知消息
+		if(UserStatus.AUTHORIZED_FAILURE.getValue().equals(userStatusReq.getStatus())){
+			Log.debug("审核不通过，发通知消息");
+			DoNotify notify = new DoNotify();
+			notify.setHandleType(DoNotify.HandleType.PUBLISH.name());
+			notify.setNotifyId(UUIDUtil.genId32());
+			notify.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+			notify.setSenderType(SenderType.SYSTEM.getValue());
+			notify.setSenderId(userStatusReq.getUserId());
+			notify.setAccepterType(AccepterType.USER.getValue());
+			notify.setAccepterId(userStatusReq.getUserId());
+			notify.setTitle("审核结果");
+			notify.setContent("审核未通过：" + userStatusReq.getRemark());
+			notify.setLink("../user/toApplyCertficate.html");
+			
+			NotifyMQSend.sendNotifyMQ(notify);
 		}
 	}
 
