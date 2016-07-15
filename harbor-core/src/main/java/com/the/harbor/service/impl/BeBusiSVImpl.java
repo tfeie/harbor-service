@@ -268,6 +268,10 @@ public class BeBusiSVImpl implements IBeBusiSV {
 	@Override
 	public void giveHaibei(GiveHBReq giveHBReq) {
 		// 判断用户海贝是否足够
+		boolean check = HyBeUtil.getBeRewardUsers(giveHBReq.getBeId()).contains(giveHBReq.getFromUserId());
+		if (check) {
+			throw new BusinessException("您已经打赏过了哦~");
+		}
 		HyUserAssets userAssets = userManagerSV.getUserAssets(giveHBReq.getFromUserId(), AssetsType.HAIBEI.getValue());
 		if (userAssets == null) {
 			throw new BusinessException(BusiErrorCode.HAIBEI_NOT_ENOUGH.getValue(), "您的海贝数量不足，请充值");
