@@ -81,16 +81,13 @@ public class GoIndexBuildListener implements InitializingBean {
 		while (true) {
 			Message message = receiver.receiveMessage();
 			LOG.info("Thread" + workerId + " GOT ONE MESSAGE! " + message.getMessageId());
-			boolean success = false;
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					Go go = JSONObject.parseObject(message.getMessageBody(), Go.class);
 					ElasticSearchFactory.addIndex(HarborIndex.HY_GO_DB.getValue(), HarborIndexType.HY_GO.getValue(),
 							go.getGoId(), message.getMessageBody());
 				}
-				success = true;
 			} catch (Exception ex) {
-				success = false;
 				LOG.error("GO索引构建MNS消息失败", ex);
 			}
 			try {

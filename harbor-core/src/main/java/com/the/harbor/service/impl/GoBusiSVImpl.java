@@ -5,19 +5,12 @@ import java.util.List;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.aliyun.mns.client.CloudQueue;
-import com.aliyun.mns.client.MNSClient;
-import com.aliyun.mns.common.ClientException;
-import com.aliyun.mns.common.ServiceException;
-import com.aliyun.mns.model.Message;
 import com.the.harbor.api.go.param.CheckUserOrderGoReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.DoGoComment;
@@ -56,9 +49,7 @@ import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.enumeration.hyuser.SystemUser;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.exception.BusinessException;
-import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
 import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
-import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.def.DoNotify;
@@ -91,16 +82,15 @@ import com.the.harbor.dao.mapper.interfaces.HyGoViewMapper;
 import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IPaymentBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
-import com.the.harbor.util.GoFavorMQSend;
+import com.the.harbor.util.ESIndexBuildMQSend;
 import com.the.harbor.util.HarborSeqUtil;
 import com.the.harbor.util.NotifyMQSend;
 import com.the.harbor.util.UserAssetsTradeMQSend;
+import com.the.harbor.util.UserFavorMQSend;
 
 @Component
 @Transactional
 public class GoBusiSVImpl implements IGoBusiSV {
-
-	private static final Logger LOG = LoggerFactory.getLogger(GoBusiSVImpl.class);
 
 	@Autowired
 	private transient HyGoDetailMapper hyGoDetailMapper;
@@ -195,37 +185,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			}
 		}
 		// 将GO的数据发送给MNS处理
-		this.buildGoIndexBuildMQ(bgo);
+		ESIndexBuildMQSend.sendMQ(bgo);
 		return goId;
-	}
-
-	/**
-	 * 产生一个GO索引构建消息
-	 * 
-	 * @param go
-	 */
-	private void buildGoIndexBuildMQ(Go go) {
-		MNSClient client = MNSFactory.getMNSClient();
-		try {
-			CloudQueue queue = client.getQueueRef(GlobalSettings.getGoIndexBuildQueueName());
-			Message message = new Message();
-			message.setMessageBody(JSON.toJSONString(go));
-			queue.putMessage(message);
-		} catch (ClientException ce) {
-			LOG.error("Something wrong with the network connection between client and MNS service."
-					+ "Please check your network and DNS availablity.", ce);
-		} catch (ServiceException se) {
-			if (se.getErrorCode().equals("QueueNotExist")) {
-				LOG.error("Queue is not exist.Please create before use", se);
-			} else if (se.getErrorCode().equals("TimeExpired")) {
-				LOG.error("The request is time expired. Please check your local machine timeclock", se);
-			}
-			LOG.error("Go index build message put in Queue error", se);
-		} catch (Exception e) {
-			LOG.error("Unknown exception happened!", e);
-		}
-		client.close();
-
 	}
 
 	@Override
@@ -267,7 +228,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			body.setHandleType(DoGoFavorite.HandleType.DO.name());
 			body.setGoId(goOrderCreateReq.getGoId());
 			body.setUserId(goOrderCreateReq.getUserId());
-			GoFavorMQSend.sendNotifyMQ(body);
+			UserFavorMQSend.sendMQ(body);
 		}
 		return orderId;
 	}
@@ -723,7 +684,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			body.setHandleType(DoGoFavorite.HandleType.DO.name());
 			body.setGoId(goId);
 			body.setUserId(userId);
-			GoFavorMQSend.sendNotifyMQ(body);
+			UserFavorMQSend.sendMQ(body);
 		}
 		return resp;
 	}

@@ -89,15 +89,12 @@ public class NotifyListener implements InitializingBean {
 		while (true) {
 			Message message = receiver.receiveMessage();
 			LOG.info("Thread" + workerId + " GOT ONE MESSAGE! " + message.getMessageId());
-			boolean success = false;
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					DoNotify notify = JSON.parse(message.getMessageBody(), DoNotify.class);
 					notifySV.process(notify);
 				}
-				success = true;
 			} catch (Exception ex) {
-				success = false;
 				LOG.error("系统通知消息消费失败", ex);
 			}
 			// 如果记录入库成功，则需要从MNS删除消息

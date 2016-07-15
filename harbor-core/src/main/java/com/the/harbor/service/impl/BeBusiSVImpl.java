@@ -4,19 +4,12 @@ import java.sql.Timestamp;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.aliyun.mns.client.CloudQueue;
-import com.aliyun.mns.client.MNSClient;
-import com.aliyun.mns.common.ClientException;
-import com.aliyun.mns.common.ServiceException;
-import com.aliyun.mns.model.Message;
 import com.the.harbor.api.be.param.Be;
 import com.the.harbor.api.be.param.BeComment;
 import com.the.harbor.api.be.param.BeCreateReq;
@@ -38,9 +31,7 @@ import com.the.harbor.base.enumeration.hypaymentorder.BusiType;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.exception.BusinessException;
-import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
 import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
-import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.def.DoNotify;
@@ -70,17 +61,16 @@ import com.the.harbor.dao.mapper.interfaces.HyBeTagsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeViewMapper;
 import com.the.harbor.service.interfaces.IBeBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
-import com.the.harbor.util.BeFavorMQSend;
+import com.the.harbor.util.ESIndexBuildMQSend;
 import com.the.harbor.util.HarborSeqUtil;
 import com.the.harbor.util.IndexRealtimeCountMQSend;
 import com.the.harbor.util.NotifyMQSend;
 import com.the.harbor.util.UserAssetsTradeMQSend;
+import com.the.harbor.util.UserFavorMQSend;
 
 @Component
 @Transactional
 public class BeBusiSVImpl implements IBeBusiSV {
-
-	private static final Logger LOG = LoggerFactory.getLogger(BeBusiSVImpl.class);
 
 	@Autowired
 	private transient HyBeMapper hyBeMapper;
@@ -163,37 +153,8 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			}
 		}
 		// 构建索引记录并发送到消息中,实现异步构建
-		this.buildBeIndexBuildMQ(be);
+		ESIndexBuildMQSend.sendMQ(be);
 		return beId;
-	}
-
-	/**
-	 * 产生一个BE索引构建消息
-	 * 
-	 * @param be
-	 */
-	private void buildBeIndexBuildMQ(Be be) {
-		MNSClient client = MNSFactory.getMNSClient();
-		try {
-			CloudQueue queue = client.getQueueRef(GlobalSettings.getBeIndexBuildQueueName());
-			Message message = new Message();
-			message.setMessageBody(JSON.toJSONString(be));
-			queue.putMessage(message);
-		} catch (ClientException ce) {
-			LOG.error("Something wrong with the network connection between client and MNS service."
-					+ "Please check your network and DNS availablity.", ce);
-		} catch (ServiceException se) {
-			if (se.getErrorCode().equals("QueueNotExist")) {
-				LOG.error("Queue is not exist.Please create before use", se);
-			} else if (se.getErrorCode().equals("TimeExpired")) {
-				LOG.error("The request is time expired. Please check your local machine timeclock", se);
-			}
-			LOG.error("BE index build  message put in Queue error", se);
-		} catch (Exception e) {
-			LOG.error("Unknown exception happened!", e);
-		}
-		client.close();
-
 	}
 
 	@Override
@@ -211,14 +172,14 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			record.setUserId(be.getUserId());
 			record.setDianzanUserId(doBELikes.getUserId());
 			hyBeLikesMapper.insert(record);
-			
+
 			// 发送用户自动收藏的消息
 			if (!HyBeUtil.checkUserBeFavorite(be.getBeId(), doBELikes.getUserId())) {
 				DoBeFavorite body = new DoBeFavorite();
 				body.setHandleType(DoBeFavorite.HandleType.DO.name());
 				body.setBeId(be.getBeId());
 				body.setUserId(doBELikes.getUserId());
-				BeFavorMQSend.sendNotifyMQ(body);
+				UserFavorMQSend.sendMQ(body);
 			}
 		} else if (DoBeLikes.HandleType.CANCEL.name().equals(doBELikes.getHandleType())) {
 			// 如果是取消赞，则删除
@@ -352,7 +313,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			body.setHandleType(DoBeFavorite.HandleType.DO.name());
 			body.setBeId(be.getBeId());
 			body.setUserId(giveHBReq.getFromUserId());
-			BeFavorMQSend.sendNotifyMQ(body);
+			UserFavorMQSend.sendMQ(body);
 		}
 	}
 

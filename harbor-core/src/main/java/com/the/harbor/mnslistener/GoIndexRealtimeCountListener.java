@@ -87,7 +87,6 @@ public class GoIndexRealtimeCountListener implements InitializingBean {
 		while (true) {
 			Message message = receiver.receiveMessage();
 			LOG.info("Thread" + workerId + " GOT ONE MESSAGE! " + message.getMessageId());
-			boolean success = false;
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					DoGoIndexRealtimeStat stat = JSONObject.parseObject(message.getMessageBody(),
@@ -115,9 +114,7 @@ public class GoIndexRealtimeCountListener implements InitializingBean {
 					}
 
 				}
-				success = true;
 			} catch (Exception ex) {
-				success = false;
 				LOG.error("GO实时统计数据索引更新存储MNS消息消费失败", ex);
 			}
 			try {

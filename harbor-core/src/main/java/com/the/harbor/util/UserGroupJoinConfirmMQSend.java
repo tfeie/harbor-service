@@ -8,22 +8,22 @@ import com.aliyun.mns.client.MNSClient;
 import com.aliyun.mns.common.ClientException;
 import com.aliyun.mns.common.ServiceException;
 import com.aliyun.mns.model.Message;
-import com.the.harbor.api.be.param.DoBeFavorite;
+import com.the.harbor.api.go.param.DoGoJoinConfirm;
 import com.the.harbor.base.enumeration.mns.MQType;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.util.UUIDUtil;
 
-public class BeFavorMQSend {
+public class UserGroupJoinConfirmMQSend {
 
-	private static final Logger LOG = Logger.getLogger(BeFavorMQSend.class);
+	private static final Logger LOG = Logger.getLogger(UserGroupJoinConfirmMQSend.class);
 
-	public static void sendNotifyMQ(DoBeFavorite body) {
+	public static void sendMQ(DoGoJoinConfirm body) {
 		MNSClient client = MNSFactory.getMNSClient();
 		try {
 			body.setMqId(UUIDUtil.genId32());
-			body.setMqType(MQType.MQ_HY_BE_FAVORITE.getValue());
-			CloudQueue queue = client.getQueueRef(GlobalSettings.getUserInteractionQueueName());
+			body.setMqType(MQType.MQ_HY_GO_JOIN_CONFIRM.getValue());
+			CloudQueue queue = client.getQueueRef(GlobalSettings.getGroupJoinConfirmQueueName());
 			Message message = new Message();
 			message.setMessageBody(JSONObject.toJSONString(body));
 			queue.putMessage(message);
@@ -36,7 +36,7 @@ public class BeFavorMQSend {
 			} else if (se.getErrorCode().equals("TimeExpired")) {
 				LOG.error("The request is time expired. Please check your local machine timeclock", se);
 			}
-			LOG.error("be favor message put in Queue error", se);
+			LOG.error("group join confirm message put in Queue error", se);
 		} catch (Exception e) {
 			LOG.error("Unknown exception happened!", e);
 		}

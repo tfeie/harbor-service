@@ -90,14 +90,11 @@ public class UserInteractionListener implements InitializingBean {
 		while (true) {
 			Message message = receiver.receiveMessage();
 			LOG.info("Thread" + workerId + " GOT ONE MESSAGE! " + message.getMessageId());
-			boolean success = false;
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					userInterfactionSV.process(message.getMessageBody());
 				}
-				success = true;
 			} catch (Exception ex) {
-				success = false;
 				LOG.error("用户交互消息消费失败", ex);
 			}
 			try {
@@ -105,7 +102,7 @@ public class UserInteractionListener implements InitializingBean {
 			} catch (Exception ex) {
 				LOG.error("消息删除失败", ex);
 			}
-			
+
 		}
 	}
 

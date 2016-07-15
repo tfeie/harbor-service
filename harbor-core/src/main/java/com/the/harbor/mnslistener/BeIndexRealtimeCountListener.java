@@ -87,7 +87,6 @@ public class BeIndexRealtimeCountListener implements InitializingBean {
 		while (true) {
 			Message message = receiver.receiveMessage();
 			LOG.info("Thread" + workerId + " GOT ONE MESSAGE! " + message.getMessageId());
-			boolean success = false;
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					DoBeIndexRealtimeStat stat = JSONObject.parseObject(message.getMessageBody(),
@@ -117,9 +116,7 @@ public class BeIndexRealtimeCountListener implements InitializingBean {
 					}
 
 				}
-				success = true;
 			} catch (Exception ex) {
-				success = false;
 				LOG.error("BE实时统计数据索引更新存储MNS消息消费失败", ex);
 			}
 			try {

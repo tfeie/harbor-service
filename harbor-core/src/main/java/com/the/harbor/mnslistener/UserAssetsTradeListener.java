@@ -89,15 +89,12 @@ public class UserAssetsTradeListener implements InitializingBean {
 		while (true) {
 			Message message = receiver.receiveMessage();
 			LOG.info("Thread" + workerId + " GOT ONE MESSAGE! " + message.getMessageId());
-			boolean success = false;
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					DoUserAssetsTrade notify = JSON.parse(message.getMessageBody(), DoUserAssetsTrade.class);
 					userManagerSV.process(notify);
 				}
-				success = true;
 			} catch (Exception ex) {
-				success = false;
 				LOG.error("系统通知消息消费失败", ex);
 			}
 			try {

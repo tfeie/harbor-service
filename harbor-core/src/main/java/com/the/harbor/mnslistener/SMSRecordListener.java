@@ -87,7 +87,6 @@ public class SMSRecordListener implements InitializingBean {
 			Message message = receiver.receiveMessage();
 			LOG.info("Thread" + workerId + " GOT ONE MESSAGE! " + message.getMessageId());
 			System.out.println(message.getMessageBody());
-			boolean success = false;
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					SMSSendResponse resp = JSONObject.parseObject(message.getMessageBody(), SMSSendResponse.class);
@@ -95,9 +94,7 @@ public class SMSRecordListener implements InitializingBean {
 					BeanUtils.copyProperties(record, resp);
 					builder.saveSmsSendRecord(record);
 				}
-				success = true;
 			} catch (Exception ex) {
-				success = false;
 				LOG.error("短信发送记录MNS消息失败", ex);
 			}
 			try {
