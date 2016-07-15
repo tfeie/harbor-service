@@ -866,7 +866,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 					// 我打赏别人海贝
 					HyUserHbAssets hbr = new HyUserHbAssets();
 					hbr.setAssetsId(assets.getAssetsId());
-					hbr.setTotalDashang(hbr.getTotalDashang() + notify.getTradeBalance());
+					hbr.setTotalDashang(hb.getTotalDashang() + notify.getTradeBalance());
 					hyUserHbAssetsMapper.updateByPrimaryKeySelective(hbr);
 				}
 			}
@@ -918,7 +918,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 				// 我获得别人打赏的海贝
 				HyUserHbAssets hbr = new HyUserHbAssets();
 				hbr.setAssetsId(assets.getAssetsId());
-				hbr.setTotalBeishang(hbr.getTotalBeishang() + notify.getTradeBalance());
+				hbr.setTotalBeishang(hb.getTotalBeishang() + notify.getTradeBalance());
 				hyUserHbAssetsMapper.updateByPrimaryKeySelective(hbr);
 			}
 
