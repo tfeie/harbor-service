@@ -29,6 +29,7 @@ import com.the.harbor.api.go.param.GoOrderMeetLocaltionReq;
 import com.the.harbor.api.go.param.GoTag;
 import com.the.harbor.api.go.param.GroupApplyReq;
 import com.the.harbor.api.go.param.GroupApplyResp;
+import com.the.harbor.api.go.param.QueryMyJointGoReq;
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.api.pay.param.CreatePaymentOrderReq;
@@ -574,7 +575,9 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			sql.or().andGoIdEqualTo(goId).andOrderStatusEqualTo(OrderStatus.FINISH.getValue());
 			orderCount = hyGoOrderMapper.countByExample(sql);
 		} else if (GoType.GROUP.getValue().equals(goType)) {
-
+			HyGoJoinCriteria sql = new HyGoJoinCriteria();
+			sql.or().andGoIdEqualTo(goId);
+			orderCount = hyGoJoinMapper.countByExample(sql);
 		}
 		return orderCount;
 	}
@@ -861,6 +864,46 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		}
 		Go go = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Go.class);
 		return go;
+	}
+
+	@Override
+	public int getMyJointGoCount(String userId, String goType) {
+		int orderCount = 0;
+		if (GoType.ONE_ON_ONE.getValue().equals(goType)) {
+			HyGoOrderCriteria sql = new HyGoOrderCriteria();
+			sql.or().andUserIdEqualTo(userId).andGoTypeEqualTo(goType);
+			orderCount = hyGoOrderMapper.countByExample(sql);
+		} else if (GoType.GROUP.getValue().equals(goType)) {
+			HyGoJoinCriteria sql = new HyGoJoinCriteria();
+			sql.or().andUserIdEqualTo(userId).andGoTypeEqualTo(goType);
+			orderCount = hyGoJoinMapper.countByExample(sql);
+		}
+		return orderCount;
+	}
+
+	@Override
+	public List<HyGoOrder> getMyJointGroupGoes(QueryMyJointGoReq req) {
+		String goType = req.getGoType();
+		String userId = req.getUserId();
+		int start = (req.getPageNo() - 1) * req.getPageSize();
+		int end = req.getPageNo() * req.getPageSize();
+		HyGoOrderCriteria sql = new HyGoOrderCriteria();
+		sql.or().andUserIdEqualTo(userId).andGoTypeEqualTo(goType);
+		sql.setLimitStart(start);
+		sql.setLimitEnd(end);
+		return hyGoOrderMapper.selectByExample(sql);
+	}
+
+	public List<HyGoJoin> getMyJointOnOGoes(QueryMyJointGoReq req) {
+		String goType = req.getGoType();
+		String userId = req.getUserId();
+		int start = (req.getPageNo() - 1) * req.getPageSize();
+		int end = req.getPageNo() * req.getPageSize();
+		HyGoJoinCriteria sql = new HyGoJoinCriteria();
+		sql.or().andUserIdEqualTo(userId).andGoTypeEqualTo(goType);
+		sql.setLimitStart(start);
+		sql.setLimitEnd(end);
+		return hyGoJoinMapper.selectByExample(sql);
 	}
 
 }

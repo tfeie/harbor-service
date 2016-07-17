@@ -48,6 +48,8 @@ import com.the.harbor.api.go.param.QueryMyFavorGoReq;
 import com.the.harbor.api.go.param.QueryMyFavorGoResp;
 import com.the.harbor.api.go.param.QueryMyGoReq;
 import com.the.harbor.api.go.param.QueryMyGoResp;
+import com.the.harbor.api.go.param.QueryMyJointGoReq;
+import com.the.harbor.api.go.param.QueryMyJointGoResp;
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.api.user.param.UserViewInfo;
@@ -77,6 +79,7 @@ import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.dao.mapper.bo.HyGo;
+import com.the.harbor.dao.mapper.bo.HyGoJoin;
 import com.the.harbor.dao.mapper.bo.HyGoOrder;
 import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
@@ -498,6 +501,40 @@ public class GoSVImpl implements IGoSV {
 		pageInfo.setResult(result);
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		QueryMyFavorGoResp resp = new QueryMyFavorGoResp();
+		resp.setPagInfo(pageInfo);
+		resp.setResponseHeader(responseHeader);
+		return resp;
+	}
+
+	@Override
+	public QueryMyJointGoResp queryMyFavorGoes(QueryMyJointGoReq queryMyGoReq)
+			throws BusinessException, SystemException {
+		String goType = queryMyGoReq.getGoType();
+		String userId = queryMyGoReq.getUserId();
+		int total = goBusiSV.getMyJointGoCount(userId, goType);
+		List<Go> result = new ArrayList<Go>();
+		if (GoType.ONE_ON_ONE.getValue().equals(goType)) {
+			List<HyGoJoin> list = goBusiSV.getMyJointOnOGoes(queryMyGoReq);
+			if (!CollectionUtil.isEmpty(list)) {
+				for (HyGoJoin go : list) {
+					result.add(this.getGoInfo(go.getGoId()));
+				}
+			}
+		} else if (GoType.GROUP.getValue().equals(goType)) {
+			List<HyGoOrder> list = goBusiSV.getMyJointGroupGoes(queryMyGoReq);
+			if (!CollectionUtil.isEmpty(list)) {
+				for (HyGoOrder go : list) {
+					result.add(this.getGoInfo(go.getGoId()));
+				}
+			}
+		}
+		PageInfo<Go> pageInfo = new PageInfo<Go>();
+		pageInfo.setCount(Integer.parseInt(total + ""));
+		pageInfo.setPageNo(queryMyGoReq.getPageNo());
+		pageInfo.setPageSize(queryMyGoReq.getPageSize());
+		pageInfo.setResult(result);
+		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
+		QueryMyJointGoResp resp = new QueryMyJointGoResp();
 		resp.setPagInfo(pageInfo);
 		resp.setResponseHeader(responseHeader);
 		return resp;

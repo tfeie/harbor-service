@@ -1,5 +1,7 @@
 package com.the.harbor.service.interfaces;
 
+import java.util.List;
+
 import com.the.harbor.api.go.param.CheckUserOrderGoReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.DoGoComment;
@@ -14,9 +16,11 @@ import com.the.harbor.api.go.param.GoOrderMeetLocaltionConfirmReq;
 import com.the.harbor.api.go.param.GoOrderMeetLocaltionReq;
 import com.the.harbor.api.go.param.GroupApplyReq;
 import com.the.harbor.api.go.param.GroupApplyResp;
+import com.the.harbor.api.go.param.QueryMyJointGoReq;
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.dao.mapper.bo.HyGo;
+import com.the.harbor.dao.mapper.bo.HyGoJoin;
 import com.the.harbor.dao.mapper.bo.HyGoOrder;
 
 public interface IGoBusiSV {
@@ -58,5 +62,11 @@ public interface IGoBusiSV {
 	boolean checkUserOrderGo(CheckUserOrderGoReq checkUserOrderGoReq);
 
 	void processDoGoJoinConfirm(DoGoJoinConfirm doGoJoinConfirm);
+
+	int getMyJointGoCount(String userId, String goType);
+
+	List<HyGoOrder> getMyJointGroupGoes(QueryMyJointGoReq req);
+
+	List<HyGoJoin> getMyJointOnOGoes(QueryMyJointGoReq req);
 
 }
