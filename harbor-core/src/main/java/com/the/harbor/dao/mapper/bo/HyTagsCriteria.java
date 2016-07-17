@@ -603,6 +603,76 @@ public class HyTagsCriteria {
             addCriterion("TAG_CAT not between", value1, value2, "tagCat");
             return (Criteria) this;
         }
+
+        public Criteria andShowFlagIsNull() {
+            addCriterion("SHOW_FLAG is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShowFlagIsNotNull() {
+            addCriterion("SHOW_FLAG is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShowFlagEqualTo(String value) {
+            addCriterion("SHOW_FLAG =", value, "showFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShowFlagNotEqualTo(String value) {
+            addCriterion("SHOW_FLAG <>", value, "showFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShowFlagGreaterThan(String value) {
+            addCriterion("SHOW_FLAG >", value, "showFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShowFlagGreaterThanOrEqualTo(String value) {
+            addCriterion("SHOW_FLAG >=", value, "showFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShowFlagLessThan(String value) {
+            addCriterion("SHOW_FLAG <", value, "showFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShowFlagLessThanOrEqualTo(String value) {
+            addCriterion("SHOW_FLAG <=", value, "showFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShowFlagLike(String value) {
+            addCriterion("SHOW_FLAG like", value, "showFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShowFlagNotLike(String value) {
+            addCriterion("SHOW_FLAG not like", value, "showFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShowFlagIn(List<String> values) {
+            addCriterion("SHOW_FLAG in", values, "showFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShowFlagNotIn(List<String> values) {
+            addCriterion("SHOW_FLAG not in", values, "showFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShowFlagBetween(String value1, String value2) {
+            addCriterion("SHOW_FLAG between", value1, value2, "showFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShowFlagNotBetween(String value1, String value2) {
+            addCriterion("SHOW_FLAG not between", value1, value2, "showFlag");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
