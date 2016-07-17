@@ -15,8 +15,6 @@ public class HyTags {
 
     private String tagCat;
 
-    private String showFlag;
-
     public String getTagId() {
         return tagId;
     }
@@ -71,13 +69,5 @@ public class HyTags {
 
     public void setTagCat(String tagCat) {
         this.tagCat = tagCat == null ? null : tagCat.trim();
-    }
-
-    public String getShowFlag() {
-        return showFlag;
-    }
-
-    public void setShowFlag(String showFlag) {
-        this.showFlag = showFlag == null ? null : showFlag.trim();
     }
 }

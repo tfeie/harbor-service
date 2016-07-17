@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
 import com.the.harbor.base.enumeration.hytags.ScopeType;
-import com.the.harbor.base.enumeration.hytags.ShowFlag;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.commons.cache.base.AbstractCache;
 import com.the.harbor.commons.components.redis.CacheFactory;
@@ -56,18 +55,10 @@ public class HyTagsCacheImpl extends AbstractCache {
 				skillTags.add(bo);
 			} else if (TagType.GO.getValue().equals(o.getTagType())
 					&& ScopeType.GO.getValue().equals(o.getScopeType())) {
-				if (ShowFlag.ACTUAL_PAGE.getValue().equals(o.getShowFlag())) {
-					goTags.add(bo);
-				} else if (ShowFlag.INDEX_PAGE.getValue().equals(o.getShowFlag())) {
-					goIndexTags.add(bo);
-				}
+				goTags.add(bo);
 			} else if (TagType.BE.getValue().equals(o.getTagType())
 					&& ScopeType.BE.getValue().equals(o.getScopeType())) {
-				if (ShowFlag.ACTUAL_PAGE.getValue().equals(o.getShowFlag())) {
-					beTags.add(bo);
-				} else if (ShowFlag.INDEX_PAGE.getValue().equals(o.getShowFlag())) {
-					beIndexTags.add(bo);
-				}
+				beTags.add(bo);
 
 			}
 		}
