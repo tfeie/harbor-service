@@ -308,6 +308,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		UserAssetsTradeMQSend.sendMQ(t);
 		// 记录BE的打赏用户信息
 		HyBeUtil.userRewardBe(giveHBReq.getBeId(), giveHBReq.getFromUserId());
+		HyBeUtil.getBeRewardHBCount(giveHBReq.getBeId(), giveHBReq.getCount());
 		// 发送索引更新消息
 		IndexRealtimeCountMQSend.sendBeRealtimeIndexUpdateMQ(
 				new DoBeIndexRealtimeStat(giveHBReq.getBeId(), DoBeIndexRealtimeStat.StatType.REWARD.name()));
