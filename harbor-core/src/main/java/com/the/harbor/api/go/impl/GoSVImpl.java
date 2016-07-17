@@ -507,7 +507,7 @@ public class GoSVImpl implements IGoSV {
 	}
 
 	@Override
-	public QueryMyJointGoResp queryMyFavorGoes(QueryMyJointGoReq queryMyGoReq)
+	public QueryMyJointGoResp queryMyJointGoes(QueryMyJointGoReq queryMyGoReq)
 			throws BusinessException, SystemException {
 		String goType = queryMyGoReq.getGoType();
 		String userId = queryMyGoReq.getUserId();

@@ -243,7 +243,7 @@ public interface IGoSV {
 	QueryMyFavorGoResp queryMyFavorGoes(@NotNull(message = "参数为空") QueryMyFavorGoReq queryMyGoReq)
 			throws BusinessException, SystemException;
 
-	QueryMyJointGoResp queryMyFavorGoes(@NotNull(message = "参数为空") QueryMyJointGoReq queryMyGoReq)
+	QueryMyJointGoResp queryMyJointGoes(@NotNull(message = "参数为空") QueryMyJointGoReq queryMyGoReq)
 			throws BusinessException, SystemException;
 
 	/**
