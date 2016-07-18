@@ -46,7 +46,6 @@ import com.the.harbor.base.enumeration.hynotify.SenderType;
 import com.the.harbor.base.enumeration.hypaymentorder.BusiType;
 import com.the.harbor.base.enumeration.hypaymentorder.PayStatus;
 import com.the.harbor.base.enumeration.hypaymentorder.PayType;
-import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.enumeration.hyuser.SystemUser;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.exception.BusinessException;
@@ -178,8 +177,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				record.setGoId(goId);
 				record.setRecordId(HarborSeqUtil.createHyUserTagsRecordId());
 				record.setSortId(sortId);
-				record.setTagId(StringUtil.isBlank(d.getTagId()) ? HarborSeqUtil.createTagId(TagType.GO.getValue())
-						: d.getTagId());
+				record.setTagId(
+						StringUtil.isBlank(d.getTagId()) ? HarborSeqUtil.createTagId(d.getTagType()) : d.getTagId());
 				record.setStatus(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
 				sortId++;
 				hyGoTagsMapper.insert(record);

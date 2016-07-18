@@ -18,7 +18,7 @@ public class GoTag implements Serializable {
 	/**
 	 * 标签类型
 	 */
-	@NotNull(message="标签类型不能为空",groups = {IGoSV.CreateGo.class})
+	@NotNull(message = "标签类型不能为空", groups = { IGoSV.CreateGo.class })
 	private String tagType;
 
 	/**
@@ -30,6 +30,8 @@ public class GoTag implements Serializable {
 	 * 标签类目
 	 */
 	private String tagCat;
+
+	private String polyTagId;
 
 	public String getTagId() {
 		return tagId;
@@ -61,6 +63,14 @@ public class GoTag implements Serializable {
 
 	public void setTagCat(String tagCat) {
 		this.tagCat = tagCat;
+	}
+
+	public String getPolyTagId() {
+		return polyTagId;
+	}
+
+	public void setPolyTagId(String polyTagId) {
+		this.polyTagId = polyTagId;
 	}
 
 }

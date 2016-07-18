@@ -17,6 +17,8 @@ public class HyBeTags {
 
     private String status;
 
+    private String polyTagId;
+
     public long getRecordId() {
         return recordId;
     }
@@ -79,5 +81,13 @@ public class HyBeTags {
 
     public void setStatus(String status) {
         this.status = status == null ? null : status.trim();
+    }
+
+    public String getPolyTagId() {
+        return polyTagId;
+    }
+
+    public void setPolyTagId(String polyTagId) {
+        this.polyTagId = polyTagId == null ? null : polyTagId.trim();
     }
 }

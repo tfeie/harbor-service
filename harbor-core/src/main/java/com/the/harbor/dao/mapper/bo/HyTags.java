@@ -15,6 +15,10 @@ public class HyTags {
 
     private String tagCat;
 
+    private String isPoly;
+
+    private String polyTagId;
+
     public String getTagId() {
         return tagId;
     }
@@ -69,5 +73,21 @@ public class HyTags {
 
     public void setTagCat(String tagCat) {
         this.tagCat = tagCat == null ? null : tagCat.trim();
+    }
+
+    public String getIsPoly() {
+        return isPoly;
+    }
+
+    public void setIsPoly(String isPoly) {
+        this.isPoly = isPoly == null ? null : isPoly.trim();
+    }
+
+    public String getPolyTagId() {
+        return polyTagId;
+    }
+
+    public void setPolyTagId(String polyTagId) {
+        this.polyTagId = polyTagId == null ? null : polyTagId.trim();
     }
 }

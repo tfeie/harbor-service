@@ -10,6 +10,7 @@
     <result column="TAG_CAT" property="tagCat" jdbcType="VARCHAR" />
     <result column="SORT_ID" property="sortId" jdbcType="INTEGER" />
     <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="POLY_TAG_ID" property="polyTagId" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -70,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    RECORD_ID, GO_ID, TAG_ID, TAG_TYPE, TAG_NAME, TAG_CAT, SORT_ID, STATUS
+    RECORD_ID, GO_ID, TAG_ID, TAG_TYPE, TAG_NAME, TAG_CAT, SORT_ID, STATUS, POLY_TAG_ID
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyGoTagsCriteria" >
     select
@@ -109,10 +110,12 @@
   <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyGoTags" >
     insert into hy_go_tags (RECORD_ID, GO_ID, TAG_ID, 
       TAG_TYPE, TAG_NAME, TAG_CAT, 
-      SORT_ID, STATUS)
+      SORT_ID, STATUS, POLY_TAG_ID
+      )
     values (#{recordId,jdbcType=BIGINT}, #{goId,jdbcType=VARCHAR}, #{tagId,jdbcType=VARCHAR}, 
       #{tagType,jdbcType=VARCHAR}, #{tagName,jdbcType=VARCHAR}, #{tagCat,jdbcType=VARCHAR}, 
-      #{sortId,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR})
+      #{sortId,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}, #{polyTagId,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyGoTags" >
     insert into hy_go_tags
@@ -137,6 +140,9 @@
       <if test="status != null" >
         STATUS,
       </if>
+      <if test="polyTagId != null" >
+        POLY_TAG_ID,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       #{recordId,jdbcType=BIGINT},
@@ -158,6 +164,9 @@
       #{sortId,jdbcType=INTEGER},
       <if test="status != null" >
         #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="polyTagId != null" >
+        #{polyTagId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -194,6 +203,9 @@
       <if test="record.status != null" >
         STATUS = #{record.status,jdbcType=VARCHAR},
       </if>
+      <if test="record.polyTagId != null" >
+        POLY_TAG_ID = #{record.polyTagId,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -208,7 +220,8 @@
       TAG_NAME = #{record.tagName,jdbcType=VARCHAR},
       TAG_CAT = #{record.tagCat,jdbcType=VARCHAR},
       SORT_ID = #{record.sortId,jdbcType=INTEGER},
-      STATUS = #{record.status,jdbcType=VARCHAR}
+      STATUS = #{record.status,jdbcType=VARCHAR},
+      POLY_TAG_ID = #{record.polyTagId,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -237,6 +250,9 @@
       <if test="status != null" >
         STATUS = #{status,jdbcType=VARCHAR},
       </if>
+      <if test="polyTagId != null" >
+        POLY_TAG_ID = #{polyTagId,jdbcType=VARCHAR},
+      </if>
     </set>
     where RECORD_ID = #{recordId,jdbcType=BIGINT}
   </update>
@@ -248,7 +264,8 @@
       TAG_NAME = #{tagName,jdbcType=VARCHAR},
       TAG_CAT = #{tagCat,jdbcType=VARCHAR},
       SORT_ID = #{sortId,jdbcType=INTEGER},
-      STATUS = #{status,jdbcType=VARCHAR}
+      STATUS = #{status,jdbcType=VARCHAR},
+      POLY_TAG_ID = #{polyTagId,jdbcType=VARCHAR}
     where RECORD_ID = #{recordId,jdbcType=BIGINT}
   </update>
 </mapper>

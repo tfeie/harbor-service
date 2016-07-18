@@ -25,6 +25,8 @@ public class BeTag implements Serializable {
 	 * 标签类目
 	 */
 	private String tagCat;
+	
+	private String polyTagId;
 
 	public String getTagId() {
 		return tagId;
@@ -57,5 +59,15 @@ public class BeTag implements Serializable {
 	public void setTagCat(String tagCat) {
 		this.tagCat = tagCat;
 	}
+
+	public String getPolyTagId() {
+		return polyTagId;
+	}
+
+	public void setPolyTagId(String polyTagId) {
+		this.polyTagId = polyTagId;
+	}
+	
+	
 
 }

@@ -663,6 +663,76 @@ public class HyBeTagsCriteria {
             addCriterion("STATUS not between", value1, value2, "status");
             return (Criteria) this;
         }
+
+        public Criteria andPolyTagIdIsNull() {
+            addCriterion("POLY_TAG_ID is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPolyTagIdIsNotNull() {
+            addCriterion("POLY_TAG_ID is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPolyTagIdEqualTo(String value) {
+            addCriterion("POLY_TAG_ID =", value, "polyTagId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPolyTagIdNotEqualTo(String value) {
+            addCriterion("POLY_TAG_ID <>", value, "polyTagId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPolyTagIdGreaterThan(String value) {
+            addCriterion("POLY_TAG_ID >", value, "polyTagId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPolyTagIdGreaterThanOrEqualTo(String value) {
+            addCriterion("POLY_TAG_ID >=", value, "polyTagId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPolyTagIdLessThan(String value) {
+            addCriterion("POLY_TAG_ID <", value, "polyTagId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPolyTagIdLessThanOrEqualTo(String value) {
+            addCriterion("POLY_TAG_ID <=", value, "polyTagId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPolyTagIdLike(String value) {
+            addCriterion("POLY_TAG_ID like", value, "polyTagId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPolyTagIdNotLike(String value) {
+            addCriterion("POLY_TAG_ID not like", value, "polyTagId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPolyTagIdIn(List<String> values) {
+            addCriterion("POLY_TAG_ID in", values, "polyTagId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPolyTagIdNotIn(List<String> values) {
+            addCriterion("POLY_TAG_ID not in", values, "polyTagId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPolyTagIdBetween(String value1, String value2) {
+            addCriterion("POLY_TAG_ID between", value1, value2, "polyTagId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPolyTagIdNotBetween(String value1, String value2) {
+            addCriterion("POLY_TAG_ID not between", value1, value2, "polyTagId");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
