@@ -63,9 +63,9 @@ public class HyTagsCacheImpl extends AbstractCache {
 			} else if (TagType.ONO.getValue().equals(o.getTagType())
 					&& ScopeType.ONO.getValue().equals(o.getScopeType())) {
 				if (IsPoly.YES.getValue().equals(o.getIsPoly())) {
-					onoTags.add(bo);
-				} else {
 					onoIndexTags.add(bo);
+				} else {
+					onoTags.add(bo);
 				}
 				goTags.add(bo);
 			} else if (TagType.GROUP.getValue().equals(o.getTagType())
@@ -78,7 +78,12 @@ public class HyTagsCacheImpl extends AbstractCache {
 				goTags.add(bo);
 			} else if (TagType.BE.getValue().equals(o.getTagType())
 					&& ScopeType.BE.getValue().equals(o.getScopeType())) {
-				beTags.add(bo);
+				if (IsPoly.YES.getValue().equals(o.getIsPoly())) {
+					beIndexTags.add(bo);
+				} else {
+					beTags.add(bo);
+				}
+				
 			}
 		}
 		client.set(RedisDataKey.KEY_BASE_INTEREST_TAGS.getKey(), JSON.toJSONString(interestTags));
