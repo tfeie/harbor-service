@@ -366,8 +366,11 @@ public class GoSVImpl implements IGoSV {
 		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
 		builder.must(QueryBuilders.termQuery("goType", queryGoReq.getGoType()));
-		if (!StringUtil.isBlank(queryGoReq.getGoTag())) {
-			builder.must(QueryBuilders.termQuery("goTags.tagId", queryGoReq.getGoTag()));
+		if (!StringUtil.isBlank(queryGoReq.getPolyTagId())) {
+			builder.must(QueryBuilders.termQuery("goTags.polyTagId", queryGoReq.getPolyTagId()));
+		}
+		if (!StringUtil.isBlank(queryGoReq.getTagId())) {
+			builder.must(QueryBuilders.termQuery("goTags.tagId", queryGoReq.getTagId()));
 		}
 		if (!StringUtil.isBlank(queryGoReq.getSearchKey())) {
 			builder.must(QueryBuilders.queryStringQuery(queryGoReq.getSearchKey()));

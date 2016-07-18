@@ -6,8 +6,11 @@ public class BeQueryReq implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	// BE标签
-	private String beTag;
+	// 聚合标签
+	private String polyTagId;
+
+	// 实际标签
+	private String tagId;
 
 	// 搜索关键字
 	private String searchKey;
@@ -16,12 +19,22 @@ public class BeQueryReq implements Serializable {
 
 	private Integer pageSize;
 
-	public String getBeTag() {
-		return beTag;
+
+
+	public String getPolyTagId() {
+		return polyTagId;
 	}
 
-	public void setBeTag(String beTag) {
-		this.beTag = beTag;
+	public void setPolyTagId(String polyTagId) {
+		this.polyTagId = polyTagId;
+	}
+
+	public String getTagId() {
+		return tagId;
+	}
+
+	public void setTagId(String tagId) {
+		this.tagId = tagId;
 	}
 
 	public String getSearchKey() {

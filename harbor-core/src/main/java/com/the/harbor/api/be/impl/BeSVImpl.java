@@ -223,8 +223,11 @@ public class BeSVImpl implements IBeSV {
 		int end = beQueryReq.getPageNo() * beQueryReq.getPageSize();
 		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
-		if (!StringUtil.isBlank(beQueryReq.getBeTag())) {
-			builder.must(QueryBuilders.termQuery("beTags.tagId", beQueryReq.getBeTag()));
+		if (!StringUtil.isBlank(beQueryReq.getTagId())) {
+			builder.must(QueryBuilders.termQuery("beTags.tagId", beQueryReq.getTagId()));
+		}
+		if (!StringUtil.isBlank(beQueryReq.getPolyTagId())) {
+			builder.must(QueryBuilders.termQuery("beTags.polyTagId", beQueryReq.getPolyTagId()));
 		}
 		if (!StringUtil.isBlank(beQueryReq.getSearchKey())) {
 			builder.must(QueryBuilders.queryStringQuery(beQueryReq.getSearchKey()));
@@ -271,7 +274,7 @@ public class BeSVImpl implements IBeSV {
 		Set<String> beIds = HyBeUtil.getUserFavorBesPage(queryMyFavorBeReq.getUserId(), queryMyFavorBeReq.getPageNo(),
 				queryMyFavorBeReq.getPageSize(), false);
 		List<Be> result = new ArrayList<Be>();
-		for(String beId:beIds){
+		for (String beId : beIds) {
 			result.add(this.getBe(beId));
 		}
 		PageInfo<Be> pageInfo = new PageInfo<Be>();
@@ -285,12 +288,11 @@ public class BeSVImpl implements IBeSV {
 		resp.setResponseHeader(responseHeader);
 		return resp;
 	}
-	
-	
-	private Be getBe(String beId){
+
+	private Be getBe(String beId) {
 		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
-				.setTypes(HarborIndexType.HY_BE.getValue())
-				.setQuery(QueryBuilders.termQuery("_id", beId)).execute().actionGet();
+				.setTypes(HarborIndexType.HY_BE.getValue()).setQuery(QueryBuilders.termQuery("_id", beId)).execute()
+				.actionGet();
 		if (response.getHits().totalHits() == 0) {
 			return null;
 		}
