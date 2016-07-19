@@ -157,6 +157,10 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		if (success == 0) {
 			throw new SystemException("注册失败,请稍候重试");
 		}
+		if(!StringUtil.isBlank(userRegReq.getInviteCode())){
+			this.updateUserInvite(userRegReq.getInviteCode(),user.getUserId());
+		}
+		
 		// 初始化资产信息
 		this.createDefaultUserAssets(user.getUserId());
 		return user.getUserId();
@@ -1032,5 +1036,16 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		}
 		
 	}
+	
+	public void updateUserInvite(String inviteCode,String inviteUserId) {
+		HyUserInvite hInvite = new HyUserInvite();
+		hInvite.setInviteCode(inviteCode);
+		hInvite.setInviteUserId(inviteUserId);
+		int n = hyUserInviteMapper.updateByPrimaryKeySelective(hInvite);		
+		if (n == 0) {
+			throw new SystemException("提交应邀失败");
+		}
+	}
+
 	
 }

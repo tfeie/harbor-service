@@ -143,4 +143,7 @@ public interface IUserManagerSV {
 	List<UserInviteInfo> getUserInvite(UserInviteReq userInviteReq);
 	
 	void updateUserInvite(UserInviteReq userInviteReq);
+	
+	void updateUserInvite(String inviteCode,String inviteUserId);
+
 }
