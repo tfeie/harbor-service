@@ -60,7 +60,7 @@ public class HyTagsCacheImpl extends AbstractCache {
 		}
 		for (HyTagVo bo : list) {
 			HyTags record = new HyTags();
-			BeanUtils.copyProperties(bo, record);
+			org.apache.commons.beanutils.BeanUtils.copyProperties(record, bo);
 			m.insert(record);
 		}
 	}
