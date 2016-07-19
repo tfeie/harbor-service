@@ -305,9 +305,7 @@ public class UserSVImpl implements IUserSV {
 	 */
 	@Override
 	public Response updateUserInvite(UserInviteReq userInviteReq) throws BusinessException, SystemException {
-		
+		userManagerSV.updateUserInvite(userInviteReq);
 		return ResponseBuilder.buildSuccessResponse("用户邀请码使用情况更新成功");
-
 	}
-
 }
