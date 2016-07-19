@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
+import com.the.harbor.api.user.param.UserInviteInfo;
+import com.the.harbor.api.user.param.UserInviteReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberQuery;
 import com.the.harbor.api.user.param.UserMemberRenewalReq;
@@ -206,7 +208,7 @@ public interface IUserSV {
 	 * @throws BusinessException
 	 * @throws SystemException
 	 */
-	List<UserViewInfo> queryUnAuthUsers() throws BusinessException, SystemException;;
+	List<UserViewInfo> queryUnAuthUsers() throws BusinessException, SystemException;
 	
 	/**
 	 * 提交用认证信息
@@ -214,4 +216,19 @@ public interface IUserSV {
 	 * @return
 	 */
 	Response submitUserAuthInfo(UserAuthReq userStatusReq);
+	
+	/**
+	 * 查询邀请码信息
+	 * @param userInviteReq
+	 * @return
+	 */
+	List<UserInviteInfo> quertUserInvite(UserInviteReq userInviteReq) throws BusinessException, SystemException;
+	
+	/**
+	 * 更新邀请码表中的使用者id
+	 * @param userInviteReq
+	 * @return
+	 */
+	Response updateUserInvite(UserInviteReq userInviteReq);
+
 }
