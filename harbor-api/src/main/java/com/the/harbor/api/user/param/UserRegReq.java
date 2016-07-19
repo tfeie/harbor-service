@@ -76,6 +76,11 @@ public class UserRegReq implements Serializable {
 	 */
 	@Email(message = "邮箱格式不正确", groups = { IUserSV.UserRegister.class })
 	private String email;
+	
+	/**
+	 * 邀请码
+	 */
+	private String inviteCode;
 
 	public String getEnName() {
 		return enName;
@@ -163,6 +168,14 @@ public class UserRegReq implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getInviteCode() {
+		return inviteCode;
+	}
+
+	public void setInviteCode(String inviteCode) {
+		this.inviteCode = inviteCode;
 	}
 
 }
