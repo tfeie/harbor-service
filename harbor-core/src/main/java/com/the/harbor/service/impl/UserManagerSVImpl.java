@@ -18,6 +18,8 @@ import com.the.harbor.api.user.param.DoUserFriend;
 import com.the.harbor.api.user.param.UserAuthReq;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
+import com.the.harbor.api.user.param.UserInviteInfo;
+import com.the.harbor.api.user.param.UserInviteReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberRenewalReq;
 import com.the.harbor.api.user.param.UserMemberRenewalResp;
@@ -73,6 +75,9 @@ import com.the.harbor.dao.mapper.bo.HyUserFansCriteria;
 import com.the.harbor.dao.mapper.bo.HyUserFriend;
 import com.the.harbor.dao.mapper.bo.HyUserFriendCriteria;
 import com.the.harbor.dao.mapper.bo.HyUserHbAssets;
+import com.the.harbor.dao.mapper.bo.HyUserInvite;
+import com.the.harbor.dao.mapper.bo.HyUserInviteCriteria;
+import com.the.harbor.dao.mapper.bo.HyUserInviteCriteria.Criteria;
 import com.the.harbor.dao.mapper.bo.HyUserTags;
 import com.the.harbor.dao.mapper.bo.HyUserTagsCriteria;
 import com.the.harbor.dao.mapper.interfaces.HyUserAssetsMapper;
@@ -80,6 +85,7 @@ import com.the.harbor.dao.mapper.interfaces.HyUserAssetsTradeMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserFansMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserFriendMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserHbAssetsMapper;
+import com.the.harbor.dao.mapper.interfaces.HyUserInviteMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserTagsMapper;
 import com.the.harbor.service.interfaces.IBeBusiSV;
@@ -114,6 +120,9 @@ public class UserManagerSVImpl implements IUserManagerSV {
 
 	@Autowired
 	private transient IBeBusiSV beBusiSV;
+	
+	@Autowired
+	private transient HyUserInviteMapper hyUserInviteMapper;
 
 	@Override
 	public String userRegister(UserRegReq userRegReq) {
@@ -965,5 +974,64 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		resp.setUserId(userId);
 		return resp;
 	}
+	
+	@Override
+	public List<UserInviteInfo> getUserInvite(UserInviteReq userInviteReq) {
+		if (userInviteReq == null) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "查询邀请码信息入参为空");
+		}
+		UserInviteInfo userInviteInfo = userInviteReq.getUserInviteInfo();
+		if(userInviteInfo == null){
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "查询邀请码信息入参为空");
+		}
+		HyUserInviteCriteria sql = new HyUserInviteCriteria();
+		Criteria criteria = sql.or();
+		if(StringUtil.isBlank(userInviteInfo.getUserId())){
+			criteria.andInviteUserIdEqualTo(userInviteInfo.getUserId());
+		}
+		if(StringUtil.isBlank(userInviteInfo.getInviteCode())){
+			criteria.andInviteCodeEqualTo(userInviteInfo.getInviteCode());
+		}
+		if(StringUtil.isBlank(userInviteInfo.getStatus())){
+			criteria.andStatusEqualTo(userInviteInfo.getStatus());
+		}
+		 List<HyUserInvite> users = hyUserInviteMapper.selectByExample(sql);
+		if (CollectionUtil.isEmpty(users)) {
+			return null;
+		}
+		List<UserInviteInfo> userInviteList = new ArrayList<UserInviteInfo>();
+		for (HyUserInvite user : users) {
+			UserInviteInfo userInfo = new UserInviteInfo();
+			BeanUtils.copyProperties(user, userInfo);
+			userInviteList.add(userInfo);
+		}
+		return userInviteList;
+	}
+	
+	@Override
+	public void updateUserInvite(UserInviteReq userInviteReq) {
+		if (userInviteReq == null) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "查询邀请码信息入参为空");
+		}
+		UserInviteInfo userInviteInfo = userInviteReq.getUserInviteInfo();
+		if(userInviteInfo == null){
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "查询邀请码信息入参为空");
+		}
+		
+		HyUserInvite hInvite = new HyUserInvite();
+		hInvite.setInviteCode(userInviteInfo.getInviteCode());
+		if(StringUtil.isBlank(userInviteInfo.getInviteUserId())){
+			hInvite.setInviteUserId(userInviteInfo.getInviteUserId());
+		}
+		if(StringUtil.isBlank(userInviteInfo.getStatus())){
+			hInvite.setStatus(userInviteInfo.getStatus());
+		}
+		int n = hyUserInviteMapper.updateByPrimaryKeySelective(hInvite);		
+		if (n == 0) {
+			throw new SystemException("提交应邀失败");
+		}
+		
+	}
+
 
 }

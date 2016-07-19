@@ -12,6 +12,8 @@ import com.the.harbor.api.user.IUserSV;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
 import com.the.harbor.api.user.param.UserInfo;
+import com.the.harbor.api.user.param.UserInviteInfo;
+import com.the.harbor.api.user.param.UserInviteReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberQuery;
 import com.the.harbor.api.user.param.UserMemberRenewalReq;
@@ -284,6 +286,28 @@ public class UserSVImpl implements IUserSV {
 		UserWealthQueryResp resp = userManagerSV.queryUserWealth(req.getUserId());
 		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("查询成功"));
 		return resp;
+	}
+	
+	/**
+	 * 查询邀请码信息
+	 * @param userInviteReq
+	 * @return
+	 */
+	@Override
+	public List<UserInviteInfo> quertUserInvite(UserInviteReq userInviteReq) {
+		return userManagerSV.getUserInvite(userInviteReq);
+	}
+	
+	/**
+	 * 更新邀请码表中的使用者id,状态
+	 * @param userInviteReq
+	 * @return
+	 */
+	@Override
+	public Response updateUserInvite(UserInviteReq userInviteReq) throws BusinessException, SystemException {
+		
+		return ResponseBuilder.buildSuccessResponse("用户邀请码使用情况更新成功");
+
 	}
 
 }

@@ -8,6 +8,8 @@ import com.the.harbor.api.user.param.DoUserFriend;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
 import com.the.harbor.api.user.param.UserInfo;
+import com.the.harbor.api.user.param.UserInviteInfo;
+import com.the.harbor.api.user.param.UserInviteReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberRenewalReq;
 import com.the.harbor.api.user.param.UserMemberRenewalResp;
@@ -132,4 +134,13 @@ public interface IUserManagerSV {
 	List<UserViewInfo> getUnAuthUsers();
 
 	String submitUserAuthInfo(UserAuthReq userStatusReq);
+	
+	/**
+	 * 用户邀请码
+	 * @param userInviteReq
+	 * @return
+	 */
+	List<UserInviteInfo> getUserInvite(UserInviteReq userInviteReq);
+	
+	void updateUserInvite(UserInviteReq userInviteReq);
 }
