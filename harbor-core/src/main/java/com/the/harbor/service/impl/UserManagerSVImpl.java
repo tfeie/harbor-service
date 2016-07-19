@@ -990,13 +990,13 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		}
 		HyUserInviteCriteria sql = new HyUserInviteCriteria();
 		Criteria criteria = sql.or();
-		if(StringUtil.isBlank(userInviteInfo.getUserId())){
-			criteria.andInviteUserIdEqualTo(userInviteInfo.getUserId());
+		if(!StringUtil.isBlank(userInviteInfo.getUserId())){
+			criteria.andUserIdEqualTo(userInviteInfo.getUserId());
 		}
-		if(StringUtil.isBlank(userInviteInfo.getInviteCode())){
+		if(!StringUtil.isBlank(userInviteInfo.getInviteCode())){
 			criteria.andInviteCodeEqualTo(userInviteInfo.getInviteCode());
 		}
-		if(StringUtil.isBlank(userInviteInfo.getStatus())){
+		if(!StringUtil.isBlank(userInviteInfo.getStatus())){
 			criteria.andStatusEqualTo(userInviteInfo.getStatus());
 		}
 		 List<HyUserInvite> users = hyUserInviteMapper.selectByExample(sql);
@@ -1024,10 +1024,10 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		
 		HyUserInvite hInvite = new HyUserInvite();
 		hInvite.setInviteCode(userInviteInfo.getInviteCode());
-		if(StringUtil.isBlank(userInviteInfo.getInviteUserId())){
+		if(!StringUtil.isBlank(userInviteInfo.getInviteUserId())){
 			hInvite.setInviteUserId(userInviteInfo.getInviteUserId());
 		}
-		if(StringUtil.isBlank(userInviteInfo.getStatus())){
+		if(!StringUtil.isBlank(userInviteInfo.getStatus())){
 			hInvite.setStatus(userInviteInfo.getStatus());
 		}
 		int n = hyUserInviteMapper.updateByPrimaryKeySelective(hInvite);		
