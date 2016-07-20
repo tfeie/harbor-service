@@ -230,5 +230,7 @@ public interface IUserSV {
 	 * @return
 	 */
 	Response updateUserInvite(UserInviteReq userInviteReq);
+	
+	UserInviteInfo checkUserInviteCode(String inviteCode);
 
 }
