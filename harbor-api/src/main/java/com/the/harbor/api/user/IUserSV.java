@@ -222,7 +222,7 @@ public interface IUserSV {
 	 * @param userInviteReq
 	 * @return
 	 */
-	List<UserInviteInfo> quertUserInvite(UserInviteReq userInviteReq) throws BusinessException, SystemException;
+	List<UserInviteInfo> queryUserInvite(UserInviteReq userInviteReq) throws BusinessException, SystemException;
 	
 	/**
 	 * 更新邀请码表中的使用者id
