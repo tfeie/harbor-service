@@ -19,6 +19,8 @@ public class GoDetail implements Serializable {
 	private String detail;
 
 	private String imageUrl;
+	
+	private String imgThumbnailUrl;
 
 	public String getId() {
 		return id;
@@ -51,5 +53,15 @@ public class GoDetail implements Serializable {
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
+
+	public String getImgThumbnailUrl() {
+		return imageUrl+"@!go_thumbnail";
+	}
+
+	public void setImgThumbnailUrl(String imgThumbnailUrl) {
+		this.imgThumbnailUrl = imgThumbnailUrl;
+	}
+	
+	
 
 }
