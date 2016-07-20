@@ -308,4 +308,12 @@ public class UserSVImpl implements IUserSV {
 		userManagerSV.updateUserInvite(userInviteReq);
 		return ResponseBuilder.buildSuccessResponse("用户邀请码使用情况更新成功");
 	}
+	
+	/**
+	 * 校验邀请码是否可用
+	 */
+	@Override
+	public UserInviteInfo checkUserInviteCode(String inviteCode) {
+		return userManagerSV.checkUserInviteCode(inviteCode);
+	}
 }

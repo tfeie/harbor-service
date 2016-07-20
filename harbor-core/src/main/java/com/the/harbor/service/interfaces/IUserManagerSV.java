@@ -145,5 +145,5 @@ public interface IUserManagerSV {
 	void updateUserInvite(UserInviteReq userInviteReq);
 	
 	void updateUserInvite(String inviteCode,String inviteUserId);
-
+	UserInviteInfo checkUserInviteCode(String inviteCode);
 }

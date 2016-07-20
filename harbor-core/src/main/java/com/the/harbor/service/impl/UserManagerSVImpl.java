@@ -45,6 +45,7 @@ import com.the.harbor.base.enumeration.hyuser.AccessPermission;
 import com.the.harbor.base.enumeration.hyuser.AuthSts;
 import com.the.harbor.base.enumeration.hyuser.MemberLevel;
 import com.the.harbor.base.enumeration.hyuser.SystemUser;
+import com.the.harbor.base.enumeration.hyuser.UserInviteStatus;
 import com.the.harbor.base.enumeration.hyuser.UserStatus;
 import com.the.harbor.base.enumeration.hyuser.UserType;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsStatus;
@@ -999,7 +1000,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		if(!StringUtil.isBlank(userInviteInfo.getStatus())){
 			criteria.andStatusEqualTo(userInviteInfo.getStatus());
 		}
-		 List<HyUserInvite> users = hyUserInviteMapper.selectByExample(sql);
+		List<HyUserInvite> users = hyUserInviteMapper.selectByExample(sql);
 		if (CollectionUtil.isEmpty(users)) {
 			return null;
 		}
@@ -1045,6 +1046,26 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		if (n == 0) {
 			throw new SystemException("提交应邀失败");
 		}
+	}
+	
+	public UserInviteInfo checkUserInviteCode(String inviteCode){
+		if (StringUtil.isBlank(inviteCode)) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "邀请码为空");
+		}
+		
+		HyUserInviteCriteria sql = new HyUserInviteCriteria();
+		sql.or().andInviteCodeEqualTo(inviteCode).andStatusEqualTo(UserInviteStatus.INVITE_VALID.getValue());
+		HyUserInvite user = hyUserInviteMapper.selectByPrimaryKey(inviteCode);
+		if (user == null) {
+			return null;
+		}
+		String userStatus = user.getStatus();
+		if(UserInviteStatus.INVITE_VALID.getValue().equals(userStatus)) {
+			UserInviteInfo userInfo = new UserInviteInfo();
+			BeanUtils.copyProperties(user, userInfo);
+			return userInfo;
+		}
+		return null;
 	}
 
 	
