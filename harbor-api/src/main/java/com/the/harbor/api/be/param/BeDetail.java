@@ -13,6 +13,8 @@ public class BeDetail implements Serializable {
 	private String detail;
 
 	private String imageUrl;
+	
+	private String imgThumbnailUrl;
 
 	public String getId() {
 		return id;
@@ -45,5 +47,15 @@ public class BeDetail implements Serializable {
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
+
+	public String getImgThumbnailUrl() {
+		return imageUrl+"@!be_thumbnail";
+	}
+
+	public void setImgThumbnailUrl(String imgThumbnailUrl) {
+		this.imgThumbnailUrl = imgThumbnailUrl;
+	}
+	
+	
 
 }
