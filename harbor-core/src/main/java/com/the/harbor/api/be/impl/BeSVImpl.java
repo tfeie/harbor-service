@@ -195,7 +195,7 @@ public class BeSVImpl implements IBeSV {
 					}
 				} else if (BeDetailType.IMAGE.getValue().equals(detail.getType())) {
 					if (!hasimg) {
-						imageURL = detail.getImageUrl();
+						imageURL = detail.getImageUrl()+"@!be_thumbnail";
 						hasimg = true;
 					}
 				}
