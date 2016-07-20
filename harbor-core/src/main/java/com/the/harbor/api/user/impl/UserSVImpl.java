@@ -294,7 +294,7 @@ public class UserSVImpl implements IUserSV {
 	 * @return
 	 */
 	@Override
-	public List<UserInviteInfo> quertUserInvite(UserInviteReq userInviteReq) {
+	public List<UserInviteInfo> queryUserInvite(UserInviteReq userInviteReq) {
 		return userManagerSV.getUserInvite(userInviteReq);
 	}
 	
