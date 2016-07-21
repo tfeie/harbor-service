@@ -539,6 +539,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 	@Override
 	public void processDoGoComment(DoGoComment doGoComment) {
+		Go go = this.getGoInfo(doGoComment.getGoId());
+		if (go == null) {
+			throw new BusinessException("GO[" + doGoComment.getGoId() + "]索引不存在");
+		}
 		if (DoGoComment.HandleType.PUBLISH.name().equals(doGoComment.getHandleType())) {
 			// 如果是点赞，则记录
 			HyGoComments record = new HyGoComments();
@@ -546,11 +550,47 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			record.setCreateDate(doGoComment.getSysdate() == null ? DateUtil.getSysDate() : doGoComment.getSysdate());
 			hyGoCommentsMapper.insert(record);
 
+			// 给被评论方发个消息
+			String accepterId = null;
+			String content = null;
+			// 发表评论的人
+			String enName = userManagerSV.getUserViewInfoByUserId(doGoComment.getPublishUserId()).getEnName();
+			if (StringUtil.isBlank(doGoComment.getParentUserId())) {
+				// 被评论发为GO的作者
+				accepterId = go.getUserId();
+				content = enName + "评论了您发起的活动,点击查看..";
+			} else {
+				accepterId = doGoComment.getParentUserId();
+				content = enName + "在活动中回复了您的评论,点击查看..";
+			}
+			if (!doGoComment.getPublishUserId().equals(accepterId)) {
+				// 只有当评论的发表者和接受者不是一个人的时候，才会给接受者发送系统通知
+				DoNotify notify = new DoNotify();
+				notify.setHandleType(DoNotify.HandleType.PUBLISH.name());
+				notify.setNotifyId(UUIDUtil.genId32());
+				notify.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+				notify.setSenderType(SenderType.USER.getValue());
+				notify.setSenderId(doGoComment.getPublishUserId());
+				notify.setAccepterType(AccepterType.USER.getValue());
+				notify.setAccepterId(accepterId);
+				notify.setTitle("Go有新评论啦~");
+				notify.setContent(content);
+				if(GoType.GROUP.getValue().equals(go.getGoType())){
+					notify.setLink("../go/comments.html?goId=" + go.getGoId());
+				}else{
+					notify.setLink("../go/toFeedback.html?goId=" + go.getGoId());
+				}
+				
+				NotifyMQSend.sendNotifyMQ(notify);
+			}
+
 			// 写入REDIS关系
 			GoComment b = new GoComment();
 			BeanUtils.copyProperties(record, b);
 			HyGoUtil.recordGoOrderCommentId(record.getGoId(), record.getOrderId(), record.getCommentId());
 			HyGoUtil.recordGoComment(record.getCommentId(), JSON.toJSONString(b));
+
+			// 给
 		} else if (DoGoComment.HandleType.CANCEL.name().equals(doGoComment.getHandleType())) {
 			// 如果是取消赞，则删除
 			if (!StringUtil.isBlank(doGoComment.getCommentId())) {
