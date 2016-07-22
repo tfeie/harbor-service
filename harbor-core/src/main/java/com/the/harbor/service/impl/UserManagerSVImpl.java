@@ -64,6 +64,7 @@ import com.the.harbor.commons.redisdata.util.HyUserUtil;
 import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
+import com.the.harbor.commons.util.RandomUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.commons.util.UUIDUtil;
 import com.the.harbor.constants.HarborErrorCodeConstants;
@@ -165,6 +166,8 @@ public class UserManagerSVImpl implements IUserManagerSV {
 
 		// 初始化资产信息
 		this.createDefaultUserAssets(user.getUserId());
+		//生成邀请码
+		this.createInviteCodes(user.getUserId());
 		return user.getUserId();
 	}
 
@@ -1069,6 +1072,22 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			return userInfo;
 		}
 		return null;
+	}
+	
+	private void createInviteCodes(String userId){
+		for(int i=0;i<5;i++){
+			String inviteCode = RandomUtil.generateNumber(6);
+			HyUserInvite record= new HyUserInvite();
+			record.setInviteCode(inviteCode);
+			record.setUserId(userId);
+			record.setStatus(UserInviteStatus.INVITE_VALID.getValue());
+			try{
+				hyUserInviteMapper.insert(record);
+			}catch(Exception ex){
+				
+			}
+		}
+		
 	}
 
 }
