@@ -45,6 +45,10 @@ public class GoOrder implements Serializable {
 
 	private Timestamp stsDate;
 
+	private String helpValue;
+
+	private int giveHb;
+
 	// 活动标题
 	private String topic;
 
@@ -261,6 +265,22 @@ public class GoOrder implements Serializable {
 
 	public void setOrderCount(int orderCount) {
 		this.orderCount = orderCount;
+	}
+
+	public String getHelpValue() {
+		return helpValue;
+	}
+
+	public void setHelpValue(String helpValue) {
+		this.helpValue = helpValue;
+	}
+
+	public int getGiveHb() {
+		return giveHb;
+	}
+
+	public void setGiveHb(int giveHb) {
+		this.giveHb = giveHb;
 	}
 
 }
