@@ -116,7 +116,7 @@ public class PaymentBusiSVImpl implements IPaymentBusiSV {
 				t.setSourceNo(buyHB.getBuyOrderId());
 				t.setSummary("购买海贝[" + buyHB.getBuyAmount() + "]个");
 				t.setToUserId(payOrder.getUserId());
-				t.setTradeBalance(payOrder.getPayAmount());
+				t.setTradeBalance(buyHB.getBuyAmount());
 				UserAssetsTradeMQSend.sendMQ(t);
 			}
 		} else if (BusiType.PAY_FOR_MEMBER.getValue().equals(busiType)) {
