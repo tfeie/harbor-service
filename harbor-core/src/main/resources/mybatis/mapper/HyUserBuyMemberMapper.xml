@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.the.harbor.dao.mapper.interfaces.HyUserBuyMemberMapper" >
+  <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyUserBuyMember" >
+    <id column="BUY_ORDER_ID" property="buyOrderId" jdbcType="VARCHAR" />
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="BUY_MONTHS" property="buyMonths" jdbcType="INTEGER" />
+    <result column="PAY_AMOUNT" property="payAmount" jdbcType="BIGINT" />
+    <result column="BUY_DATE" property="buyDate" jdbcType="TIMESTAMP" />
+    <result column="FROM_SIGN" property="fromSign" jdbcType="VARCHAR" />
+    <result column="PAY_ORDER_ID" property="payOrderId" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    BUY_ORDER_ID, USER_ID, BUY_MONTHS, PAY_AMOUNT, BUY_DATE, FROM_SIGN, PAY_ORDER_ID, 
+    STATUS
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyUserBuyMemberCriteria" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    'false' as QUERYID,
+    <include refid="Base_Column_List" />
+    from hy_user_buy_member
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart != null and limitStart>=0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from hy_user_buy_member
+    where BUY_ORDER_ID = #{buyOrderId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from hy_user_buy_member
+    where BUY_ORDER_ID = #{buyOrderId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUserBuyMemberCriteria" >
+    delete from hy_user_buy_member
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyUserBuyMember" >
+    insert into hy_user_buy_member (BUY_ORDER_ID, USER_ID, BUY_MONTHS, 
+      PAY_AMOUNT, BUY_DATE, FROM_SIGN, 
+      PAY_ORDER_ID, STATUS)
+    values (#{buyOrderId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{buyMonths,jdbcType=INTEGER}, 
+      #{payAmount,jdbcType=BIGINT}, #{buyDate,jdbcType=TIMESTAMP}, #{fromSign,jdbcType=VARCHAR}, 
+      #{payOrderId,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyUserBuyMember" >
+    insert into hy_user_buy_member
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="buyOrderId != null" >
+        BUY_ORDER_ID,
+      </if>
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      BUY_MONTHS,
+      PAY_AMOUNT,
+      <if test="buyDate != null" >
+        BUY_DATE,
+      </if>
+      <if test="fromSign != null" >
+        FROM_SIGN,
+      </if>
+      <if test="payOrderId != null" >
+        PAY_ORDER_ID,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="buyOrderId != null" >
+        #{buyOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      #{buyMonths,jdbcType=INTEGER},
+      #{payAmount,jdbcType=BIGINT},
+      <if test="buyDate != null" >
+        #{buyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fromSign != null" >
+        #{fromSign,jdbcType=VARCHAR},
+      </if>
+      <if test="payOrderId != null" >
+        #{payOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyUserBuyMemberCriteria" resultType="java.lang.Integer" >
+    select count(*) from hy_user_buy_member
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hy_user_buy_member
+    <set >
+      <if test="record.buyOrderId != null" >
+        BUY_ORDER_ID = #{record.buyOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null" >
+        USER_ID = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.buyMonths != null" >
+        BUY_MONTHS = #{record.buyMonths,jdbcType=INTEGER},
+      </if>
+      <if test="record.payAmount != null" >
+        PAY_AMOUNT = #{record.payAmount,jdbcType=BIGINT},
+      </if>
+      <if test="record.buyDate != null" >
+        BUY_DATE = #{record.buyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.fromSign != null" >
+        FROM_SIGN = #{record.fromSign,jdbcType=VARCHAR},
+      </if>
+      <if test="record.payOrderId != null" >
+        PAY_ORDER_ID = #{record.payOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        STATUS = #{record.status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hy_user_buy_member
+    set BUY_ORDER_ID = #{record.buyOrderId,jdbcType=VARCHAR},
+      USER_ID = #{record.userId,jdbcType=VARCHAR},
+      BUY_MONTHS = #{record.buyMonths,jdbcType=INTEGER},
+      PAY_AMOUNT = #{record.payAmount,jdbcType=BIGINT},
+      BUY_DATE = #{record.buyDate,jdbcType=TIMESTAMP},
+      FROM_SIGN = #{record.fromSign,jdbcType=VARCHAR},
+      PAY_ORDER_ID = #{record.payOrderId,jdbcType=VARCHAR},
+      STATUS = #{record.status,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.the.harbor.dao.mapper.bo.HyUserBuyMember" >
+    update hy_user_buy_member
+    <set >
+      <if test="userId != null" >
+        USER_ID = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="buyMonths != null" >
+        BUY_MONTHS = #{buyMonths,jdbcType=INTEGER},
+      </if>
+      <if test="payAmount != null" >
+        PAY_AMOUNT = #{payAmount,jdbcType=BIGINT},
+      </if>
+      <if test="buyDate != null" >
+        BUY_DATE = #{buyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fromSign != null" >
+        FROM_SIGN = #{fromSign,jdbcType=VARCHAR},
+      </if>
+      <if test="payOrderId != null" >
+        PAY_ORDER_ID = #{payOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where BUY_ORDER_ID = #{buyOrderId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyUserBuyMember" >
+    update hy_user_buy_member
+    set USER_ID = #{userId,jdbcType=VARCHAR},
+      BUY_MONTHS = #{buyMonths,jdbcType=INTEGER},
+      PAY_AMOUNT = #{payAmount,jdbcType=BIGINT},
+      BUY_DATE = #{buyDate,jdbcType=TIMESTAMP},
+      FROM_SIGN = #{fromSign,jdbcType=VARCHAR},
+      PAY_ORDER_ID = #{payOrderId,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=VARCHAR}
+    where BUY_ORDER_ID = #{buyOrderId,jdbcType=VARCHAR}
+  </update>
+</mapper>
