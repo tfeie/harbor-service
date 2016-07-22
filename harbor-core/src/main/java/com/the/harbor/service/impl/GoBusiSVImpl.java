@@ -37,6 +37,7 @@ import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.api.pay.param.CreatePaymentOrderReq;
 import com.the.harbor.api.user.param.DoUserAssetsTrade;
 import com.the.harbor.api.user.param.UserViewInfo;
+import com.the.harbor.base.enumeration.common.BusiErrorCode;
 import com.the.harbor.base.enumeration.hygo.GoType;
 import com.the.harbor.base.enumeration.hygo.OrgMode;
 import com.the.harbor.base.enumeration.hygo.PayMode;
@@ -73,6 +74,7 @@ import com.the.harbor.dao.mapper.bo.HyGoOrderCriteria;
 import com.the.harbor.dao.mapper.bo.HyGoTags;
 import com.the.harbor.dao.mapper.bo.HyGoView;
 import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
+import com.the.harbor.dao.mapper.bo.HyUserAssets;
 import com.the.harbor.dao.mapper.interfaces.HyGoCommentsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoDetailMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoFavoriteMapper;
@@ -976,6 +978,14 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 	@Override
 	public void giveHaibei(GiveHBReq giveHBReq) {
+		HyUserAssets userAssets = userManagerSV.getUserAssets(giveHBReq.getUserId(), AssetsType.HAIBEI.getValue());
+		if (userAssets == null) {
+			throw new BusinessException(BusiErrorCode.HAIBEI_NOT_ENOUGH.getValue(), "您的海贝数量不足，请充值");
+		}
+		if (userAssets.getBalance() < giveHBReq.getCount()) {
+			throw new BusinessException(BusiErrorCode.HAIBEI_NOT_ENOUGH.getValue(),
+					"您的海贝数量只有" + userAssets.getBalance() + "个,不足以打赏，请充值");
+		}
 		if (GoType.GROUP.getValue().equals(giveHBReq.getGoType())) {
 			HyGoJoin o = hyGoJoinMapper.selectByPrimaryKey(giveHBReq.getGoOrderId());
 			if (o == null) {
