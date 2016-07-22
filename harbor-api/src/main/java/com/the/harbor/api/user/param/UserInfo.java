@@ -368,7 +368,13 @@ public class UserInfo implements Serializable {
 	public void setAuthSts(String authSts) {
 		this.authSts = authSts;
 	}
-	
-	
+
+	public String getAbroadCountryRGB() {
+		return abroadCountryRGB;
+	}
+
+	public void setAbroadCountryRGB(String abroadCountryRGB) {
+		this.abroadCountryRGB = abroadCountryRGB;
+	}
 
 }
