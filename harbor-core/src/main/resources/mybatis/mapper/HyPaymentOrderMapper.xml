@@ -17,6 +17,7 @@
     <result column="return_code" property="returnCode" jdbcType="VARCHAR" />
     <result column="return_msg" property="returnMsg" jdbcType="VARCHAR" />
     <result column="notify_param" property="notifyParam" jdbcType="VARCHAR" />
+    <result column="SOURCE_NO" property="sourceNo" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -78,7 +79,8 @@
   </sql>
   <sql id="Base_Column_List" >
     PAY_ORDER_ID, USER_ID, BUSI_TYPE, PAY_AMOUNT, PAY_TYPE, SUMMARY, PAY_DATE, PAY_STATUS, 
-    NOTIFY_DATE, transaction_id, time_end, result_code, return_code, return_msg, notify_param
+    NOTIFY_DATE, transaction_id, time_end, result_code, return_code, return_msg, notify_param, 
+    SOURCE_NO
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyPaymentOrderCriteria" >
     select
@@ -119,14 +121,14 @@
       PAY_AMOUNT, PAY_TYPE, SUMMARY, 
       PAY_DATE, PAY_STATUS, NOTIFY_DATE, 
       transaction_id, time_end, result_code, 
-      return_code, return_msg, notify_param
-      )
+      return_code, return_msg, notify_param, 
+      SOURCE_NO)
     values (#{payOrderId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{busiType,jdbcType=VARCHAR}, 
       #{payAmount,jdbcType=BIGINT}, #{payType,jdbcType=VARCHAR}, #{summary,jdbcType=VARCHAR}, 
       #{payDate,jdbcType=TIMESTAMP}, #{payStatus,jdbcType=VARCHAR}, #{notifyDate,jdbcType=TIMESTAMP}, 
       #{transactionId,jdbcType=VARCHAR}, #{timeEnd,jdbcType=VARCHAR}, #{resultCode,jdbcType=VARCHAR}, 
-      #{returnCode,jdbcType=VARCHAR}, #{returnMsg,jdbcType=VARCHAR}, #{notifyParam,jdbcType=VARCHAR}
-      )
+      #{returnCode,jdbcType=VARCHAR}, #{returnMsg,jdbcType=VARCHAR}, #{notifyParam,jdbcType=VARCHAR}, 
+      #{sourceNo,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyPaymentOrder" >
     insert into hy_payment_order
@@ -174,6 +176,9 @@
       <if test="notifyParam != null" >
         notify_param,
       </if>
+      <if test="sourceNo != null" >
+        SOURCE_NO,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="payOrderId != null" >
@@ -218,6 +223,9 @@
       </if>
       <if test="notifyParam != null" >
         #{notifyParam,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceNo != null" >
+        #{sourceNo,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -275,6 +283,9 @@
       <if test="record.notifyParam != null" >
         notify_param = #{record.notifyParam,jdbcType=VARCHAR},
       </if>
+      <if test="record.sourceNo != null" >
+        SOURCE_NO = #{record.sourceNo,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -296,7 +307,8 @@
       result_code = #{record.resultCode,jdbcType=VARCHAR},
       return_code = #{record.returnCode,jdbcType=VARCHAR},
       return_msg = #{record.returnMsg,jdbcType=VARCHAR},
-      notify_param = #{record.notifyParam,jdbcType=VARCHAR}
+      notify_param = #{record.notifyParam,jdbcType=VARCHAR},
+      SOURCE_NO = #{record.sourceNo,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -346,6 +358,9 @@
       <if test="notifyParam != null" >
         notify_param = #{notifyParam,jdbcType=VARCHAR},
       </if>
+      <if test="sourceNo != null" >
+        SOURCE_NO = #{sourceNo,jdbcType=VARCHAR},
+      </if>
     </set>
     where PAY_ORDER_ID = #{payOrderId,jdbcType=VARCHAR}
   </update>
@@ -364,7 +379,8 @@
       result_code = #{resultCode,jdbcType=VARCHAR},
       return_code = #{returnCode,jdbcType=VARCHAR},
       return_msg = #{returnMsg,jdbcType=VARCHAR},
-      notify_param = #{notifyParam,jdbcType=VARCHAR}
+      notify_param = #{notifyParam,jdbcType=VARCHAR},
+      SOURCE_NO = #{sourceNo,jdbcType=VARCHAR}
     where PAY_ORDER_ID = #{payOrderId,jdbcType=VARCHAR}
   </update>
 </mapper>

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.pay.param.CreatePaymentOrderReq;
 import com.the.harbor.api.pay.param.NotifyPaymentReq;
 import com.the.harbor.base.enumeration.hypaymentorder.BusiType;
@@ -12,6 +13,7 @@ import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
 import com.the.harbor.dao.mapper.interfaces.HyPaymentOrderMapper;
+import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IPaymentBusiSV;
 import com.the.harbor.util.HarborSeqUtil;
 
@@ -21,6 +23,9 @@ public class PaymentBusiSVImpl implements IPaymentBusiSV {
 
 	@Autowired
 	private HyPaymentOrderMapper hyPaymentOrderMapper;
+
+	@Autowired
+	private IGoBusiSV goBusiSV;
 
 	@Override
 	public String createPaymentOrder(CreatePaymentOrderReq createPaymentOrderReq) {
@@ -34,6 +39,7 @@ public class PaymentBusiSVImpl implements IPaymentBusiSV {
 		p.setPayType(createPaymentOrderReq.getPayType());
 		p.setSummary(createPaymentOrderReq.getSummary());
 		p.setUserId(createPaymentOrderReq.getUserId());
+		p.setSourceNo(createPaymentOrderReq.getSourceNo());
 		hyPaymentOrderMapper.insertSelective(p);
 		return payOrderId;
 	}
@@ -80,9 +86,13 @@ public class PaymentBusiSVImpl implements IPaymentBusiSV {
 
 	private void callbackSuccessPay(HyPaymentOrder payOrder) {
 		String busiType = payOrder.getBusiType();
-		if(BusiType.PAY_FOR_GROUP.getValue().equals(busiType)){
-			//支付GO的费用
-			
+		if (BusiType.PAY_FOR_GROUP.getValue().equals(busiType)) {
+			// 支付GO的费用
+			UpdateGoJoinPayReq updateGoJoinPayReq= new UpdateGoJoinPayReq();
+			updateGoJoinPayReq.setGoOrderId(payOrder.getSourceNo());
+			updateGoJoinPayReq.setPayOrderId(payOrder.getPayOrderId());
+			updateGoJoinPayReq.setPayStatus("SUCCESS");
+			goBusiSV.updateGoJoinPay(updateGoJoinPayReq);
 		}
 	}
 

@@ -1144,6 +1144,76 @@ public class HyPaymentOrderCriteria {
             addCriterion("notify_param not between", value1, value2, "notifyParam");
             return (Criteria) this;
         }
+
+        public Criteria andSourceNoIsNull() {
+            addCriterion("SOURCE_NO is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNoIsNotNull() {
+            addCriterion("SOURCE_NO is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNoEqualTo(String value) {
+            addCriterion("SOURCE_NO =", value, "sourceNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNoNotEqualTo(String value) {
+            addCriterion("SOURCE_NO <>", value, "sourceNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNoGreaterThan(String value) {
+            addCriterion("SOURCE_NO >", value, "sourceNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNoGreaterThanOrEqualTo(String value) {
+            addCriterion("SOURCE_NO >=", value, "sourceNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNoLessThan(String value) {
+            addCriterion("SOURCE_NO <", value, "sourceNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNoLessThanOrEqualTo(String value) {
+            addCriterion("SOURCE_NO <=", value, "sourceNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNoLike(String value) {
+            addCriterion("SOURCE_NO like", value, "sourceNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNoNotLike(String value) {
+            addCriterion("SOURCE_NO not like", value, "sourceNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNoIn(List<String> values) {
+            addCriterion("SOURCE_NO in", values, "sourceNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNoNotIn(List<String> values) {
+            addCriterion("SOURCE_NO not in", values, "sourceNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNoBetween(String value1, String value2) {
+            addCriterion("SOURCE_NO between", value1, value2, "sourceNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceNoNotBetween(String value1, String value2) {
+            addCriterion("SOURCE_NO not between", value1, value2, "sourceNo");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

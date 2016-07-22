@@ -33,6 +33,8 @@ public class HyPaymentOrder {
 
     private String notifyParam;
 
+    private String sourceNo;
+
     public String getPayOrderId() {
         return payOrderId;
     }
@@ -151,5 +153,13 @@ public class HyPaymentOrder {
 
     public void setNotifyParam(String notifyParam) {
         this.notifyParam = notifyParam == null ? null : notifyParam.trim();
+    }
+
+    public String getSourceNo() {
+        return sourceNo;
+    }
+
+    public void setSourceNo(String sourceNo) {
+        this.sourceNo = sourceNo == null ? null : sourceNo.trim();
     }
 }

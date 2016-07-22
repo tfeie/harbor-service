@@ -256,6 +256,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			// 产生一笔支付交易流水
 			CreatePaymentOrderReq createPaymentOrderReq = new CreatePaymentOrderReq();
 			BeanUtils.copyProperties(createGoPaymentOrderReq, createPaymentOrderReq);
+			createPaymentOrderReq.setSourceNo(goOrderId);
 			payOrderId = paymentBusiSV.createPaymentOrder(createPaymentOrderReq);
 			// 关联上活动预约业务流水
 			Timestamp sysdate = DateUtil.getSysDate();

@@ -42,6 +42,11 @@ public class CreatePaymentOrderReq extends Response {
 	 */
 	private String summary;
 
+	/**
+	 * 关联业务流水
+	 */
+	private String sourceNo;
+
 	public String getUserId() {
 		return userId;
 	}
@@ -80,6 +85,14 @@ public class CreatePaymentOrderReq extends Response {
 
 	public void setSummary(String summary) {
 		this.summary = summary;
+	}
+
+	public String getSourceNo() {
+		return sourceNo;
+	}
+
+	public void setSourceNo(String sourceNo) {
+		this.sourceNo = sourceNo;
 	}
 
 }
