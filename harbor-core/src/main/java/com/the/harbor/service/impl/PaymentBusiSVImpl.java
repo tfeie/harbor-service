@@ -15,9 +15,12 @@ import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
+import com.the.harbor.dao.mapper.bo.HyUserBuyHb;
+import com.the.harbor.dao.mapper.bo.HyUserBuyMember;
 import com.the.harbor.dao.mapper.interfaces.HyPaymentOrderMapper;
 import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IPaymentBusiSV;
+import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.HarborSeqUtil;
 import com.the.harbor.util.UserAssetsTradeMQSend;
 
@@ -30,6 +33,9 @@ public class PaymentBusiSVImpl implements IPaymentBusiSV {
 
 	@Autowired
 	private IGoBusiSV goBusiSV;
+
+	@Autowired
+	private IUserManagerSV userManagerSV;
 
 	@Override
 	public String createPaymentOrder(CreatePaymentOrderReq createPaymentOrderReq) {
@@ -99,16 +105,28 @@ public class PaymentBusiSVImpl implements IPaymentBusiSV {
 			goBusiSV.updateGoJoinPay(updateGoJoinPayReq);
 		} else if (BusiType.PAY_FOR_HAIBI.getValue().equals(busiType)) {
 			// 充值海贝，需要将海贝冲入账户
-			DoUserAssetsTrade t = new DoUserAssetsTrade();
-			t.setAssetsType(AssetsType.HAIBEI.getValue());
-			t.setBusiType(BusiType.PAY_FOR_HAIBI.getValue());
-			t.setFromUserId(SystemUser.SYSTEM.getValue());
-			t.setHandleType(DoUserAssetsTrade.HandleType.TRANSFER.name());
-			t.setSourceNo(payOrder.getPayOrderId());
-			t.setSummary("购买海贝[" + payOrder.getPayAmount() + "]个");
-			t.setToUserId(payOrder.getUserId());
-			t.setTradeBalance(payOrder.getPayAmount());
-			UserAssetsTradeMQSend.sendMQ(t);
+			String buyOrderId = payOrder.getSourceNo();
+			HyUserBuyHb buyHB = userManagerSV.getHyUserBuyHb(buyOrderId);
+			if (buyHB != null) {
+				DoUserAssetsTrade t = new DoUserAssetsTrade();
+				t.setAssetsType(AssetsType.HAIBEI.getValue());
+				t.setBusiType(BusiType.PAY_FOR_HAIBI.getValue());
+				t.setFromUserId(SystemUser.SYSTEM.getValue());
+				t.setHandleType(DoUserAssetsTrade.HandleType.TRANSFER.name());
+				t.setSourceNo(buyHB.getBuyOrderId());
+				t.setSummary("购买海贝[" + buyHB.getBuyAmount() + "]个");
+				t.setToUserId(payOrder.getUserId());
+				t.setTradeBalance(payOrder.getPayAmount());
+				UserAssetsTradeMQSend.sendMQ(t);
+			}
+		} else if (BusiType.PAY_FOR_MEMBER.getValue().equals(busiType)) {
+			// 会员续费
+			String buyOrderId = payOrder.getSourceNo();
+			HyUserBuyMember buyMember = userManagerSV.getHyUserBuyMember(buyOrderId);
+			if (buyMember != null) {
+				userManagerSV.userMemberRenewal(buyMember);
+
+			}
 		}
 	}
 

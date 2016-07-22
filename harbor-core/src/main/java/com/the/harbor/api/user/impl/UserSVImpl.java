@@ -21,8 +21,6 @@ import com.the.harbor.api.user.param.UserInviteInfo;
 import com.the.harbor.api.user.param.UserInviteReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberQuery;
-import com.the.harbor.api.user.param.UserMemberRenewalReq;
-import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserQueryResp;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
@@ -45,7 +43,6 @@ import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.redisdata.util.HyUserUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.StringUtil;
-import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
 import com.the.harbor.service.interfaces.IPaymentBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 
@@ -154,28 +151,6 @@ public class UserSVImpl implements IUserSV {
 		UserQueryResp resp = new UserQueryResp();
 		resp.setUserInfo(userInfo);
 		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("查询成功"));
-		return resp;
-	}
-
-	@Override
-	public UserMemberRenewalResp userMemberRenewal(UserMemberRenewalReq userMemberRenewalReq)
-			throws BusinessException, SystemException {
-		if (userMemberRenewalReq == null) {
-			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "参数为空");
-		}
-		if (userMemberRenewalReq.getPayMonth() == 0) {
-			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "您的购买时长为0个月，请重选");
-		}
-		// 判断的支付的交易流水是否正确
-		HyPaymentOrder payOrder = paymentBusiSV.getHyPaymentOrder(userMemberRenewalReq.getPayOrderId());
-		if (payOrder == null) {
-			throw new BusinessException("PAY_00001", "您输入的会员支付交易流水不正确，无法续期");
-		}
-		// 执行续期动作
-		UserMemberRenewalResp resp = userManagerSV.userMemberRenewal(userMemberRenewalReq);
-		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("会员续期成功"));
-
-		this.storeUserInfo2Redis(userMemberRenewalReq.getUserId());
 		return resp;
 	}
 

@@ -24,8 +24,6 @@ import com.the.harbor.api.user.param.UserEditReq;
 import com.the.harbor.api.user.param.UserInviteInfo;
 import com.the.harbor.api.user.param.UserInviteReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
-import com.the.harbor.api.user.param.UserMemberRenewalReq;
-import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
@@ -475,18 +473,20 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		return m;
 	}
 
-	@Override
-	public UserMemberRenewalResp userMemberRenewal(UserMemberRenewalReq userMemberRenewalReq) {
+	/**
+	 * 会员缴费续期
+	 * 
+	 * @param buyMember
+	 * @return
+	 */
+	public void userMemberRenewal(HyUserBuyMember buyMember) {
 		// 校验用户信息
-		HyUser hyUser = this.getUserInfo(userMemberRenewalReq.getUserId());
+		HyUser hyUser = this.getUserInfo(buyMember.getUserId());
 		if (hyUser == null) {
 			throw new BusinessException("USER_00001", "传入的用户不存在");
 		}
-		if (!hyUser.getWxOpenid().equals(userMemberRenewalReq.getOpenId())) {
-			throw new BusinessException("USER_00002", "传入的微信openId与实际不符合，无法续期");
-		}
 		// 获取续期月份
-		int payMonth = userMemberRenewalReq.getPayMonth();
+		int payMonth = buyMember.getBuyMonths();
 		// 获取当前系统时间
 		Timestamp sysdate = DateUtil.getSysDate();
 		Timestamp effDate = null;
@@ -519,14 +519,22 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		hyUser.setExpDate(expDate);
 		hyUser.setMemberLevel(memberLevel);
 		hyUserMapper.updateByPrimaryKeySelective(hyUser);
-		// 组织返回
-		UserMemberRenewalResp resp = new UserMemberRenewalResp();
-		resp.setChName(hyUser.getChName());
-		resp.setEnName(hyUser.getEnName());
-		resp.setExpDate(DateUtil.getDateString(expDate, DateUtil.DATE_FORMAT));
-		resp.setPayMonth(payMonth);
-		resp.setUserId(hyUser.getUserId());
-		return resp;
+
+		// 更新缓存
+		this.storeUserInfo2Redis(hyUser.getUserId());
+
+	}
+
+	private void storeUserInfo2Redis(String userId) {
+		try {
+			UserViewInfo userInfo = this.getUserViewInfoFromDBByUserId(userId);
+			if (userInfo != null) {
+				HyUserUtil.storeUserInfo2Redis(userId, JSON.toJSONString(userInfo));
+				HyUserUtil.buildOpenIdAndUserIdMapped(userInfo.getWxOpenid(), userId);
+			}
+		} catch (Exception ex) {
+
+		}
 	}
 
 	@Override
@@ -1196,6 +1204,16 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			payOrderId = record.getPayOrderId();
 		}
 		return payOrderId;
+	}
+
+	@Override
+	public HyUserBuyMember getHyUserBuyMember(String buyOrderId) {
+		return hyUserBuyMemberMapper.selectByPrimaryKey(buyOrderId);
+	}
+
+	@Override
+	public HyUserBuyHb getHyUserBuyHb(String buyOrderId) {
+		return hyUserBuyHbMapper.selectByPrimaryKey(buyOrderId);
 	}
 
 }

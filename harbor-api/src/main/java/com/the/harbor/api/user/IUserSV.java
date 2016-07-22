@@ -15,8 +15,6 @@ import com.the.harbor.api.user.param.UserInviteInfo;
 import com.the.harbor.api.user.param.UserInviteReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberQuery;
-import com.the.harbor.api.user.param.UserMemberRenewalReq;
-import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserQueryResp;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
@@ -53,10 +51,6 @@ public interface IUserSV {
 	}
 
 	@interface QueryUserMemberInfo {
-
-	}
-
-	@interface UserMemberRenewal {
 
 	}
 
@@ -143,17 +137,6 @@ public interface IUserSV {
 	 * @throws SystemException
 	 */
 	UserQueryResp queryUserInfoByOpenId(String openId) throws BusinessException, SystemException;
-
-	/**
-	 * 会员续期服务
-	 * 
-	 * @param userMemberRenewalReq
-	 * @return
-	 * @throws BusinessException
-	 * @throws SystemException
-	 */
-	UserMemberRenewalResp userMemberRenewal(UserMemberRenewalReq userMemberRenewalReq)
-			throws BusinessException, SystemException;
 
 	/**
 	 * 根据userId获取用户信息

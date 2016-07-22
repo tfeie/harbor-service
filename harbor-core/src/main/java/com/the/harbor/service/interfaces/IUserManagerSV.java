@@ -13,8 +13,6 @@ import com.the.harbor.api.user.param.UserEditReq;
 import com.the.harbor.api.user.param.UserInviteInfo;
 import com.the.harbor.api.user.param.UserInviteReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
-import com.the.harbor.api.user.param.UserMemberRenewalReq;
-import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserRegReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
@@ -24,6 +22,8 @@ import com.the.harbor.api.user.param.UserTagQueryResp;
 import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.api.user.param.UserWealthQueryResp;
 import com.the.harbor.dao.mapper.bo.HyUserAssets;
+import com.the.harbor.dao.mapper.bo.HyUserBuyHb;
+import com.the.harbor.dao.mapper.bo.HyUserBuyMember;
 
 public interface IUserManagerSV {
 
@@ -73,10 +73,10 @@ public interface IUserManagerSV {
 	/**
 	 * 会员缴费续期
 	 * 
-	 * @param userMemberRenewalReq
+	 * @param buyMember
 	 * @return
 	 */
-	UserMemberRenewalResp userMemberRenewal(UserMemberRenewalReq userMemberRenewalReq);
+	void userMemberRenewal(HyUserBuyMember buyMember);
 
 	/**
 	 * 用户资料编辑
@@ -152,4 +152,8 @@ public interface IUserManagerSV {
 	String createUserBuyHB(CreateUserBuyHBOrderReq createUserBuyHBOrderReq);
 
 	String createUserBuyMember(CreateUserBuyMemberOrderReq createUserBuyMemberOrderReq);
+
+	HyUserBuyMember getHyUserBuyMember(String buyOrderId);
+
+	HyUserBuyHb getHyUserBuyHb(String buyOrderId);
 }
