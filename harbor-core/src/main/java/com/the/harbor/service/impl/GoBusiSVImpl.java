@@ -344,16 +344,19 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		UserViewInfo publishUser = userManagerSV.getUserViewInfoByUserId(hyGo.getUserId());
 		String title = "";
 		String content = "";
+		String link ="";
 		HyGoOrder o = new HyGoOrder();
 		o.setOrderId(hyGoOrder.getOrderId());
 		if ("confirm".equals(goOrderConfirmReq.getAckFlag())) {
 			title = "海牛同意了您的预约";
 			content = "[" + publishUser.getEnName() + "]同意了您的预约的活动[" + hyGo.getTopic() + "]";
+			link = "../go/toAppointment.html?goOrderId="+hyGoOrder.getOrderId();
 			o.setOrderStatus(OrderStatus.WAIT_MEET.getValue());
 		} else if ("reject".equals(goOrderConfirmReq.getAckFlag())) {
 			o.setOrderStatus(OrderStatus.REJECT.getValue());
 			title = "海牛拒绝了您的预约";
-			content = "[" + publishUser.getEnName() + "]拒绝了您的预约的活动[" + hyGo.getTopic() + "]";
+			content = "[" + publishUser.getEnName() + "]拒绝了您的预约的活动[" + hyGo.getTopic() + "],您可以浏览其它活动~";
+			link = "../go/goindex.html";
 		}
 		Timestamp sysdate = DateUtil.getSysDate();
 		o.setStsDate(sysdate);
@@ -370,6 +373,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		body.setAccepterId(hyGoOrder.getUserId());
 		body.setTitle(title);
 		body.setContent(content);
+		body.setLink(link);
 		NotifyMQSend.sendNotifyMQ(body);
 
 	}
