@@ -735,6 +735,32 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			body.setUserId(userId);
 			UserFavorMQSend.sendMQ(body);
 		}
+		if(!needPay){
+			//如果不需要支付，则将订单更新成待确认状态
+			Timestamp sysdate = DateUtil.getSysDate();
+			HyGoJoin o = new HyGoJoin();
+			o.setOrderId(orderId);
+			o.setOrderStatus(com.the.harbor.base.enumeration.hygojoin.OrderStatus.WAIT_CONFIRM.getValue());
+			o.setStsDate(sysdate);
+			hyGoJoinMapper.updateByPrimaryKeySelective(o);
+
+			// 支付成功后记录用户报名申请此活动，交给活动发起者进行审核
+			HyGoUtil.userApplyJoinGroup(hyGo.getGoId(),userId);
+
+			// 给活动发起者通知审核
+			UserViewInfo orderUser = userManagerSV.getUserViewInfoByUserId(userId);
+			DoNotify body = new DoNotify();
+			body.setHandleType(DoNotify.HandleType.PUBLISH.name());
+			body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+			body.setSenderType(SenderType.USER.getValue());
+			body.setSenderId(userId);
+			body.setAccepterType(AccepterType.USER.getValue());
+			body.setAccepterId(hyGo.getUserId());
+			body.setTitle("有新用户报名参加活动");
+			body.setContent("[" + orderUser.getEnName() + "]报名参加您发起的group活动[" + hyGo.getTopic() + "],请您确认~");
+			body.setLink("../go/confirmlist.html?goId=" + hyGo.getGoId());
+			NotifyMQSend.sendNotifyMQ(body);
+		}
 		return resp;
 	}
 
