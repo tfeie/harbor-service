@@ -679,7 +679,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				if (newPayOrderFlag) {
 					// 产生一个新的支付流水
 					CreatePaymentOrderReq createPaymentOrderReq = new CreatePaymentOrderReq();
-					createPaymentOrderReq.setBusiType(BusiType.PAY_FOR_GO.getValue());
+					createPaymentOrderReq.setBusiType(BusiType.PAY_FOR_GROUP.getValue());
 					createPaymentOrderReq.setPayAmount(hyGo.getFixedPrice());
 					createPaymentOrderReq.setPayType(PayType.WEIXIN.getValue());
 					createPaymentOrderReq.setSummary("GROUP活动[" + hyGo.getGoId() + "]报名缴费");
@@ -698,7 +698,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			if (needPay) {
 				/* 如果是需要支付，则产生一笔支付流水 */
 				CreatePaymentOrderReq createPaymentOrderReq = new CreatePaymentOrderReq();
-				createPaymentOrderReq.setBusiType(BusiType.PAY_FOR_GO.getValue());
+				createPaymentOrderReq.setBusiType(BusiType.PAY_FOR_GROUP.getValue());
 				createPaymentOrderReq.setPayAmount(hyGo.getFixedPrice());
 				createPaymentOrderReq.setPayType(PayType.WEIXIN.getValue());
 				createPaymentOrderReq.setSummary("GROUP活动[" + hyGo.getGoId() + "]报名缴费");
@@ -816,7 +816,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 					// 如果不是我请客，则说明用户已经支付过了
 					DoUserAssetsTrade t = new DoUserAssetsTrade();
 					t.setAssetsType(AssetsType.CASH.getValue());
-					t.setBusiType(BusiType.PAY_FOR_GO.getValue());
+					t.setBusiType(BusiType.PAY_FOR_GROUP.getValue());
 					// 因为用户支付现金给系统，这里由系统支付给活动发起方
 					t.setFromUserId(SystemUser.SYSTEM.getValue());
 					t.setHandleType(DoUserAssetsTrade.HandleType.TRANSFER.name());
