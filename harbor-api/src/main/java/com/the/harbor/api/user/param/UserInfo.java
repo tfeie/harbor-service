@@ -25,6 +25,8 @@ public class UserInfo implements Serializable {
 
 	private String abroadCountry;
 
+	private String abroadCountryRGB;
+
 	private String abroadUniversity;
 
 	private String atCountry;
@@ -366,5 +368,7 @@ public class UserInfo implements Serializable {
 	public void setAuthSts(String authSts) {
 		this.authSts = authSts;
 	}
+	
+	
 
 }
