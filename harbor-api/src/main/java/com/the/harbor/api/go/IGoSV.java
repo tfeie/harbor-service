@@ -6,6 +6,7 @@ import com.the.harbor.api.go.param.CheckUserOrderGoReq;
 import com.the.harbor.api.go.param.CheckUserOrderGoResp;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderResp;
+import com.the.harbor.api.go.param.GiveHBReq;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoCreateResp;
 import com.the.harbor.api.go.param.GoOrderConfirmReq;
@@ -110,6 +111,10 @@ public interface IGoSV {
 	}
 
 	@interface SubmitGoHelp {
+
+	}
+
+	@interface GiveHaibei {
 
 	}
 
@@ -296,6 +301,7 @@ public interface IGoSV {
 
 	/**
 	 * 提交活动是否对你有帮助
+	 * 
 	 * @param submitGoHelpReq
 	 * @return
 	 * @throws BusinessException
@@ -303,5 +309,15 @@ public interface IGoSV {
 	 */
 	Response submitGoHelp(@NotNull(message = "参数为空") SubmitGoHelpReq submitGoHelpReq)
 			throws BusinessException, SystemException;
+
+	/**
+	 * 活动打赏海贝
+	 * 
+	 * @param giveHBReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	Response giveHaibei(@NotNull(message = "参数为空") GiveHBReq giveHBReq) throws BusinessException, SystemException;
 
 }

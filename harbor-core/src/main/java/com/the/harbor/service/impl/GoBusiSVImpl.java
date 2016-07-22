@@ -17,6 +17,7 @@ import com.the.harbor.api.go.param.DoGoComment;
 import com.the.harbor.api.go.param.DoGoFavorite;
 import com.the.harbor.api.go.param.DoGoJoinConfirm;
 import com.the.harbor.api.go.param.DoGoView;
+import com.the.harbor.api.go.param.GiveHBReq;
 import com.the.harbor.api.go.param.Go;
 import com.the.harbor.api.go.param.GoComment;
 import com.the.harbor.api.go.param.GoCreateReq;
@@ -971,6 +972,92 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			// TODO 设置评价值
 			hyGoOrderMapper.updateByPrimaryKeySelective(o);
 		}
+	}
+
+	@Override
+	public void giveHaibei(GiveHBReq giveHBReq) {
+		if (GoType.GROUP.getValue().equals(giveHBReq.getGoType())) {
+			HyGoJoin o = hyGoJoinMapper.selectByPrimaryKey(giveHBReq.getGoOrderId());
+			if (o == null) {
+				throw new BusinessException("活动参加申请不存在，不能打赏哦");
+			}
+			if (!o.getUserId().equals(giveHBReq.getUserId())) {
+				throw new BusinessException("您没有参加活动，不能打赏哦");
+			}
+			Go go = this.getGoInfo(o.getGoId());
+			if (go == null) {
+				throw new BusinessException("活动信息不存在，不能打赏哦");
+			}
+			// TODO 设置打赏金额,注意累加
+			hyGoJoinMapper.updateByPrimaryKeySelective(o);
+			// 发送海贝赠送交易消息
+			DoUserAssetsTrade t = new DoUserAssetsTrade();
+			t.setAssetsType(AssetsType.HAIBEI.getValue());
+			t.setBusiType(BusiType.REWARD_HB_FOR_GROUP.getValue());
+			t.setFromUserId(giveHBReq.getUserId());
+			t.setHandleType(DoUserAssetsTrade.HandleType.TRANSFER.name());
+			t.setSourceNo(o.getOrderId());
+			t.setSummary("用户[" + giveHBReq.getUserId() + "]点评GROUP活动并打赏活动发起者[" + go.getUserId() + "]共["
+					+ giveHBReq.getCount() + "]个海贝,源单号为活动参加流水");
+			t.setToUserId(go.getUserId());
+			t.setTradeBalance(giveHBReq.getCount());
+			UserAssetsTradeMQSend.sendMQ(t);
+			// 给活动发起者消息中心发送通知
+			DoNotify notify = new DoNotify();
+			notify.setHandleType(DoNotify.HandleType.PUBLISH.name());
+			notify.setNotifyId(UUIDUtil.genId32());
+			notify.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+			notify.setSenderType(SenderType.USER.getValue());
+			notify.setSenderId(o.getUserId());
+			notify.setAccepterType(AccepterType.USER.getValue());
+			notify.setAccepterId(go.getUserId());
+			notify.setTitle("收到海贝通知~");
+			notify.setContent("给您发起的group活动[" + go.getTopic() + "]捐献了[" + giveHBReq.getCount() + "]个海贝，速速查看~");
+			notify.setLink("../be/comments.html?goId=" + go.getGoId());
+			NotifyMQSend.sendNotifyMQ(notify);
+
+		} else if (GoType.ONE_ON_ONE.getValue().equals(giveHBReq.getGoType())) {
+			HyGoOrder o = hyGoOrderMapper.selectByPrimaryKey(giveHBReq.getGoOrderId());
+			if (o == null) {
+				throw new BusinessException("活动预约申请不存在，不能打赏哦");
+			}
+			if (!o.getUserId().equals(giveHBReq.getUserId())) {
+				throw new BusinessException("您不是当前活动申请者，不能打赏哦");
+			}
+			Go go = this.getGoInfo(o.getGoId());
+			if (go == null) {
+				throw new BusinessException("活动信息不存在，不能打赏哦");
+			}
+			// TODO 设置打赏金额，注意累加
+			hyGoOrderMapper.updateByPrimaryKeySelective(o);
+
+			// 发送海贝赠送交易消息
+			DoUserAssetsTrade t = new DoUserAssetsTrade();
+			t.setAssetsType(AssetsType.HAIBEI.getValue());
+			t.setBusiType(BusiType.REWARD_HB_FOR_ONO.getValue());
+			t.setFromUserId(giveHBReq.getUserId());
+			t.setHandleType(DoUserAssetsTrade.HandleType.TRANSFER.name());
+			t.setSourceNo(o.getOrderId());
+			t.setSummary("用户[" + giveHBReq.getUserId() + "]点评ono活动并打赏活动发起者[" + go.getUserId() + "]共["
+					+ giveHBReq.getCount() + "]个海贝,源单号为活动预约流水");
+			t.setToUserId(go.getUserId());
+			t.setTradeBalance(giveHBReq.getCount());
+			UserAssetsTradeMQSend.sendMQ(t);
+			// 给活动发起者消息中心发送通知
+			DoNotify notify = new DoNotify();
+			notify.setHandleType(DoNotify.HandleType.PUBLISH.name());
+			notify.setNotifyId(UUIDUtil.genId32());
+			notify.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
+			notify.setSenderType(SenderType.USER.getValue());
+			notify.setSenderId(o.getUserId());
+			notify.setAccepterType(AccepterType.USER.getValue());
+			notify.setAccepterId(go.getUserId());
+			notify.setTitle("收到海贝通知~");
+			notify.setContent("给您发起的one on one活动[" + go.getTopic() + "]捐献了[" + giveHBReq.getCount() + "]个海贝，速速查看~");
+			notify.setLink("../be/toHainiuFeedback.html?goOrderId=" + o.getOrderId());
+			NotifyMQSend.sendNotifyMQ(notify);
+		}
+
 	}
 
 }

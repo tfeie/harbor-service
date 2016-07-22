@@ -24,6 +24,7 @@ import com.the.harbor.api.go.param.CheckUserOrderGoReq;
 import com.the.harbor.api.go.param.CheckUserOrderGoResp;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderResp;
+import com.the.harbor.api.go.param.GiveHBReq;
 import com.the.harbor.api.go.param.Go;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoCreateResp;
@@ -547,6 +548,12 @@ public class GoSVImpl implements IGoSV {
 	@Override
 	public Response submitGoHelp(SubmitGoHelpReq submitGoHelpReq) throws BusinessException, SystemException {
 		goBusiSV.submitGoHelp(submitGoHelpReq);
+		return ResponseBuilder.buildSuccessResponse("操作成功");
+	}
+
+	@Override
+	public Response giveHaibei(GiveHBReq giveHBReq) throws BusinessException, SystemException {
+		goBusiSV.giveHaibei(giveHBReq);
 		return ResponseBuilder.buildSuccessResponse("操作成功");
 	}
 

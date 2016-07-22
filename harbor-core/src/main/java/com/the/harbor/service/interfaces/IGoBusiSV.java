@@ -8,6 +8,7 @@ import com.the.harbor.api.go.param.DoGoComment;
 import com.the.harbor.api.go.param.DoGoFavorite;
 import com.the.harbor.api.go.param.DoGoJoinConfirm;
 import com.the.harbor.api.go.param.DoGoView;
+import com.the.harbor.api.go.param.GiveHBReq;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoOrderConfirmReq;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
@@ -71,5 +72,7 @@ public interface IGoBusiSV {
 	List<HyGoJoin> getMyJointOnOGoes(QueryMyJointGoReq req);
 
 	void submitGoHelp(SubmitGoHelpReq submitGoHelpReq);
+
+	void giveHaibei(GiveHBReq giveHBReq);
 
 }
