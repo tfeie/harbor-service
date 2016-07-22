@@ -2,6 +2,13 @@ package com.the.harbor.api.user;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
+import com.the.harbor.api.user.param.CreateUserBuyHBOrderReq;
+import com.the.harbor.api.user.param.CreateUserBuyHBOrderResp;
+import com.the.harbor.api.user.param.CreateUserBuyMemberOrderReq;
+import com.the.harbor.api.user.param.CreateUserBuyMemberOrderResp;
+import com.the.harbor.api.user.param.UserAuthReq;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
 import com.the.harbor.api.user.param.UserInviteInfo;
@@ -12,7 +19,6 @@ import com.the.harbor.api.user.param.UserMemberRenewalReq;
 import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserQueryResp;
 import com.the.harbor.api.user.param.UserRegReq;
-import com.the.harbor.api.user.param.UserAuthReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
@@ -61,9 +67,17 @@ public interface IUserSV {
 	@interface QueryUserWealth {
 
 	}
-	
-	@interface UserAuth{
-		
+
+	@interface UserAuth {
+
+	}
+
+	@interface CreateUserBuyHB {
+
+	}
+
+	@interface CreateUserBuyMember {
+
 	}
 
 	/**
@@ -203,34 +217,61 @@ public interface IUserSV {
 
 	/**
 	 * 查询未认证的用户
+	 * 
 	 * @param status
 	 * @return
 	 * @throws BusinessException
 	 * @throws SystemException
 	 */
 	List<UserViewInfo> queryUnAuthUsers() throws BusinessException, SystemException;
-	
+
 	/**
 	 * 提交用认证信息
+	 * 
 	 * @param user
 	 * @return
 	 */
 	Response submitUserAuthInfo(UserAuthReq userStatusReq);
-	
+
 	/**
 	 * 查询邀请码信息
+	 * 
 	 * @param userInviteReq
 	 * @return
 	 */
 	List<UserInviteInfo> queryUserInvite(UserInviteReq userInviteReq) throws BusinessException, SystemException;
-	
+
 	/**
 	 * 更新邀请码表中的使用者id
+	 * 
 	 * @param userInviteReq
 	 * @return
 	 */
 	Response updateUserInvite(UserInviteReq userInviteReq);
-	
+
 	UserInviteInfo checkUserInviteCode(String inviteCode);
+
+	/**
+	 * 创建海贝购买支付订单
+	 * 
+	 * @param giveHBReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	CreateUserBuyHBOrderResp createUserBuyHB(@NotNull(message = "参数为空") CreateUserBuyHBOrderReq createUserBuyHBOrderReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 创建会员购买支付订单
+	 * 
+	 * @param giveHBReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	CreateUserBuyMemberOrderResp createUserBuyMember(
+			@NotNull(message = "参数为空") CreateUserBuyMemberOrderReq createUserBuyMemberOrderReq)
+			throws BusinessException, SystemException;
 
 }

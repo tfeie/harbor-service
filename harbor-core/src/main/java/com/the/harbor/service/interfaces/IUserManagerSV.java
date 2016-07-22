@@ -2,19 +2,20 @@ package com.the.harbor.service.interfaces;
 
 import java.util.List;
 
+import com.the.harbor.api.user.param.CreateUserBuyHBOrderReq;
+import com.the.harbor.api.user.param.CreateUserBuyMemberOrderReq;
 import com.the.harbor.api.user.param.DoUserAssetsTrade;
 import com.the.harbor.api.user.param.DoUserFans;
 import com.the.harbor.api.user.param.DoUserFriend;
+import com.the.harbor.api.user.param.UserAuthReq;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
-import com.the.harbor.api.user.param.UserInfo;
 import com.the.harbor.api.user.param.UserInviteInfo;
 import com.the.harbor.api.user.param.UserInviteReq;
 import com.the.harbor.api.user.param.UserMemberInfo;
 import com.the.harbor.api.user.param.UserMemberRenewalReq;
 import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserRegReq;
-import com.the.harbor.api.user.param.UserAuthReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserTag;
@@ -123,26 +124,32 @@ public interface IUserManagerSV {
 	UserWealthQueryResp queryUserWealth(String userId);
 
 	HyUserAssets getUserAssets(String userId, String assetsType);
-	
+
 	UserViewInfo getUserViewInfoFromDBByUserId(String userId);
-	
+
 	/**
 	 * 查询未认证的用户
+	 * 
 	 * @param status
 	 * @return
 	 */
 	List<UserViewInfo> getUnAuthUsers();
 
 	String submitUserAuthInfo(UserAuthReq userStatusReq);
-	
+
 	/**
 	 * 用户邀请码
+	 * 
 	 * @param userInviteReq
 	 * @return
 	 */
 	List<UserInviteInfo> getUserInvite(UserInviteReq userInviteReq);
-	
+
 	void updateUserInvite(UserInviteReq userInviteReq);
-	
+
 	UserInviteInfo checkUserInviteCode(String inviteCode);
+
+	String createUserBuyHB(CreateUserBuyHBOrderReq createUserBuyHBOrderReq);
+
+	String createUserBuyMember(CreateUserBuyMemberOrderReq createUserBuyMemberOrderReq);
 }

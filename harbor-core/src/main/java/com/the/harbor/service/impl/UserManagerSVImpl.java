@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.the.harbor.api.pay.param.CreatePaymentOrderReq;
+import com.the.harbor.api.user.param.CreateUserBuyHBOrderReq;
+import com.the.harbor.api.user.param.CreateUserBuyMemberOrderReq;
 import com.the.harbor.api.user.param.DoUserAssetsTrade;
 import com.the.harbor.api.user.param.DoUserFans;
 import com.the.harbor.api.user.param.DoUserFriend;
@@ -68,10 +71,15 @@ import com.the.harbor.commons.util.RandomUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.commons.util.UUIDUtil;
 import com.the.harbor.constants.HarborErrorCodeConstants;
+import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
 import com.the.harbor.dao.mapper.bo.HyUser;
 import com.the.harbor.dao.mapper.bo.HyUserAssets;
 import com.the.harbor.dao.mapper.bo.HyUserAssetsCriteria;
 import com.the.harbor.dao.mapper.bo.HyUserAssetsTrade;
+import com.the.harbor.dao.mapper.bo.HyUserBuyHb;
+import com.the.harbor.dao.mapper.bo.HyUserBuyHbCriteria;
+import com.the.harbor.dao.mapper.bo.HyUserBuyMember;
+import com.the.harbor.dao.mapper.bo.HyUserBuyMemberCriteria;
 import com.the.harbor.dao.mapper.bo.HyUserCriteria;
 import com.the.harbor.dao.mapper.bo.HyUserFans;
 import com.the.harbor.dao.mapper.bo.HyUserFansCriteria;
@@ -85,6 +93,8 @@ import com.the.harbor.dao.mapper.bo.HyUserTags;
 import com.the.harbor.dao.mapper.bo.HyUserTagsCriteria;
 import com.the.harbor.dao.mapper.interfaces.HyUserAssetsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserAssetsTradeMapper;
+import com.the.harbor.dao.mapper.interfaces.HyUserBuyHbMapper;
+import com.the.harbor.dao.mapper.interfaces.HyUserBuyMemberMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserFansMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserFriendMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserHbAssetsMapper;
@@ -92,6 +102,7 @@ import com.the.harbor.dao.mapper.interfaces.HyUserInviteMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserTagsMapper;
 import com.the.harbor.service.interfaces.IBeBusiSV;
+import com.the.harbor.service.interfaces.IPaymentBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.HarborSeqUtil;
 import com.the.harbor.util.NotifyMQSend;
@@ -125,7 +136,16 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	private transient IBeBusiSV beBusiSV;
 
 	@Autowired
+	private transient IPaymentBusiSV paymentBusiSV;
+
+	@Autowired
 	private transient HyUserInviteMapper hyUserInviteMapper;
+
+	@Autowired
+	private transient HyUserBuyHbMapper hyUserBuyHbMapper;
+
+	@Autowired
+	private transient HyUserBuyMemberMapper hyUserBuyMemberMapper;
 
 	@Override
 	public String userRegister(UserRegReq userRegReq) {
@@ -166,7 +186,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 
 		// 初始化资产信息
 		this.createDefaultUserAssets(user.getUserId());
-		//生成邀请码
+		// 生成邀请码
 		this.createInviteCodes(user.getUserId());
 		return user.getUserId();
 	}
@@ -1073,21 +1093,107 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		}
 		return null;
 	}
-	
-	private void createInviteCodes(String userId){
-		for(int i=0;i<5;i++){
+
+	private void createInviteCodes(String userId) {
+		for (int i = 0; i < 5; i++) {
 			String inviteCode = RandomUtil.generateNumber(6);
-			HyUserInvite record= new HyUserInvite();
+			HyUserInvite record = new HyUserInvite();
 			record.setInviteCode(inviteCode);
 			record.setUserId(userId);
 			record.setStatus(UserInviteStatus.INVITE_VALID.getValue());
-			try{
+			try {
 				hyUserInviteMapper.insert(record);
-			}catch(Exception ex){
-				
+			} catch (Exception ex) {
+
 			}
 		}
-		
+
+	}
+
+	@Override
+	public String createUserBuyHB(CreateUserBuyHBOrderReq createUserBuyHBOrderReq) {
+		String payOrderId = null;
+		/* 判断签名流水是否生成了支付订单，放置重复提交 */
+		HyUserBuyHbCriteria sql = new HyUserBuyHbCriteria();
+		sql.or().andFromSignEqualTo(createUserBuyHBOrderReq.getFromSign());
+		List<HyUserBuyHb> list = hyUserBuyHbMapper.selectByExample(sql);
+		if (CollectionUtil.isEmpty(list)) {
+			/* 如果没有产生，则产生一笔 */
+			String buyOrderId = UUIDUtil.genId32();
+			CreatePaymentOrderReq createPaymentOrderReq = new CreatePaymentOrderReq();
+			BeanUtils.copyProperties(createUserBuyHBOrderReq, createPaymentOrderReq);
+			createPaymentOrderReq.setSourceNo(buyOrderId);
+			payOrderId = paymentBusiSV.createPaymentOrder(createPaymentOrderReq);
+			HyUserBuyHb record = new HyUserBuyHb();
+			record.setBuyAmount(createUserBuyHBOrderReq.getBuyAmount());
+			record.setBuyDate(DateUtil.getSysDate());
+			record.setBuyOrderId(buyOrderId);
+			record.setFromSign(createUserBuyHBOrderReq.getFromSign());
+			record.setPayAmount(createUserBuyHBOrderReq.getPayAmount());
+			record.setPayOrderId(payOrderId);
+			record.setStatus("10");
+			record.setUserId(createUserBuyHBOrderReq.getUserId());
+			hyUserBuyHbMapper.insert(record);
+		} else {
+			/* 如果已经提交了申请，则更新支付金额等信息 */
+			HyUserBuyHb record = list.get(0);
+			record.setBuyAmount(createUserBuyHBOrderReq.getBuyAmount());
+			record.setBuyDate(DateUtil.getSysDate());
+			record.setPayAmount(createUserBuyHBOrderReq.getPayAmount());
+			hyUserBuyHbMapper.updateByPrimaryKeySelective(record);
+
+			HyPaymentOrder payOrder = paymentBusiSV.getHyPaymentOrder(record.getPayOrderId());
+			if (payOrder != null) {
+				payOrder.setPayAmount(createUserBuyHBOrderReq.getPayAmount());
+				payOrder.setPayDate(DateUtil.getSysDate());
+				paymentBusiSV.updateByPrimaryKeySelective(payOrder);
+			}
+			payOrderId = record.getPayOrderId();
+		}
+		return payOrderId;
+	}
+
+	@Override
+	public String createUserBuyMember(CreateUserBuyMemberOrderReq createUserBuyMemberOrderReq) {
+		String payOrderId = null;
+		/* 判断签名流水是否生成了支付订单，放置重复提交 */
+		HyUserBuyMemberCriteria sql = new HyUserBuyMemberCriteria();
+		sql.or().andFromSignEqualTo(createUserBuyMemberOrderReq.getFromSign());
+		List<HyUserBuyMember> list = hyUserBuyMemberMapper.selectByExample(sql);
+		if (CollectionUtil.isEmpty(list)) {
+			/* 如果没有产生，则产生一笔 */
+			String buyOrderId = UUIDUtil.genId32();
+			CreatePaymentOrderReq createPaymentOrderReq = new CreatePaymentOrderReq();
+			BeanUtils.copyProperties(createUserBuyMemberOrderReq, createPaymentOrderReq);
+			createPaymentOrderReq.setSourceNo(buyOrderId);
+			payOrderId = paymentBusiSV.createPaymentOrder(createPaymentOrderReq);
+			HyUserBuyMember record = new HyUserBuyMember();
+			record.setBuyMonths(createUserBuyMemberOrderReq.getBuyMonths());
+			record.setBuyDate(DateUtil.getSysDate());
+			record.setBuyOrderId(buyOrderId);
+			record.setFromSign(createUserBuyMemberOrderReq.getFromSign());
+			record.setPayAmount(createUserBuyMemberOrderReq.getPayAmount());
+			record.setPayOrderId(payOrderId);
+			record.setStatus("10");
+			record.setUserId(createUserBuyMemberOrderReq.getUserId());
+			hyUserBuyMemberMapper.insert(record);
+		} else {
+			/* 如果已经提交了申请，则更新支付金额等信息 */
+			HyUserBuyMember record = list.get(0);
+			record.setBuyMonths(createUserBuyMemberOrderReq.getBuyMonths());
+			record.setBuyDate(DateUtil.getSysDate());
+			record.setPayAmount(createUserBuyMemberOrderReq.getPayAmount());
+			hyUserBuyMemberMapper.updateByPrimaryKeySelective(record);
+
+			HyPaymentOrder payOrder = paymentBusiSV.getHyPaymentOrder(record.getPayOrderId());
+			if (payOrder != null) {
+				payOrder.setPayAmount(createUserBuyMemberOrderReq.getPayAmount());
+				payOrder.setPayDate(DateUtil.getSysDate());
+				paymentBusiSV.updateByPrimaryKeySelective(payOrder);
+			}
+			payOrderId = record.getPayOrderId();
+		}
+		return payOrderId;
 	}
 
 }

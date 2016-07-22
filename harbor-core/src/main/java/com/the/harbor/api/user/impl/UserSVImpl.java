@@ -9,6 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.the.harbor.api.user.IUserSV;
+import com.the.harbor.api.user.param.CreateUserBuyHBOrderReq;
+import com.the.harbor.api.user.param.CreateUserBuyHBOrderResp;
+import com.the.harbor.api.user.param.CreateUserBuyMemberOrderReq;
+import com.the.harbor.api.user.param.CreateUserBuyMemberOrderResp;
+import com.the.harbor.api.user.param.UserAuthReq;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
 import com.the.harbor.api.user.param.UserInfo;
@@ -20,7 +25,6 @@ import com.the.harbor.api.user.param.UserMemberRenewalReq;
 import com.the.harbor.api.user.param.UserMemberRenewalResp;
 import com.the.harbor.api.user.param.UserQueryResp;
 import com.the.harbor.api.user.param.UserRegReq;
-import com.the.harbor.api.user.param.UserAuthReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryReq;
 import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
@@ -67,7 +71,7 @@ public class UserSVImpl implements IUserSV {
 		userManagerSV.submitUserCertification(userCertificationReq);
 		return ResponseBuilder.buildSuccessResponse("认证材料提交成功");
 	}
-	
+
 	@Override
 	public Response submitUserAuthInfo(UserAuthReq userStatusReq) {
 		String userId = userManagerSV.submitUserAuthInfo(userStatusReq);
@@ -262,12 +266,11 @@ public class UserSVImpl implements IUserSV {
 		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("查询成功"));
 		return resp;
 	}
-	
+
 	@Override
 	public List<UserViewInfo> queryUnAuthUsers() {
 		return userManagerSV.getUnAuthUsers();
 	}
-
 
 	private void storeUserInfo2Redis(String userId) {
 		try {
@@ -287,9 +290,10 @@ public class UserSVImpl implements IUserSV {
 		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("查询成功"));
 		return resp;
 	}
-	
+
 	/**
 	 * 查询邀请码信息
+	 * 
 	 * @param userInviteReq
 	 * @return
 	 */
@@ -297,9 +301,10 @@ public class UserSVImpl implements IUserSV {
 	public List<UserInviteInfo> queryUserInvite(UserInviteReq userInviteReq) {
 		return userManagerSV.getUserInvite(userInviteReq);
 	}
-	
+
 	/**
 	 * 更新邀请码表中的使用者id,状态
+	 * 
 	 * @param userInviteReq
 	 * @return
 	 */
@@ -308,12 +313,32 @@ public class UserSVImpl implements IUserSV {
 		userManagerSV.updateUserInvite(userInviteReq);
 		return ResponseBuilder.buildSuccessResponse("用户邀请码使用情况更新成功");
 	}
-	
+
 	/**
 	 * 校验邀请码是否可用
 	 */
 	@Override
 	public UserInviteInfo checkUserInviteCode(String inviteCode) {
 		return userManagerSV.checkUserInviteCode(inviteCode);
+	}
+
+	@Override
+	public CreateUserBuyHBOrderResp createUserBuyHB(CreateUserBuyHBOrderReq createUserBuyHBOrderReq)
+			throws BusinessException, SystemException {
+		String payOrderId = userManagerSV.createUserBuyHB(createUserBuyHBOrderReq);
+		CreateUserBuyHBOrderResp resp = new CreateUserBuyHBOrderResp();
+		resp.setPayOrderId(payOrderId);
+		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("处理成功"));
+		return resp;
+	}
+
+	@Override
+	public CreateUserBuyMemberOrderResp createUserBuyMember(CreateUserBuyMemberOrderReq createUserBuyMemberOrderReq)
+			throws BusinessException, SystemException {
+		String payOrderId = userManagerSV.createUserBuyMember(createUserBuyMemberOrderReq);
+		CreateUserBuyMemberOrderResp resp = new CreateUserBuyMemberOrderResp();
+		resp.setPayOrderId(payOrderId);
+		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("处理成功"));
+		return resp;
 	}
 }
