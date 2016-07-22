@@ -56,6 +56,7 @@ import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.redisdata.def.DoNotify;
+import com.the.harbor.commons.redisdata.def.HyCountryVo;
 import com.the.harbor.commons.redisdata.util.HyCountryUtil;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
 import com.the.harbor.commons.redisdata.util.HyIndustryUtil;
@@ -121,7 +122,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 
 	@Autowired
 	private transient IBeBusiSV beBusiSV;
-	
+
 	@Autowired
 	private transient HyUserInviteMapper hyUserInviteMapper;
 
@@ -158,10 +159,10 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		if (success == 0) {
 			throw new SystemException("注册失败,请稍候重试");
 		}
-		if(!StringUtil.isBlank(userRegReq.getInviteCode())){
-			this.resetUserInvite(userRegReq.getInviteCode(),user.getUserId());
+		if (!StringUtil.isBlank(userRegReq.getInviteCode())) {
+			this.resetUserInvite(userRegReq.getInviteCode(), user.getUserId());
 		}
-		
+
 		// 初始化资产信息
 		this.createDefaultUserAssets(user.getUserId());
 		return user.getUserId();
@@ -637,7 +638,8 @@ public class UserManagerSVImpl implements IUserManagerSV {
 					? GlobalSettings.getHarborUserDefaultHeadICONURL() : hyUser.getWxHeadimg());
 
 			userInfo.setAbroadCountryName(HyCountryUtil.getHyCountryName(hyUser.getAbroadCountry()));
-
+			HyCountryVo country = HyCountryUtil.getHyCountry(hyUser.getAbroadCountry());
+			userInfo.setAbroadCountryRGB(country == null ? null : country.getCountryRgb());
 			userInfo.setAtCityName(hyUser.getAtCity());
 			userInfo.setIndustryName(HyIndustryUtil.getHyIndustryName(hyUser.getIndustry()));
 			userInfo.setUserTypeName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
@@ -979,25 +981,25 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		resp.setUserId(userId);
 		return resp;
 	}
-	
+
 	@Override
 	public List<UserInviteInfo> getUserInvite(UserInviteReq userInviteReq) {
 		if (userInviteReq == null) {
 			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "查询邀请码信息入参为空");
 		}
 		UserInviteInfo userInviteInfo = userInviteReq.getUserInviteInfo();
-		if(userInviteInfo == null){
+		if (userInviteInfo == null) {
 			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "查询邀请码信息入参为空");
 		}
 		HyUserInviteCriteria sql = new HyUserInviteCriteria();
 		Criteria criteria = sql.or();
-		if(!StringUtil.isBlank(userInviteInfo.getUserId())){
+		if (!StringUtil.isBlank(userInviteInfo.getUserId())) {
 			criteria.andUserIdEqualTo(userInviteInfo.getUserId());
 		}
-		if(!StringUtil.isBlank(userInviteInfo.getInviteCode())){
+		if (!StringUtil.isBlank(userInviteInfo.getInviteCode())) {
 			criteria.andInviteCodeEqualTo(userInviteInfo.getInviteCode());
 		}
-		if(!StringUtil.isBlank(userInviteInfo.getStatus())){
+		if (!StringUtil.isBlank(userInviteInfo.getStatus())) {
 			criteria.andStatusEqualTo(userInviteInfo.getStatus());
 		}
 		List<HyUserInvite> users = hyUserInviteMapper.selectByExample(sql);
@@ -1012,48 +1014,48 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		}
 		return userInviteList;
 	}
-	
+
 	@Override
 	public void updateUserInvite(UserInviteReq userInviteReq) {
 		if (userInviteReq == null) {
 			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "查询邀请码信息入参为空");
 		}
 		UserInviteInfo userInviteInfo = userInviteReq.getUserInviteInfo();
-		if(userInviteInfo == null){
+		if (userInviteInfo == null) {
 			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "查询邀请码信息入参为空");
 		}
-		
+
 		HyUserInvite hInvite = new HyUserInvite();
 		hInvite.setInviteCode(userInviteInfo.getInviteCode());
-		if(!StringUtil.isBlank(userInviteInfo.getInviteUserId())){
+		if (!StringUtil.isBlank(userInviteInfo.getInviteUserId())) {
 			hInvite.setInviteUserId(userInviteInfo.getInviteUserId());
 		}
-		if(!StringUtil.isBlank(userInviteInfo.getStatus())){
+		if (!StringUtil.isBlank(userInviteInfo.getStatus())) {
 			hInvite.setStatus(userInviteInfo.getStatus());
 		}
-		int n = hyUserInviteMapper.updateByPrimaryKeySelective(hInvite);		
+		int n = hyUserInviteMapper.updateByPrimaryKeySelective(hInvite);
 		if (n == 0) {
 			throw new SystemException("提交应邀失败");
 		}
-		
+
 	}
-	
-	private void resetUserInvite(String inviteCode,String inviteUserId) {
+
+	private void resetUserInvite(String inviteCode, String inviteUserId) {
 		HyUserInvite hInvite = new HyUserInvite();
 		hInvite.setInviteCode(inviteCode);
 		hInvite.setInviteUserId(inviteUserId);
 		hInvite.setStatus(UserInviteStatus.INVITE_INVALID.getValue());
-		int n = hyUserInviteMapper.updateByPrimaryKeySelective(hInvite);		
+		int n = hyUserInviteMapper.updateByPrimaryKeySelective(hInvite);
 		if (n == 0) {
 			throw new SystemException("提交应邀失败");
 		}
 	}
-	
-	public UserInviteInfo checkUserInviteCode(String inviteCode){
+
+	public UserInviteInfo checkUserInviteCode(String inviteCode) {
 		if (StringUtil.isBlank(inviteCode)) {
 			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "邀请码为空");
 		}
-		
+
 		HyUserInviteCriteria sql = new HyUserInviteCriteria();
 		sql.or().andInviteCodeEqualTo(inviteCode).andStatusEqualTo(UserInviteStatus.INVITE_VALID.getValue());
 		HyUserInvite user = hyUserInviteMapper.selectByPrimaryKey(inviteCode);
@@ -1061,7 +1063,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			return null;
 		}
 		String userStatus = user.getStatus();
-		if(UserInviteStatus.INVITE_VALID.getValue().equals(userStatus)) {
+		if (UserInviteStatus.INVITE_VALID.getValue().equals(userStatus)) {
 			UserInviteInfo userInfo = new UserInviteInfo();
 			BeanUtils.copyProperties(user, userInfo);
 			return userInfo;
@@ -1069,5 +1071,4 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		return null;
 	}
 
-	
 }
