@@ -691,14 +691,16 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			}
 		} else {
 			// 如果没有申请过，则提交一个新的申请
-			// 产生一个新的支付流水
-			CreatePaymentOrderReq createPaymentOrderReq = new CreatePaymentOrderReq();
-			createPaymentOrderReq.setBusiType(BusiType.PAY_FOR_GO.getValue());
-			createPaymentOrderReq.setPayAmount(hyGo.getFixedPrice());
-			createPaymentOrderReq.setPayType(PayType.WEIXIN.getValue());
-			createPaymentOrderReq.setSummary("GROUP活动[" + hyGo.getGoId() + "]报名缴费");
-			createPaymentOrderReq.setUserId(hyGo.getUserId());
-			payOrderId = paymentBusiSV.createPaymentOrder(createPaymentOrderReq);
+			if(needPay){
+				/*如果是需要支付，则产生一笔支付流水*/
+				CreatePaymentOrderReq createPaymentOrderReq = new CreatePaymentOrderReq();
+				createPaymentOrderReq.setBusiType(BusiType.PAY_FOR_GO.getValue());
+				createPaymentOrderReq.setPayAmount(hyGo.getFixedPrice());
+				createPaymentOrderReq.setPayType(PayType.WEIXIN.getValue());
+				createPaymentOrderReq.setSummary("GROUP活动[" + hyGo.getGoId() + "]报名缴费");
+				createPaymentOrderReq.setUserId(hyGo.getUserId());
+				payOrderId = paymentBusiSV.createPaymentOrder(createPaymentOrderReq);
+			}
 			// 产生一个申请
 			orderId = UUIDUtil.genId32();
 			Timestamp sysdate = DateUtil.getSysDate();
