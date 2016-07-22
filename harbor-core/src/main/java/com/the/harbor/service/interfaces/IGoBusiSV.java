@@ -17,6 +17,7 @@ import com.the.harbor.api.go.param.GoOrderMeetLocaltionReq;
 import com.the.harbor.api.go.param.GroupApplyReq;
 import com.the.harbor.api.go.param.GroupApplyResp;
 import com.the.harbor.api.go.param.QueryMyJointGoReq;
+import com.the.harbor.api.go.param.SubmitGoHelpReq;
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.dao.mapper.bo.HyGo;
@@ -68,5 +69,7 @@ public interface IGoBusiSV {
 	List<HyGoOrder> getMyJointGroupGoes(QueryMyJointGoReq req);
 
 	List<HyGoJoin> getMyJointOnOGoes(QueryMyJointGoReq req);
+
+	void submitGoHelp(SubmitGoHelpReq submitGoHelpReq);
 
 }

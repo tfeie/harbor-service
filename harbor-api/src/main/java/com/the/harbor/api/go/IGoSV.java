@@ -28,6 +28,7 @@ import com.the.harbor.api.go.param.QueryMyGoReq;
 import com.the.harbor.api.go.param.QueryMyGoResp;
 import com.the.harbor.api.go.param.QueryMyJointGoReq;
 import com.the.harbor.api.go.param.QueryMyJointGoResp;
+import com.the.harbor.api.go.param.SubmitGoHelpReq;
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.base.exception.BusinessException;
@@ -105,6 +106,10 @@ public interface IGoSV {
 	}
 
 	@interface QueryMyJointGoes {
+
+	}
+
+	@interface SubmitGoHelp {
 
 	}
 
@@ -287,6 +292,16 @@ public interface IGoSV {
 	 * @throws SystemException
 	 */
 	CheckUserOrderGoResp checkUserOrderGo(@NotNull(message = "参数为空") CheckUserOrderGoReq checkUserOrderGoReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 提交活动是否对你有帮助
+	 * @param submitGoHelpReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	Response submitGoHelp(@NotNull(message = "参数为空") SubmitGoHelpReq submitGoHelpReq)
 			throws BusinessException, SystemException;
 
 }

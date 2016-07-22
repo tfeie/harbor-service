@@ -50,6 +50,7 @@ import com.the.harbor.api.go.param.QueryMyGoReq;
 import com.the.harbor.api.go.param.QueryMyGoResp;
 import com.the.harbor.api.go.param.QueryMyJointGoReq;
 import com.the.harbor.api.go.param.QueryMyJointGoResp;
+import com.the.harbor.api.go.param.SubmitGoHelpReq;
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.api.user.param.UserViewInfo;
@@ -541,6 +542,12 @@ public class GoSVImpl implements IGoSV {
 		resp.setPagInfo(pageInfo);
 		resp.setResponseHeader(responseHeader);
 		return resp;
+	}
+
+	@Override
+	public Response submitGoHelp(SubmitGoHelpReq submitGoHelpReq) throws BusinessException, SystemException {
+		goBusiSV.submitGoHelp(submitGoHelpReq);
+		return ResponseBuilder.buildSuccessResponse("操作成功");
 	}
 
 }

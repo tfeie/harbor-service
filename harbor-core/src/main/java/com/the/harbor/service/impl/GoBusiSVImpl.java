@@ -30,6 +30,7 @@ import com.the.harbor.api.go.param.GoTag;
 import com.the.harbor.api.go.param.GroupApplyReq;
 import com.the.harbor.api.go.param.GroupApplyResp;
 import com.the.harbor.api.go.param.QueryMyJointGoReq;
+import com.the.harbor.api.go.param.SubmitGoHelpReq;
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.api.pay.param.CreatePaymentOrderReq;
@@ -575,12 +576,12 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				notify.setAccepterId(accepterId);
 				notify.setTitle("Go有新评论啦~");
 				notify.setContent(content);
-				if(GoType.GROUP.getValue().equals(go.getGoType())){
+				if (GoType.GROUP.getValue().equals(go.getGoType())) {
 					notify.setLink("../go/comments.html?goId=" + go.getGoId());
-				}else{
+				} else {
 					notify.setLink("../go/toFeedback.html?goId=" + go.getGoId());
 				}
-				
+
 				NotifyMQSend.sendNotifyMQ(notify);
 			}
 
@@ -691,8 +692,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			}
 		} else {
 			// 如果没有申请过，则提交一个新的申请
-			if(needPay){
-				/*如果是需要支付，则产生一笔支付流水*/
+			if (needPay) {
+				/* 如果是需要支付，则产生一笔支付流水 */
 				CreatePaymentOrderReq createPaymentOrderReq = new CreatePaymentOrderReq();
 				createPaymentOrderReq.setBusiType(BusiType.PAY_FOR_GO.getValue());
 				createPaymentOrderReq.setPayAmount(hyGo.getFixedPrice());
@@ -945,6 +946,31 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		sql.setLimitStart(start);
 		sql.setLimitEnd(end);
 		return hyGoJoinMapper.selectByExample(sql);
+	}
+
+	@Override
+	public void submitGoHelp(SubmitGoHelpReq submitGoHelpReq) {
+		if (GoType.GROUP.getValue().equals(submitGoHelpReq.getGoType())) {
+			HyGoJoin o = hyGoJoinMapper.selectByPrimaryKey(submitGoHelpReq.getGoOrderId());
+			if (o == null) {
+				throw new BusinessException("活动参加申请不存在，无法评价哦");
+			}
+			if (!o.getUserId().equals(submitGoHelpReq.getUserId())) {
+				throw new BusinessException("您没有参加活动，无法评价哦");
+			}
+			// TODO 设置评价值
+			hyGoJoinMapper.updateByPrimaryKeySelective(o);
+		} else if (GoType.ONE_ON_ONE.getValue().equals(submitGoHelpReq.getGoType())) {
+			HyGoOrder o = hyGoOrderMapper.selectByPrimaryKey(submitGoHelpReq.getGoOrderId());
+			if (o == null) {
+				throw new BusinessException("活动预约申请不存在，无法评价哦");
+			}
+			if (!o.getUserId().equals(submitGoHelpReq.getUserId())) {
+				throw new BusinessException("您不是当前活动申请者，无法评价哦");
+			}
+			// TODO 设置评价值
+			hyGoOrderMapper.updateByPrimaryKeySelective(o);
+		}
 	}
 
 }
