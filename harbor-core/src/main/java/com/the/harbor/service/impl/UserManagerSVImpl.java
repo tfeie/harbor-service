@@ -1123,6 +1123,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			CreatePaymentOrderReq createPaymentOrderReq = new CreatePaymentOrderReq();
 			BeanUtils.copyProperties(createUserBuyHBOrderReq, createPaymentOrderReq);
 			createPaymentOrderReq.setSourceNo(buyOrderId);
+			createPaymentOrderReq.setBusiType(BusiType.PAY_FOR_HAIBI.getValue());
 			payOrderId = paymentBusiSV.createPaymentOrder(createPaymentOrderReq);
 			HyUserBuyHb record = new HyUserBuyHb();
 			record.setBuyAmount(createUserBuyHBOrderReq.getBuyAmount());
@@ -1166,6 +1167,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			CreatePaymentOrderReq createPaymentOrderReq = new CreatePaymentOrderReq();
 			BeanUtils.copyProperties(createUserBuyMemberOrderReq, createPaymentOrderReq);
 			createPaymentOrderReq.setSourceNo(buyOrderId);
+			createPaymentOrderReq.setBusiType(BusiType.PAY_FOR_MEMBER.getValue());
 			payOrderId = paymentBusiSV.createPaymentOrder(createPaymentOrderReq);
 			HyUserBuyMember record = new HyUserBuyMember();
 			record.setBuyMonths(createUserBuyMemberOrderReq.getBuyMonths());
