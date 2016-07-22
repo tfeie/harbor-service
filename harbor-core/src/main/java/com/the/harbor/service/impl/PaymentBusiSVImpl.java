@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
+import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.api.pay.param.CreatePaymentOrderReq;
 import com.the.harbor.api.pay.param.NotifyPaymentReq;
 import com.the.harbor.api.user.param.DoUserAssetsTrade;
@@ -127,6 +128,14 @@ public class PaymentBusiSVImpl implements IPaymentBusiSV {
 				userManagerSV.userMemberRenewal(buyMember);
 
 			}
+		} else if (BusiType.PAY_FOR_ONO.getValue().equals(busiType)) {
+			//ono活动支付成功处理
+			UpdateGoOrderPayReq updateGoOrderPayReq = new UpdateGoOrderPayReq();
+			updateGoOrderPayReq.setGoOrderId(payOrder.getSourceNo());
+			updateGoOrderPayReq.setPayOrderId(payOrder.getPayOrderId());
+			updateGoOrderPayReq.setPayStatus("SUCCESS");
+			goBusiSV.updateGoOrderPay(updateGoOrderPayReq);
+			
 		}
 	}
 
