@@ -239,6 +239,9 @@ public class GoSVImpl implements IGoSV {
 		goOrder.setFixedPrice(go.getFixedPrice());
 		goOrder.setOrderStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_ORDER.getValue(),
 				ParamCode.ORDER_STATUS.getValue(), hyGoOrder.getOrderStatus()));
+		// TODO
+		goOrder.setHelpValueName(
+				HyDictUtil.getHyDictDesc(TypeCode.HY_GO_ORDER.getValue(), ParamCode.HELP_VALUE.getValue(), ""));
 		goOrder.setOrgModeName(go.getOrgModeName());
 		goOrder.setOrderCount(goBusiSV.getOrderCount(go.getGoId(), go.getGoType()));
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");

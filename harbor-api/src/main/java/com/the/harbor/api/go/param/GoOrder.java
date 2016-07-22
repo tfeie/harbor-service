@@ -48,6 +48,9 @@ public class GoOrder implements Serializable {
 	private String helpValue;
 
 	private int giveHb;
+	
+	//是否有帮助翻译
+	private String helpValueName;
 
 	// 活动标题
 	private String topic;
@@ -282,5 +285,15 @@ public class GoOrder implements Serializable {
 	public void setGiveHb(int giveHb) {
 		this.giveHb = giveHb;
 	}
+
+	public String getHelpValueName() {
+		return helpValueName;
+	}
+
+	public void setHelpValueName(String helpValueName) {
+		this.helpValueName = helpValueName;
+	}
+	
+	
 
 }
