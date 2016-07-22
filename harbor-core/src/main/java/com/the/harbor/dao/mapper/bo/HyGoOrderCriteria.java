@@ -1404,6 +1404,136 @@ public class HyGoOrderCriteria {
             addCriterion("STS_DATE not between", value1, value2, "stsDate");
             return (Criteria) this;
         }
+
+        public Criteria andHelpValueIsNull() {
+            addCriterion("HELP_VALUE is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpValueIsNotNull() {
+            addCriterion("HELP_VALUE is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpValueEqualTo(String value) {
+            addCriterion("HELP_VALUE =", value, "helpValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpValueNotEqualTo(String value) {
+            addCriterion("HELP_VALUE <>", value, "helpValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpValueGreaterThan(String value) {
+            addCriterion("HELP_VALUE >", value, "helpValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpValueGreaterThanOrEqualTo(String value) {
+            addCriterion("HELP_VALUE >=", value, "helpValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpValueLessThan(String value) {
+            addCriterion("HELP_VALUE <", value, "helpValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpValueLessThanOrEqualTo(String value) {
+            addCriterion("HELP_VALUE <=", value, "helpValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpValueLike(String value) {
+            addCriterion("HELP_VALUE like", value, "helpValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpValueNotLike(String value) {
+            addCriterion("HELP_VALUE not like", value, "helpValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpValueIn(List<String> values) {
+            addCriterion("HELP_VALUE in", values, "helpValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpValueNotIn(List<String> values) {
+            addCriterion("HELP_VALUE not in", values, "helpValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpValueBetween(String value1, String value2) {
+            addCriterion("HELP_VALUE between", value1, value2, "helpValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpValueNotBetween(String value1, String value2) {
+            addCriterion("HELP_VALUE not between", value1, value2, "helpValue");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbIsNull() {
+            addCriterion("GIVE_HB is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbIsNotNull() {
+            addCriterion("GIVE_HB is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbEqualTo(int value) {
+            addCriterion("GIVE_HB =", value, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbNotEqualTo(int value) {
+            addCriterion("GIVE_HB <>", value, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbGreaterThan(int value) {
+            addCriterion("GIVE_HB >", value, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbGreaterThanOrEqualTo(int value) {
+            addCriterion("GIVE_HB >=", value, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbLessThan(int value) {
+            addCriterion("GIVE_HB <", value, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbLessThanOrEqualTo(int value) {
+            addCriterion("GIVE_HB <=", value, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbIn(List<Integer> values) {
+            addCriterion("GIVE_HB in", values, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbNotIn(List<Integer> values) {
+            addCriterion("GIVE_HB not in", values, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbBetween(int value1, int value2) {
+            addCriterion("GIVE_HB between", value1, value2, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbNotBetween(int value1, int value2) {
+            addCriterion("GIVE_HB not between", value1, value2, "giveHb");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

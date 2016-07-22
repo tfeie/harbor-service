@@ -961,7 +961,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			if (!o.getUserId().equals(submitGoHelpReq.getUserId())) {
 				throw new BusinessException("您没有参加活动，无法评价哦");
 			}
-			// TODO 设置评价值
+			o.setHelpValue(submitGoHelpReq.getHelpValue());
 			hyGoJoinMapper.updateByPrimaryKeySelective(o);
 		} else if (GoType.ONE_ON_ONE.getValue().equals(submitGoHelpReq.getGoType())) {
 			HyGoOrder o = hyGoOrderMapper.selectByPrimaryKey(submitGoHelpReq.getGoOrderId());
@@ -971,7 +971,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			if (!o.getUserId().equals(submitGoHelpReq.getUserId())) {
 				throw new BusinessException("您不是当前活动申请者，无法评价哦");
 			}
-			// TODO 设置评价值
+			o.setHelpValue(submitGoHelpReq.getHelpValue());
 			hyGoOrderMapper.updateByPrimaryKeySelective(o);
 		}
 	}
@@ -998,7 +998,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			if (go == null) {
 				throw new BusinessException("活动信息不存在，不能打赏哦");
 			}
-			// TODO 设置打赏金额,注意累加
+			o.setGiveHb(o.getGiveHb() + giveHBReq.getCount());
 			hyGoJoinMapper.updateByPrimaryKeySelective(o);
 			// 发送海贝赠送交易消息
 			DoUserAssetsTrade t = new DoUserAssetsTrade();
@@ -1038,7 +1038,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			if (go == null) {
 				throw new BusinessException("活动信息不存在，不能打赏哦");
 			}
-			// TODO 设置打赏金额，注意累加
+			o.setGiveHb(o.getGiveHb() + giveHBReq.getCount());
 			hyGoOrderMapper.updateByPrimaryKeySelective(o);
 
 			// 发送海贝赠送交易消息

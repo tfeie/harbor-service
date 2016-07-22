@@ -23,13 +23,13 @@ public class GiveHBReq implements Serializable {
 	private String userId;
 
 	@NotNull(message = "打赏海贝数量为空", groups = { IBeSV.GiveHaibei.class })
-	private long count;
+	private int count;
 
-	public long getCount() {
+	public int getCount() {
 		return count;
 	}
 
-	public void setCount(long count) {
+	public void setCount(int count) {
 		this.count = count;
 	}
 

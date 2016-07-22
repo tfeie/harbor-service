@@ -41,6 +41,10 @@ public class HyGoOrder {
 
     private Timestamp stsDate;
 
+    private String helpValue;
+
+    private int giveHb;
+
     public String getOrderId() {
         return orderId;
     }
@@ -191,5 +195,21 @@ public class HyGoOrder {
 
     public void setStsDate(Timestamp stsDate) {
         this.stsDate = stsDate;
+    }
+
+    public String getHelpValue() {
+        return helpValue;
+    }
+
+    public void setHelpValue(String helpValue) {
+        this.helpValue = helpValue == null ? null : helpValue.trim();
+    }
+
+    public int getGiveHb() {
+        return giveHb;
+    }
+
+    public void setGiveHb(int giveHb) {
+        this.giveHb = giveHb;
     }
 }

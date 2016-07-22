@@ -10,6 +10,7 @@ import com.the.harbor.cacheimpl.HyCountryCacheImpl;
 import com.the.harbor.cacheimpl.HyDictsCacheImpl;
 import com.the.harbor.cacheimpl.HyIndustryCacheImpl;
 import com.the.harbor.cacheimpl.HyTagsCacheImpl;
+import com.the.harbor.commons.appserver.CacheServiceStart;
 import com.the.harbor.commons.redisdata.util.HyCountryUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -35,8 +36,7 @@ public class HyCountriesTest {
 
 	@Test
 	public void geta() {
-		String aa = HyCountryUtil.getHyCountryName("FR");
-		System.out.println(HyCountryUtil.getHyCountryName("FR"));
+		CacheServiceStart.main(null);
 	}
 
 }

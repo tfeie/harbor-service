@@ -734,6 +734,66 @@ public class HyGoJoinCriteria {
             addCriterion("PAY_ORDER_ID not between", value1, value2, "payOrderId");
             return (Criteria) this;
         }
+
+        public Criteria andGiveHbIsNull() {
+            addCriterion("GIVE_HB is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbIsNotNull() {
+            addCriterion("GIVE_HB is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbEqualTo(int value) {
+            addCriterion("GIVE_HB =", value, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbNotEqualTo(int value) {
+            addCriterion("GIVE_HB <>", value, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbGreaterThan(int value) {
+            addCriterion("GIVE_HB >", value, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbGreaterThanOrEqualTo(int value) {
+            addCriterion("GIVE_HB >=", value, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbLessThan(int value) {
+            addCriterion("GIVE_HB <", value, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbLessThanOrEqualTo(int value) {
+            addCriterion("GIVE_HB <=", value, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbIn(List<Integer> values) {
+            addCriterion("GIVE_HB in", values, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbNotIn(List<Integer> values) {
+            addCriterion("GIVE_HB not in", values, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbBetween(int value1, int value2) {
+            addCriterion("GIVE_HB between", value1, value2, "giveHb");
+            return (Criteria) this;
+        }
+
+        public Criteria andGiveHbNotBetween(int value1, int value2) {
+            addCriterion("GIVE_HB not between", value1, value2, "giveHb");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

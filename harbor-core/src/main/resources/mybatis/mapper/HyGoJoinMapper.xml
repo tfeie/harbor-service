@@ -11,6 +11,7 @@
     <result column="STS_DATE" property="stsDate" jdbcType="TIMESTAMP" />
     <result column="HELP_VALUE" property="helpValue" jdbcType="VARCHAR" />
     <result column="PAY_ORDER_ID" property="payOrderId" jdbcType="VARCHAR" />
+    <result column="GIVE_HB" property="giveHb" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -72,7 +73,7 @@
   </sql>
   <sql id="Base_Column_List" >
     ORDER_ID, USER_ID, GO_ID, GO_TYPE, ORDER_STATUS, CREATE_DATE, STS_DATE, HELP_VALUE, 
-    PAY_ORDER_ID
+    PAY_ORDER_ID, GIVE_HB
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyGoJoinCriteria" >
     select
@@ -111,12 +112,12 @@
   <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyGoJoin" >
     insert into hy_go_join (ORDER_ID, USER_ID, GO_ID, 
       GO_TYPE, ORDER_STATUS, CREATE_DATE, 
-      STS_DATE, HELP_VALUE, PAY_ORDER_ID
-      )
+      STS_DATE, HELP_VALUE, PAY_ORDER_ID, 
+      GIVE_HB)
     values (#{orderId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{goId,jdbcType=VARCHAR}, 
       #{goType,jdbcType=VARCHAR}, #{orderStatus,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, 
-      #{stsDate,jdbcType=TIMESTAMP}, #{helpValue,jdbcType=VARCHAR}, #{payOrderId,jdbcType=VARCHAR}
-      )
+      #{stsDate,jdbcType=TIMESTAMP}, #{helpValue,jdbcType=VARCHAR}, #{payOrderId,jdbcType=VARCHAR}, 
+      #{giveHb,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyGoJoin" >
     insert into hy_go_join
@@ -148,6 +149,7 @@
       <if test="payOrderId != null" >
         PAY_ORDER_ID,
       </if>
+      GIVE_HB,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="orderId != null" >
@@ -177,6 +179,7 @@
       <if test="payOrderId != null" >
         #{payOrderId,jdbcType=VARCHAR},
       </if>
+      #{giveHb,jdbcType=INTEGER},
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyGoJoinCriteria" resultType="java.lang.Integer" >
@@ -215,6 +218,9 @@
       <if test="record.payOrderId != null" >
         PAY_ORDER_ID = #{record.payOrderId,jdbcType=VARCHAR},
       </if>
+      <if test="record.giveHb != null" >
+        GIVE_HB = #{record.giveHb,jdbcType=INTEGER},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -230,7 +236,8 @@
       CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
       STS_DATE = #{record.stsDate,jdbcType=TIMESTAMP},
       HELP_VALUE = #{record.helpValue,jdbcType=VARCHAR},
-      PAY_ORDER_ID = #{record.payOrderId,jdbcType=VARCHAR}
+      PAY_ORDER_ID = #{record.payOrderId,jdbcType=VARCHAR},
+      GIVE_HB = #{record.giveHb,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -262,6 +269,9 @@
       <if test="payOrderId != null" >
         PAY_ORDER_ID = #{payOrderId,jdbcType=VARCHAR},
       </if>
+      <if test="giveHb != null" >
+        GIVE_HB = #{giveHb,jdbcType=INTEGER},
+      </if>
     </set>
     where ORDER_ID = #{orderId,jdbcType=VARCHAR}
   </update>
@@ -274,7 +284,8 @@
       CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
       STS_DATE = #{stsDate,jdbcType=TIMESTAMP},
       HELP_VALUE = #{helpValue,jdbcType=VARCHAR},
-      PAY_ORDER_ID = #{payOrderId,jdbcType=VARCHAR}
+      PAY_ORDER_ID = #{payOrderId,jdbcType=VARCHAR},
+      GIVE_HB = #{giveHb,jdbcType=INTEGER}
     where ORDER_ID = #{orderId,jdbcType=VARCHAR}
   </update>
 </mapper>

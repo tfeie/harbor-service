@@ -17,6 +17,7 @@ public class QueryBeTest {
 
 	public static void main(String[] args) {
 		deleteGoIndex();
+		deleteBeIndex();
 
 	}
 

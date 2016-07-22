@@ -21,6 +21,8 @@ public class HyGoJoin {
 
     private String payOrderId;
 
+    private int giveHb;
+
     public String getOrderId() {
         return orderId;
     }
@@ -91,5 +93,13 @@ public class HyGoJoin {
 
     public void setPayOrderId(String payOrderId) {
         this.payOrderId = payOrderId == null ? null : payOrderId.trim();
+    }
+
+    public int getGiveHb() {
+        return giveHb;
+    }
+
+    public void setGiveHb(int giveHb) {
+        this.giveHb = giveHb;
     }
 }
