@@ -7,8 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.pay.param.CreatePaymentOrderReq;
 import com.the.harbor.api.pay.param.NotifyPaymentReq;
+import com.the.harbor.api.user.param.DoUserAssetsTrade;
 import com.the.harbor.base.enumeration.hypaymentorder.BusiType;
 import com.the.harbor.base.enumeration.hypaymentorder.PayStatus;
+import com.the.harbor.base.enumeration.hyuser.SystemUser;
+import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
@@ -16,6 +19,7 @@ import com.the.harbor.dao.mapper.interfaces.HyPaymentOrderMapper;
 import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IPaymentBusiSV;
 import com.the.harbor.util.HarborSeqUtil;
+import com.the.harbor.util.UserAssetsTradeMQSend;
 
 @Component
 @Transactional
@@ -88,11 +92,23 @@ public class PaymentBusiSVImpl implements IPaymentBusiSV {
 		String busiType = payOrder.getBusiType();
 		if (BusiType.PAY_FOR_GROUP.getValue().equals(busiType)) {
 			// 支付GO的费用
-			UpdateGoJoinPayReq updateGoJoinPayReq= new UpdateGoJoinPayReq();
+			UpdateGoJoinPayReq updateGoJoinPayReq = new UpdateGoJoinPayReq();
 			updateGoJoinPayReq.setGoOrderId(payOrder.getSourceNo());
 			updateGoJoinPayReq.setPayOrderId(payOrder.getPayOrderId());
 			updateGoJoinPayReq.setPayStatus("SUCCESS");
 			goBusiSV.updateGoJoinPay(updateGoJoinPayReq);
+		} else if (BusiType.PAY_FOR_HAIBI.getValue().equals(busiType)) {
+			// 充值海贝，需要将海贝冲入账户
+			DoUserAssetsTrade t = new DoUserAssetsTrade();
+			t.setAssetsType(AssetsType.HAIBEI.getValue());
+			t.setBusiType(BusiType.PAY_FOR_HAIBI.getValue());
+			t.setFromUserId(SystemUser.SYSTEM.getValue());
+			t.setHandleType(DoUserAssetsTrade.HandleType.TRANSFER.name());
+			t.setSourceNo(payOrder.getPayOrderId());
+			t.setSummary("购买海贝[" + payOrder.getPayAmount() + "]个");
+			t.setToUserId(payOrder.getUserId());
+			t.setTradeBalance(payOrder.getPayAmount());
+			UserAssetsTradeMQSend.sendMQ(t);
 		}
 	}
 
