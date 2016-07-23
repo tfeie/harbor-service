@@ -168,12 +168,13 @@ public class BeSVImpl implements IBeSV {
 		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
 				.setTypes(HarborIndexType.HY_BE.getValue())
 				.setQuery(QueryBuilders.termQuery("_id", queryOneBeReq.getBeId())).execute().actionGet();
-		if (response.getHits().totalHits() == 0) {
-			return null;
+		Be be = null;
+		if (response.getHits().totalHits() != 0) {
+			be = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Be.class);
+			UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(be.getUserId());
+			this.fillBeInfo(be, createUserInfo);
 		}
-		Be be = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Be.class);
-		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(be.getUserId());
-		this.fillBeInfo(be, createUserInfo);
+
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		QueryOneBeResp resp = new QueryOneBeResp();
 		resp.setBe(be);
@@ -195,7 +196,7 @@ public class BeSVImpl implements IBeSV {
 					}
 				} else if (BeDetailType.IMAGE.getValue().equals(detail.getType())) {
 					if (!hasimg) {
-						imageURL = detail.getImageUrl()+"@!be_thumbnail";
+						imageURL = detail.getImageUrl() + "@!be_thumbnail";
 						hasimg = true;
 					}
 				}
