@@ -593,7 +593,13 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				if (GoType.GROUP.getValue().equals(go.getGoType())) {
 					notify.setLink("../go/comments.html?goId=" + go.getGoId());
 				} else {
-					notify.setLink("../go/toFeedback.html?goId=" + go.getGoId());
+					if(go.getUserId().equals(doGoComment.getPublishUserId())){
+						//对于ONO活动，发布评论的人与活动发起者是一个人，说明是海牛
+						notify.setLink("../go/toHainiuFeedback.html?goOrderId=" + doGoComment.getOrderId());
+					}else{
+						notify.setLink("../go/toFeedback.html?goOrderId=" +doGoComment.getOrderId());
+					}
+					
 				}
 
 				NotifyMQSend.sendNotifyMQ(notify);
