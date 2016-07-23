@@ -41,6 +41,8 @@ import com.the.harbor.api.pay.param.CreatePaymentOrderReq;
 import com.the.harbor.api.user.param.DoUserAssetsTrade;
 import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.base.enumeration.common.BusiErrorCode;
+import com.the.harbor.base.enumeration.dict.ParamCode;
+import com.the.harbor.base.enumeration.dict.TypeCode;
 import com.the.harbor.base.enumeration.hygo.GoType;
 import com.the.harbor.base.enumeration.hygo.OrgMode;
 import com.the.harbor.base.enumeration.hygo.PayMode;
@@ -59,6 +61,7 @@ import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.def.DoNotify;
+import com.the.harbor.commons.redisdata.util.HyDictUtil;
 import com.the.harbor.commons.redisdata.util.HyGoUtil;
 import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
@@ -1120,6 +1123,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			if (joinUser != null) {
 				BeanUtils.copyProperties(joinUser, o);
 			}
+			o.setOrderStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_JOIN.getValue(),
+					ParamCode.ORDER_STATUS.getValue(), b.getOrderStatus()));
 			l.add(o);
 		}
 		return l;
@@ -1141,6 +1146,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			if (joinUser != null) {
 				BeanUtils.copyProperties(joinUser, o);
 			}
+			o.setOrderStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_ORDER.getValue(),
+					ParamCode.ORDER_STATUS.getValue(), b.getOrderStatus()));
 			l.add(o);
 		}
 		return l;
