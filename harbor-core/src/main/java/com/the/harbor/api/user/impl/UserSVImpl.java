@@ -43,7 +43,6 @@ import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.redisdata.util.HyUserUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.StringUtil;
-import com.the.harbor.service.interfaces.IPaymentBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 
 @Service(validation = "true")
@@ -51,9 +50,6 @@ public class UserSVImpl implements IUserSV {
 
 	@Autowired
 	private transient IUserManagerSV userManagerSV;
-
-	@Autowired
-	private transient IPaymentBusiSV paymentBusiSV;
 
 	@Override
 	public Response userRegister(UserRegReq userRegReq) throws BusinessException, SystemException {
@@ -287,14 +283,6 @@ public class UserSVImpl implements IUserSV {
 	public Response updateUserInvite(UserInviteReq userInviteReq) throws BusinessException, SystemException {
 		userManagerSV.updateUserInvite(userInviteReq);
 		return ResponseBuilder.buildSuccessResponse("用户邀请码使用情况更新成功");
-	}
-
-	/**
-	 * 校验邀请码是否可用
-	 */
-	@Override
-	public UserInviteInfo checkUserInviteCode(String inviteCode) {
-		return userManagerSV.checkUserInviteCode(inviteCode);
 	}
 
 	@Override

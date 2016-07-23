@@ -152,6 +152,16 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		if (hyUser != null) {
 			throw new BusinessException(HarborErrorCodeConstants.WEIXIN_BOUND, "您的微信账号已经注册");
 		}
+		if (!StringUtil.isBlank(userRegReq.getInviteCode())) {
+			HyUserInvite userInvite = hyUserInviteMapper.selectByPrimaryKey(userRegReq.getInviteCode());
+			if (userInvite == null) {
+				throw new BusinessException("您的邀请码不存在哦，速速找好友邀请吧~");
+			}
+			if (UserInviteStatus.USED.getValue().equals(userInvite.getStatus())) {
+				throw new BusinessException("您的邀请码已经被使用哦，速速找好友邀请吧~");
+			}
+		}
+
 		HyUser user = new HyUser();
 		String hyId = HarborSeqUtil.createHyUserHyId(userRegReq.getAbroadCountry());
 		user.setUserId(HarborSeqUtil.createHyUserId());
@@ -1075,31 +1085,8 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		HyUserInvite hInvite = new HyUserInvite();
 		hInvite.setInviteCode(inviteCode);
 		hInvite.setInviteUserId(inviteUserId);
-		hInvite.setStatus(UserInviteStatus.INVITE_INVALID.getValue());
-		int n = hyUserInviteMapper.updateByPrimaryKeySelective(hInvite);
-		if (n == 0) {
-			throw new SystemException("提交应邀失败");
-		}
-	}
-
-	public UserInviteInfo checkUserInviteCode(String inviteCode) {
-		if (StringUtil.isBlank(inviteCode)) {
-			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "邀请码为空");
-		}
-
-		HyUserInviteCriteria sql = new HyUserInviteCriteria();
-		sql.or().andInviteCodeEqualTo(inviteCode).andStatusEqualTo(UserInviteStatus.INVITE_VALID.getValue());
-		HyUserInvite user = hyUserInviteMapper.selectByPrimaryKey(inviteCode);
-		if (user == null) {
-			return null;
-		}
-		String userStatus = user.getStatus();
-		if (UserInviteStatus.INVITE_VALID.getValue().equals(userStatus)) {
-			UserInviteInfo userInfo = new UserInviteInfo();
-			BeanUtils.copyProperties(user, userInfo);
-			return userInfo;
-		}
-		return null;
+		hInvite.setStatus(UserInviteStatus.USED.getValue());
+		hyUserInviteMapper.updateByPrimaryKeySelective(hInvite);
 	}
 
 	private void createInviteCodes(String userId) {
@@ -1108,7 +1095,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			HyUserInvite record = new HyUserInvite();
 			record.setInviteCode(inviteCode);
 			record.setUserId(userId);
-			record.setStatus(UserInviteStatus.INVITE_VALID.getValue());
+			record.setStatus(UserInviteStatus.NOT_USE.getValue());
 			try {
 				hyUserInviteMapper.insert(record);
 			} catch (Exception ex) {

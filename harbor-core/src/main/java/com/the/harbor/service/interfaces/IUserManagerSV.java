@@ -147,8 +147,6 @@ public interface IUserManagerSV {
 
 	void updateUserInvite(UserInviteReq userInviteReq);
 
-	UserInviteInfo checkUserInviteCode(String inviteCode);
-
 	String createUserBuyHB(CreateUserBuyHBOrderReq createUserBuyHBOrderReq);
 
 	String createUserBuyMember(CreateUserBuyMemberOrderReq createUserBuyMemberOrderReq);
