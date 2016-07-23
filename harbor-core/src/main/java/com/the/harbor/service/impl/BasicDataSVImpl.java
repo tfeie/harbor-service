@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.the.harbor.base.enumeration.common.Status;
 import com.the.harbor.base.enumeration.hytags.TagCat;
+import com.the.harbor.dao.mapper.bo.HyCfg;
+import com.the.harbor.dao.mapper.bo.HyCfgCriteria;
 import com.the.harbor.dao.mapper.bo.HyCountry;
 import com.the.harbor.dao.mapper.bo.HyCountryCriteria;
 import com.the.harbor.dao.mapper.bo.HyDicts;
@@ -18,6 +20,7 @@ import com.the.harbor.dao.mapper.bo.HyTags;
 import com.the.harbor.dao.mapper.bo.HyTagsCriteria;
 import com.the.harbor.dao.mapper.bo.HyUniversity;
 import com.the.harbor.dao.mapper.bo.HyUniversityCriteria;
+import com.the.harbor.dao.mapper.interfaces.HyCfgMapper;
 import com.the.harbor.dao.mapper.interfaces.HyCountryMapper;
 import com.the.harbor.dao.mapper.interfaces.HyDictsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyIndustryMapper;
@@ -43,6 +46,15 @@ public class BasicDataSVImpl implements IBasicDataSV {
 
 	@Autowired
 	private transient HyDictsMapper hyDictsMapper;
+
+	@Autowired
+	private transient HyCfgMapper hyCfgMapper;
+
+	@Override
+	public List<HyCfg> getAllCfgs() {
+		HyCfgCriteria sql = new HyCfgCriteria();
+		return hyCfgMapper.selectByExample(sql);
+	}
 
 	@Override
 	public List<HyCountry> getAllHyCountries() {

@@ -232,8 +232,6 @@ public interface IUserSV {
 	 */
 	Response updateUserInvite(UserInviteReq userInviteReq);
 
-	UserInviteInfo checkUserInviteCode(String inviteCode);
-
 	/**
 	 * 创建海贝购买支付订单
 	 * 
