@@ -62,6 +62,8 @@ public class Go implements Serializable {
 	// 发布用户信息
 	private String abroadCountryName;
 
+	private String abroadCountryRGB;
+
 	private String atCityName;
 
 	private String industryName;
@@ -370,5 +372,15 @@ public class Go implements Serializable {
 	public void setHomePageBg(String homePageBg) {
 		this.homePageBg = homePageBg;
 	}
+
+	public String getAbroadCountryRGB() {
+		return abroadCountryRGB;
+	}
+
+	public void setAbroadCountryRGB(String abroadCountryRGB) {
+		this.abroadCountryRGB = abroadCountryRGB;
+	}
+	
+	
 
 }

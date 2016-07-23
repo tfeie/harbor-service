@@ -1,6 +1,7 @@
 package com.the.harbor.service.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.elasticsearch.action.search.SearchResponse;
@@ -22,6 +23,8 @@ import com.the.harbor.api.go.param.Go;
 import com.the.harbor.api.go.param.GoComment;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoDetail;
+import com.the.harbor.api.go.param.GoJoin;
+import com.the.harbor.api.go.param.GoOrder;
 import com.the.harbor.api.go.param.GoOrderConfirmReq;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.GoOrderFinishReq;
@@ -344,13 +347,13 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		UserViewInfo publishUser = userManagerSV.getUserViewInfoByUserId(hyGo.getUserId());
 		String title = "";
 		String content = "";
-		String link ="";
+		String link = "";
 		HyGoOrder o = new HyGoOrder();
 		o.setOrderId(hyGoOrder.getOrderId());
 		if ("confirm".equals(goOrderConfirmReq.getAckFlag())) {
 			title = "海牛同意了您的预约";
 			content = "[" + publishUser.getEnName() + "]同意了您的预约的活动[" + hyGo.getTopic() + "]";
-			link = "../go/toAppointment.html?goOrderId="+hyGoOrder.getOrderId();
+			link = "../go/toAppointment.html?goOrderId=" + hyGoOrder.getOrderId();
 			o.setOrderStatus(OrderStatus.WAIT_MEET.getValue());
 		} else if ("reject".equals(goOrderConfirmReq.getAckFlag())) {
 			o.setOrderStatus(OrderStatus.REJECT.getValue());
@@ -739,8 +742,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			body.setUserId(userId);
 			UserFavorMQSend.sendMQ(body);
 		}
-		if(!needPay){
-			//如果不需要支付，则将订单更新成待确认状态
+		if (!needPay) {
+			// 如果不需要支付，则将订单更新成待确认状态
 			Timestamp sysdate = DateUtil.getSysDate();
 			HyGoJoin o = new HyGoJoin();
 			o.setOrderId(orderId);
@@ -749,7 +752,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			hyGoJoinMapper.updateByPrimaryKeySelective(o);
 
 			// 支付成功后记录用户报名申请此活动，交给活动发起者进行审核
-			HyGoUtil.userApplyJoinGroup(hyGo.getGoId(),userId);
+			HyGoUtil.userApplyJoinGroup(hyGo.getGoId(), userId);
 
 			// 给活动发起者通知审核
 			UserViewInfo orderUser = userManagerSV.getUserViewInfoByUserId(userId);
@@ -1099,6 +1102,48 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			NotifyMQSend.sendNotifyMQ(notify);
 		}
 
+	}
+
+	@Override
+	public List<GoJoin> getGoJoins(String goId) {
+		HyGoJoinCriteria sql = new HyGoJoinCriteria();
+		sql.or().andGoIdEqualTo(goId);
+		List<HyGoJoin> list = hyGoJoinMapper.selectByExample(sql);
+		if (CollectionUtil.isEmpty(list)) {
+			return null;
+		}
+		List<GoJoin> l = new ArrayList<GoJoin>();
+		for (HyGoJoin b : list) {
+			GoJoin o = new GoJoin();
+			BeanUtils.copyProperties(b, o);
+			UserViewInfo joinUser = userManagerSV.getUserViewInfoByUserId(b.getUserId());
+			if (joinUser != null) {
+				BeanUtils.copyProperties(joinUser, o);
+			}
+			l.add(o);
+		}
+		return l;
+	}
+
+	@Override
+	public List<GoOrder> getGoOrders(String goId) {
+		HyGoOrderCriteria sql = new HyGoOrderCriteria();
+		sql.or().andGoIdEqualTo(goId);
+		List<HyGoOrder> list = hyGoOrderMapper.selectByExample(sql);
+		if (CollectionUtil.isEmpty(list)) {
+			return null;
+		}
+		List<GoOrder> l = new ArrayList<GoOrder>();
+		for (HyGoOrder b : list) {
+			GoOrder o = new GoOrder();
+			BeanUtils.copyProperties(b, o);
+			UserViewInfo joinUser = userManagerSV.getUserViewInfoByUserId(b.getUserId());
+			if (joinUser != null) {
+				BeanUtils.copyProperties(joinUser, o);
+			}
+			l.add(o);
+		}
+		return l;
 	}
 
 }

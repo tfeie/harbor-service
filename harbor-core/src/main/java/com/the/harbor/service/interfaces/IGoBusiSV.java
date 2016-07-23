@@ -10,6 +10,8 @@ import com.the.harbor.api.go.param.DoGoJoinConfirm;
 import com.the.harbor.api.go.param.DoGoView;
 import com.the.harbor.api.go.param.GiveHBReq;
 import com.the.harbor.api.go.param.GoCreateReq;
+import com.the.harbor.api.go.param.GoJoin;
+import com.the.harbor.api.go.param.GoOrder;
 import com.the.harbor.api.go.param.GoOrderConfirmReq;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.GoOrderFinishReq;
@@ -74,5 +76,9 @@ public interface IGoBusiSV {
 	void submitGoHelp(SubmitGoHelpReq submitGoHelpReq);
 
 	void giveHaibei(GiveHBReq giveHBReq);
+	
+	List<GoJoin> getGoJoins(String goId);
+	
+	List<GoOrder> getGoOrders(String goId);
 
 }

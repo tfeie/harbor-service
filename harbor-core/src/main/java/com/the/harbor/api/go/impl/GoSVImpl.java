@@ -29,6 +29,7 @@ import com.the.harbor.api.go.param.Go;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoCreateResp;
 import com.the.harbor.api.go.param.GoDetail;
+import com.the.harbor.api.go.param.GoJoin;
 import com.the.harbor.api.go.param.GoOrder;
 import com.the.harbor.api.go.param.GoOrderConfirmReq;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
@@ -51,6 +52,8 @@ import com.the.harbor.api.go.param.QueryMyGoReq;
 import com.the.harbor.api.go.param.QueryMyGoResp;
 import com.the.harbor.api.go.param.QueryMyJointGoReq;
 import com.the.harbor.api.go.param.QueryMyJointGoResp;
+import com.the.harbor.api.go.param.QueryOrderGoRecordReq;
+import com.the.harbor.api.go.param.QueryOrderGoRecordResp;
 import com.the.harbor.api.go.param.SubmitGoHelpReq;
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
@@ -239,8 +242,8 @@ public class GoSVImpl implements IGoSV {
 		goOrder.setFixedPrice(go.getFixedPrice());
 		goOrder.setOrderStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_ORDER.getValue(),
 				ParamCode.ORDER_STATUS.getValue(), hyGoOrder.getOrderStatus()));
-		goOrder.setHelpValueName(
-				HyDictUtil.getHyDictDesc(TypeCode.HY_GO_ORDER.getValue(), ParamCode.HELP_VALUE.getValue(), hyGoOrder.getHelpValue()));
+		goOrder.setHelpValueName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_ORDER.getValue(),
+				ParamCode.HELP_VALUE.getValue(), hyGoOrder.getHelpValue()));
 		goOrder.setOrgModeName(go.getOrgModeName());
 		goOrder.setOrderCount(goBusiSV.getOrderCount(go.getGoId(), go.getGoType()));
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
@@ -557,6 +560,24 @@ public class GoSVImpl implements IGoSV {
 	public Response giveHaibei(GiveHBReq giveHBReq) throws BusinessException, SystemException {
 		goBusiSV.giveHaibei(giveHBReq);
 		return ResponseBuilder.buildSuccessResponse("操作成功");
+	}
+
+	@Override
+	public QueryOrderGoRecordResp queryOrderGoRecords(QueryOrderGoRecordReq queryOrderGoRecordReq)
+			throws BusinessException, SystemException {
+		String goId = queryOrderGoRecordReq.getGoId();
+		String goType = queryOrderGoRecordReq.getGoType();
+		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
+		QueryOrderGoRecordResp resp = new QueryOrderGoRecordResp();
+		if (GoType.GROUP.getValue().equals(goType)) {
+			List<GoJoin> goJoins = goBusiSV.getGoJoins(goId);
+			resp.setGoJoins(goJoins);
+		} else if (GoType.ONE_ON_ONE.getValue().equals(goType)) {
+			List<GoOrder> goOrders = goBusiSV.getGoOrders(goId);
+			resp.setGoOrders(goOrders);
+		}
+		resp.setResponseHeader(responseHeader);
+		return resp;
 	}
 
 }

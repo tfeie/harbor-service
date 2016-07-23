@@ -29,6 +29,8 @@ import com.the.harbor.api.go.param.QueryMyGoReq;
 import com.the.harbor.api.go.param.QueryMyGoResp;
 import com.the.harbor.api.go.param.QueryMyJointGoReq;
 import com.the.harbor.api.go.param.QueryMyJointGoResp;
+import com.the.harbor.api.go.param.QueryOrderGoRecordReq;
+import com.the.harbor.api.go.param.QueryOrderGoRecordResp;
 import com.the.harbor.api.go.param.SubmitGoHelpReq;
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
@@ -115,6 +117,10 @@ public interface IGoSV {
 	}
 
 	@interface GiveHaibei {
+
+	}
+
+	@interface QueryOrderGoRecords {
 
 	}
 
@@ -319,5 +325,16 @@ public interface IGoSV {
 	 * @throws SystemException
 	 */
 	Response giveHaibei(@NotNull(message = "参数为空") GiveHBReq giveHBReq) throws BusinessException, SystemException;
+
+	/**
+	 * 查询获得活动的参与者信息
+	 * 
+	 * @param queryOrderGoRecordReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	QueryOrderGoRecordResp queryOrderGoRecords(@NotNull(message = "参数为空") QueryOrderGoRecordReq queryOrderGoRecordReq)
+			throws BusinessException, SystemException;
 
 }
