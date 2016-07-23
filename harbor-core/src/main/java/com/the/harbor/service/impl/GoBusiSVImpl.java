@@ -1060,7 +1060,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			notify.setAccepterId(go.getUserId());
 			notify.setTitle("收到海贝通知~");
 			notify.setContent("给您发起的group活动[" + go.getTopic() + "]捐献了[" + giveHBReq.getCount() + "]个海贝，速速查看~");
-			notify.setLink("../be/comments.html?goId=" + go.getGoId());
+			notify.setLink("../go/comments.html?goId=" + go.getGoId());
 			NotifyMQSend.sendNotifyMQ(notify);
 
 		} else if (GoType.ONE_ON_ONE.getValue().equals(giveHBReq.getGoType())) {
@@ -1101,7 +1101,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			notify.setAccepterId(go.getUserId());
 			notify.setTitle("收到海贝通知~");
 			notify.setContent("给您发起的one on one活动[" + go.getTopic() + "]捐献了[" + giveHBReq.getCount() + "]个海贝，速速查看~");
-			notify.setLink("../be/toHainiuFeedback.html?goOrderId=" + o.getOrderId());
+			notify.setLink("../go/toHainiuFeedback.html?goOrderId=" + o.getOrderId());
 			NotifyMQSend.sendNotifyMQ(notify);
 		}
 
