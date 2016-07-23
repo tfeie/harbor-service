@@ -594,10 +594,11 @@ public class GoBusiSVImpl implements IGoBusiSV {
 					notify.setLink("../go/comments.html?goId=" + go.getGoId());
 				} else {
 					if(go.getUserId().equals(doGoComment.getPublishUserId())){
-						//对于ONO活动，发布评论的人与活动发起者是一个人，说明是海牛
-						notify.setLink("../go/toHainiuFeedback.html?goOrderId=" + doGoComment.getOrderId());
-					}else{
+						//有疑问？ 发送给小白端
 						notify.setLink("../go/toFeedback.html?goOrderId=" +doGoComment.getOrderId());
+					}else{
+						//有疑问，顺序颠倒？发送给海牛端
+						notify.setLink("../go/toHainiuFeedback.html?goOrderId=" + doGoComment.getOrderId());
 					}
 					
 				}
