@@ -9,6 +9,8 @@ import com.the.harbor.api.go.param.CreateGoPaymentOrderResp;
 import com.the.harbor.api.go.param.GiveHBReq;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoCreateResp;
+import com.the.harbor.api.go.param.GoJoinQueryReq;
+import com.the.harbor.api.go.param.GoJoinQueryResp;
 import com.the.harbor.api.go.param.GoOrderConfirmReq;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.GoOrderCreateResp;
@@ -57,6 +59,10 @@ public interface IGoSV {
 	}
 
 	@interface QueryGoOrder {
+
+	}
+
+	@interface QueryGoJoin {
 
 	}
 
@@ -335,6 +341,16 @@ public interface IGoSV {
 	 * @throws SystemException
 	 */
 	QueryOrderGoRecordResp queryOrderGoRecords(@NotNull(message = "参数为空") QueryOrderGoRecordReq queryOrderGoRecordReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 查询GROUP活动申请单信息
+	 * @param goJoinQueryReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	GoJoinQueryResp queryGoJoin(@NotNull(message = "参数为空") GoJoinQueryReq goJoinQueryReq)
 			throws BusinessException, SystemException;
 
 }

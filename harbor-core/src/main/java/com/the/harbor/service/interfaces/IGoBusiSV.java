@@ -39,6 +39,8 @@ public interface IGoBusiSV {
 
 	HyGoOrder getHyGoOrder(String orderId);
 
+	HyGoJoin getHyGoJoin(String orderId);
+
 	HyGo getHyGo(String goId);
 
 	void updateGoOrderPay(UpdateGoOrderPayReq updateGoOrderPayReq);
@@ -76,9 +78,9 @@ public interface IGoBusiSV {
 	void submitGoHelp(SubmitGoHelpReq submitGoHelpReq);
 
 	void giveHaibei(GiveHBReq giveHBReq);
-	
+
 	List<GoJoin> getGoJoins(String goId);
-	
+
 	List<GoOrder> getGoOrders(String goId);
 
 }

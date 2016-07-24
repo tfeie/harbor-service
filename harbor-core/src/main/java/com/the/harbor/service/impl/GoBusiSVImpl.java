@@ -1160,4 +1160,9 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		return l;
 	}
 
+	@Override
+	public HyGoJoin getHyGoJoin(String orderId) {
+		return hyGoJoinMapper.selectByPrimaryKey(orderId);
+	}
+
 }

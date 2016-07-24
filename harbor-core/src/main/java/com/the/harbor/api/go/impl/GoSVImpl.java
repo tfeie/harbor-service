@@ -30,6 +30,8 @@ import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoCreateResp;
 import com.the.harbor.api.go.param.GoDetail;
 import com.the.harbor.api.go.param.GoJoin;
+import com.the.harbor.api.go.param.GoJoinQueryReq;
+import com.the.harbor.api.go.param.GoJoinQueryResp;
 import com.the.harbor.api.go.param.GoOrder;
 import com.the.harbor.api.go.param.GoOrderConfirmReq;
 import com.the.harbor.api.go.param.GoOrderCreateReq;
@@ -576,6 +578,32 @@ public class GoSVImpl implements IGoSV {
 			List<GoOrder> goOrders = goBusiSV.getGoOrders(goId);
 			resp.setGoOrders(goOrders);
 		}
+		resp.setResponseHeader(responseHeader);
+		return resp;
+	}
+
+	@Override
+	public GoJoinQueryResp queryGoJoin(GoJoinQueryReq goJoinQueryReq) throws BusinessException, SystemException {// 获取预约流水记录
+		HyGoJoin hyGoJoin = goBusiSV.getHyGoJoin(goJoinQueryReq.getGoOrderId());
+		if (hyGoJoin == null) {
+			throw new BusinessException("GO_0001", "预约记录不存在");
+		}
+		// 获取活动信息
+		Go go = this.getGoInfo(hyGoJoin.getGoId());
+		GoJoin goJoin = new GoJoin();
+		BeanUtils.copyProperties(hyGoJoin, goJoin);
+		goJoin.setPublishUserId(go.getUserId());
+		goJoin.setTopic(go.getTopic());
+		goJoin.setFixedPrice(go.getFixedPrice());
+		goJoin.setOrderStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_JOIN.getValue(),
+				ParamCode.ORDER_STATUS.getValue(), hyGoJoin.getOrderStatus()));
+		goJoin.setHelpValueName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_JOIN.getValue(),
+				ParamCode.HELP_VALUE.getValue(), hyGoJoin.getHelpValue()));
+		goJoin.setOrgModeName(go.getOrgModeName());
+		goJoin.setOrderCount(goBusiSV.getOrderCount(go.getGoId(), go.getGoType()));
+		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
+		GoJoinQueryResp resp = new GoJoinQueryResp();
+		resp.setGoJoin(goJoin);
 		resp.setResponseHeader(responseHeader);
 		return resp;
 	}
