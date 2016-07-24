@@ -154,4 +154,6 @@ public interface IUserManagerSV {
 	HyUserBuyMember getHyUserBuyMember(String buyOrderId);
 
 	HyUserBuyHb getHyUserBuyHb(String buyOrderId);
+
+	void resetUsersInRedis();
 }

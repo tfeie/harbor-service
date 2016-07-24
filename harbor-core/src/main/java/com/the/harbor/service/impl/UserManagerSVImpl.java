@@ -1203,4 +1203,17 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		return hyUserBuyHbMapper.selectByPrimaryKey(buyOrderId);
 	}
 
+	@Override
+	public void resetUsersInRedis() {
+		HyUserCriteria sql = new HyUserCriteria();
+		List<HyUser> list = hyUserMapper.selectByExample(sql);
+		if (CollectionUtil.isEmpty(list)) {
+			return;
+		}
+		for (HyUser u : list) {
+			this.storeUserInfo2Redis(u.getUserId());
+		}
+
+	}
+
 }
