@@ -57,7 +57,11 @@ public class Be implements Serializable {
 		for (int i = 0; i < list.size(); i++) {
 			sb.append(list.get(i)).append("/");
 		}
-		employmentInfo = sb.toString().substring(0, sb.toString().length() - 1);
+		if(sb.toString().length()==0){
+			employmentInfo = "";
+		}else{
+			employmentInfo=sb.toString().substring(0, sb.toString().length() - 1);
+		}
 		return employmentInfo;
 	}
 
