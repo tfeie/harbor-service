@@ -66,6 +66,10 @@ public interface IGoSV {
 
 	}
 
+	@interface QueryUserJoinGo {
+
+	}
+
 	@interface UpdateGoOrderPay {
 
 	}
@@ -345,12 +349,24 @@ public interface IGoSV {
 
 	/**
 	 * 查询GROUP活动申请单信息
+	 * 
 	 * @param goJoinQueryReq
 	 * @return
 	 * @throws BusinessException
 	 * @throws SystemException
 	 */
 	GoJoinQueryResp queryGoJoin(@NotNull(message = "参数为空") GoJoinQueryReq goJoinQueryReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 查询用户参加获得GROUP申请单信息
+	 * 
+	 * @param goJoinQueryReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	GoJoinQueryResp queryUserJoinGo(@NotNull(message = "参数为空") GoJoinQueryReq goJoinQueryReq)
 			throws BusinessException, SystemException;
 
 }
