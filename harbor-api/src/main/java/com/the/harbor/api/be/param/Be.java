@@ -39,8 +39,8 @@ public class Be implements Serializable {
 	private String wxHeadimg;
 
 	private String enName;
-	
-	public String employmentInfo;
+
+	public transient String employmentInfo;
 
 	public String getEmploymentInfo() {
 		List<String> list = new ArrayList<String>();
@@ -57,7 +57,7 @@ public class Be implements Serializable {
 		for (int i = 0; i < list.size(); i++) {
 			sb.append(list.get(i)).append("/");
 		}
-		employmentInfo= sb.toString().substring(0, sb.toString().length() - 1);
+		employmentInfo = sb.toString().substring(0, sb.toString().length() - 1);
 		return employmentInfo;
 	}
 

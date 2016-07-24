@@ -69,7 +69,7 @@ public class GoJoin implements Serializable {
 
 	private String homePageBg;
 
-	public String employmentInfo;
+	public transient String employmentInfo;
 
 	public String getEmploymentInfo() {
 		List<String> list = new ArrayList<String>();

@@ -31,7 +31,7 @@ public class UserViewInfo extends UserInfo {
 
 	private String authStsName;
 
-	public String employmentInfo;
+	public transient String employmentInfo;
 
 	public String getEmploymentInfo() {
 		List<String> list = new ArrayList<String>();
