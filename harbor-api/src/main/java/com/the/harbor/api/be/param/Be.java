@@ -25,6 +25,8 @@ public class Be implements Serializable {
 	// 发布用户信息
 	private String abroadCountryName;
 
+	private String abroadCountryRGB;
+
 	private String atCityName;
 
 	private String industryName;
@@ -257,6 +259,14 @@ public class Be implements Serializable {
 
 	public void setMmdd(String mmdd) {
 		this.mmdd = mmdd;
+	}
+
+	public String getAbroadCountryRGB() {
+		return abroadCountryRGB;
+	}
+
+	public void setAbroadCountryRGB(String abroadCountryRGB) {
+		this.abroadCountryRGB = abroadCountryRGB;
 	}
 
 }

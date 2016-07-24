@@ -49,7 +49,9 @@ import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
+import com.the.harbor.commons.redisdata.def.HyCountryVo;
 import com.the.harbor.commons.redisdata.util.HyBeUtil;
+import com.the.harbor.commons.redisdata.util.HyCountryUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
@@ -202,6 +204,7 @@ public class BeSVImpl implements IBeSV {
 				}
 			}
 		}
+		
 		be.setContentSummary(contentSummary);
 		be.setImageURL(imageURL);
 		be.setHasimg(hasimg);
@@ -216,6 +219,7 @@ public class BeSVImpl implements IBeSV {
 		be.setWxHeadimg(createUserInfo.getWxHeadimg());
 		be.setUserStatusName(createUserInfo.getUserStatusName());
 		be.setAbroadCountryName(createUserInfo.getAbroadCountryName());
+		be.setAbroadCountryRGB(createUserInfo.getAbroadCountryRGB());
 	}
 
 	@Override

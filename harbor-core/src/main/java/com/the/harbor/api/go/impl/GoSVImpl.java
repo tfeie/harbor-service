@@ -447,6 +447,7 @@ public class GoSVImpl implements IGoSV {
 		go.setHomePageBg(createUserInfo.getHomePageBg());
 		go.setCreateTimeStr(DateUtil.getDateString(go.getCreateDate(), "MM月dd"));
 		go.setCreateTimeInterval(DateUtil.getInterval(go.getCreateDate()));
+		go.setAbroadCountryRGB(createUserInfo.getAbroadCountryRGB());
 	}
 
 	/**
