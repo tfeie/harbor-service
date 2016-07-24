@@ -524,16 +524,16 @@ public class GoSVImpl implements IGoSV {
 		int total = goBusiSV.getMyJointGoCount(userId, goType);
 		List<Go> result = new ArrayList<Go>();
 		if (GoType.ONE_ON_ONE.getValue().equals(goType)) {
-			List<HyGoJoin> list = goBusiSV.getMyJointOnOGoes(queryMyGoReq);
+			List<HyGoOrder> list = goBusiSV.getMyJointGroupGoes(queryMyGoReq);
 			if (!CollectionUtil.isEmpty(list)) {
-				for (HyGoJoin go : list) {
+				for (HyGoOrder go : list) {
 					result.add(this.getGoInfo(go.getGoId()));
 				}
 			}
 		} else if (GoType.GROUP.getValue().equals(goType)) {
-			List<HyGoOrder> list = goBusiSV.getMyJointGroupGoes(queryMyGoReq);
+			List<HyGoJoin> list = goBusiSV.getMyJointOnOGoes(queryMyGoReq);
 			if (!CollectionUtil.isEmpty(list)) {
-				for (HyGoOrder go : list) {
+				for (HyGoJoin go : list) {
 					result.add(this.getGoInfo(go.getGoId()));
 				}
 			}
