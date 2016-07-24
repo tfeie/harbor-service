@@ -632,4 +632,45 @@ public class GoSVImpl implements IGoSV {
 		return resp;
 	}
 
+	@Override
+	public GoJoinQueryResp queryUserJoinGo(GoJoinQueryReq goJoinQueryReq) throws BusinessException, SystemException {
+		List<HyGoJoin> list = goBusiSV.getHyGoJoins(goJoinQueryReq.getUserId(), goJoinQueryReq.getGoId());
+		HyGoJoin hyGoJoin = null;
+		if (!CollectionUtil.isEmpty(list)) {
+			hyGoJoin = list.get(0);
+		}
+		GoJoin goJoin = null;
+		if (hyGoJoin != null) {
+			Go go = this.getGoInfo(hyGoJoin.getGoId());
+			goJoin = new GoJoin();
+			BeanUtils.copyProperties(hyGoJoin, goJoin);
+			goJoin.setPublishUserId(go.getUserId());
+			goJoin.setTopic(go.getTopic());
+			goJoin.setFixedPrice(go.getFixedPrice());
+			goJoin.setOrderStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_JOIN.getValue(),
+					ParamCode.ORDER_STATUS.getValue(), hyGoJoin.getOrderStatus()));
+			goJoin.setHelpValueName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_JOIN.getValue(),
+					ParamCode.HELP_VALUE.getValue(), hyGoJoin.getHelpValue()));
+			goJoin.setOrgModeName(go.getOrgModeName());
+			goJoin.setOrderCount(goBusiSV.getOrderCount(go.getGoId(), go.getGoType()));
+
+			UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(goJoin.getUserId());
+			goJoin.setAbroadCountryName(userInfo.getAbroadCountryName());
+			goJoin.setAbroadCountryRGB(userInfo.getAbroadCountryRGB());
+			goJoin.setAtCityName(userInfo.getAtCityName());
+			goJoin.setEnName(userInfo.getEnName());
+			goJoin.setWxHeadimg(userInfo.getWxHeadimg());
+			goJoin.setHomePageBg(userInfo.getHomePageBg());
+			goJoin.setIndustryName(userInfo.getIndustryName());
+			goJoin.setTitle(userInfo.getTitle());
+			goJoin.setUserStatusName(userInfo.getUserStatusName());
+		}
+
+		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
+		GoJoinQueryResp resp = new GoJoinQueryResp();
+		resp.setGoJoin(goJoin);
+		resp.setResponseHeader(responseHeader);
+		return resp;
+	}
+
 }

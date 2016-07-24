@@ -41,6 +41,8 @@ public interface IGoBusiSV {
 
 	HyGoJoin getHyGoJoin(String orderId);
 
+	List<HyGoJoin> getHyGoJoins(String userId, String goId);
+
 	HyGo getHyGo(String goId);
 
 	void updateGoOrderPay(UpdateGoOrderPayReq updateGoOrderPayReq);
