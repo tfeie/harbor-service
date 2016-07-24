@@ -78,8 +78,8 @@ public class Go implements Serializable {
 	private String enName;
 
 	private String homePageBg;
-	
-	public transient String employmentInfo;
+
+	public String employmentInfo;
 
 	public String getEmploymentInfo() {
 		List<String> list = new ArrayList<String>();
@@ -96,10 +96,10 @@ public class Go implements Serializable {
 		for (int i = 0; i < list.size(); i++) {
 			sb.append(list.get(i)).append("/");
 		}
-		if(sb.toString().length()==0){
+		if (sb.toString().length() == 0) {
 			employmentInfo = "";
-		}else{
-			employmentInfo=sb.toString().substring(0, sb.toString().length() - 1);
+		} else {
+			employmentInfo = sb.toString().substring(0, sb.toString().length() - 1);
 		}
 		return employmentInfo;
 	}
@@ -410,7 +410,5 @@ public class Go implements Serializable {
 	public void setAbroadCountryRGB(String abroadCountryRGB) {
 		this.abroadCountryRGB = abroadCountryRGB;
 	}
-	
-	
 
 }

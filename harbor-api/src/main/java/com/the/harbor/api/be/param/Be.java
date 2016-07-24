@@ -40,7 +40,7 @@ public class Be implements Serializable {
 
 	private String enName;
 
-	public transient String employmentInfo;
+	public String employmentInfo;
 
 	public String getEmploymentInfo() {
 		List<String> list = new ArrayList<String>();
