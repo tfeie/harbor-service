@@ -93,7 +93,7 @@ public class GoOrder implements Serializable {
 
 	public transient String employmentInfo;
 
-	public String getEmploymentInfo() {
+	public transient String getEmploymentInfo() {
 		List<String> list = new ArrayList<String>();
 		if (this.getIndustryName() != null && !"".equals(this.getIndustryName().trim())) {
 			list.add(this.getIndustryName());
@@ -112,7 +112,7 @@ public class GoOrder implements Serializable {
 		return employmentInfo;
 	}
 
-	public void setEmploymentInfo(String employmentInfo) {
+	public transient void setEmploymentInfo(String employmentInfo) {
 		this.employmentInfo = employmentInfo;
 	}
 
