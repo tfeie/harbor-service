@@ -96,7 +96,8 @@ public class Go implements Serializable {
 		for (int i = 0; i < list.size(); i++) {
 			sb.append(list.get(i)).append("/");
 		}
-		return sb.toString().substring(0, sb.toString().length() - 1);
+		employmentInfo=sb.toString().substring(0, sb.toString().length() - 1);
+		return employmentInfo;
 	}
 
 	public void setEmploymentInfo(String employmentInfo) {
