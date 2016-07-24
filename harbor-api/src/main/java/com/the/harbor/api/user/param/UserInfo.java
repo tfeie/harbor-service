@@ -80,7 +80,9 @@ public class UserInfo implements Serializable {
 	private String homePageBg;
 
 	private String authSts;
-
+	
+	public String employmentInfo;
+	
 	public String getUserId() {
 		return userId;
 	}

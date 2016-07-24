@@ -1,5 +1,8 @@
 package com.the.harbor.api.user.param;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 用户浏览信息
  * 
@@ -25,8 +28,32 @@ public class UserViewInfo extends UserInfo {
 	private String industryName;
 
 	private String userStatusName;
-	
-	  private String authStsName;
+
+	private String authStsName;
+
+	public String employmentInfo;
+
+	public String getEmploymentInfo() {
+		List<String> list = new ArrayList<String>();
+		if (this.getIndustryName() != null && !"".equals(this.getIndustryName().trim())) {
+			list.add(this.getIndustryName());
+		}
+		if (this.getTitle() != null && !"".equals(this.getTitle().trim())) {
+			list.add(this.getTitle());
+		}
+		if (this.getAtCityName() != null && !"".equals(this.getAtCityName().trim())) {
+			list.add(this.getAtCityName());
+		}
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < list.size(); i++) {
+			sb.append(list.get(i)).append("/");
+		}
+		return sb.toString().substring(0, sb.toString().length() - 1);
+	}
+
+	public void setEmploymentInfo(String employmentInfo) {
+		this.employmentInfo = employmentInfo;
+	}
 
 	public String getUserTypeName() {
 		return userTypeName;
@@ -99,7 +126,5 @@ public class UserViewInfo extends UserInfo {
 	public void setAuthStsName(String authStsName) {
 		this.authStsName = authStsName;
 	}
-	
-	
 
 }
