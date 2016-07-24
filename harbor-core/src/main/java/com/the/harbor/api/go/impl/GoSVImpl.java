@@ -248,6 +248,17 @@ public class GoSVImpl implements IGoSV {
 				ParamCode.HELP_VALUE.getValue(), hyGoOrder.getHelpValue()));
 		goOrder.setOrgModeName(go.getOrgModeName());
 		goOrder.setOrderCount(goBusiSV.getOrderCount(go.getGoId(), go.getGoType()));
+
+		UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(goOrder.getUserId());
+		goOrder.setAbroadCountryName(userInfo.getAbroadCountryName());
+		goOrder.setAbroadCountryRGB(userInfo.getAbroadCountryRGB());
+		goOrder.setAtCityName(userInfo.getAtCityName());
+		goOrder.setEnName(userInfo.getEnName());
+		goOrder.setWxHeadimg(userInfo.getWxHeadimg());
+		goOrder.setHomePageBg(userInfo.getHomePageBg());
+		goOrder.setIndustryName(userInfo.getIndustryName());
+		goOrder.setTitle(userInfo.getTitle());
+
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		GoOrderQueryResp resp = new GoOrderQueryResp();
 		resp.setGoOrder(goOrder);
@@ -602,6 +613,16 @@ public class GoSVImpl implements IGoSV {
 				ParamCode.HELP_VALUE.getValue(), hyGoJoin.getHelpValue()));
 		goJoin.setOrgModeName(go.getOrgModeName());
 		goJoin.setOrderCount(goBusiSV.getOrderCount(go.getGoId(), go.getGoType()));
+
+		UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(goJoin.getUserId());
+		goJoin.setAbroadCountryName(userInfo.getAbroadCountryName());
+		goJoin.setAbroadCountryRGB(userInfo.getAbroadCountryRGB());
+		goJoin.setAtCityName(userInfo.getAtCityName());
+		goJoin.setEnName(userInfo.getEnName());
+		goJoin.setWxHeadimg(userInfo.getWxHeadimg());
+		goJoin.setHomePageBg(userInfo.getHomePageBg());
+		goJoin.setIndustryName(userInfo.getIndustryName());
+		goJoin.setTitle(userInfo.getTitle());
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		GoJoinQueryResp resp = new GoJoinQueryResp();
 		resp.setGoJoin(goJoin);
