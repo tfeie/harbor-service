@@ -93,7 +93,7 @@ public class GoOrder implements Serializable {
 
 	public transient String employmentInfo;
 
-	public transient String getEmploymentInfo() {
+	public String getEmploymentInfo() {
 		List<String> list = new ArrayList<String>();
 		if (this.getIndustryName() != null && !"".equals(this.getIndustryName().trim())) {
 			list.add(this.getIndustryName());
@@ -108,11 +108,15 @@ public class GoOrder implements Serializable {
 		for (int i = 0; i < list.size(); i++) {
 			sb.append(list.get(i)).append("/");
 		}
-		employmentInfo=sb.toString().substring(0, sb.toString().length() - 1);
+		if(sb.toString().length()==0){
+			employmentInfo = "";
+		}else{
+			employmentInfo=sb.toString().substring(0, sb.toString().length() - 1);
+		}
 		return employmentInfo;
 	}
 
-	public transient void setEmploymentInfo(String employmentInfo) {
+	public void setEmploymentInfo(String employmentInfo) {
 		this.employmentInfo = employmentInfo;
 	}
 
