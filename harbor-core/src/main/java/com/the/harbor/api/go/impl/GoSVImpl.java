@@ -258,6 +258,7 @@ public class GoSVImpl implements IGoSV {
 		goOrder.setHomePageBg(userInfo.getHomePageBg());
 		goOrder.setIndustryName(userInfo.getIndustryName());
 		goOrder.setTitle(userInfo.getTitle());
+		goOrder.setUserStatusName(userInfo.getUserStatusName());
 
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		GoOrderQueryResp resp = new GoOrderQueryResp();
@@ -623,6 +624,7 @@ public class GoSVImpl implements IGoSV {
 		goJoin.setHomePageBg(userInfo.getHomePageBg());
 		goJoin.setIndustryName(userInfo.getIndustryName());
 		goJoin.setTitle(userInfo.getTitle());
+		goJoin.setUserStatusName(userInfo.getUserStatusName());
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		GoJoinQueryResp resp = new GoJoinQueryResp();
 		resp.setGoJoin(goJoin);
