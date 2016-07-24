@@ -29,6 +29,8 @@ public class BeComment implements Serializable {
 
 	private String abroadCountryName;
 
+	private String abroadCountryRGB;
+
 	private String wxHeadimg;
 
 	private String enName;
@@ -38,11 +40,13 @@ public class BeComment implements Serializable {
 
 	private String pabroadCountryName;
 
+	private String pabroadCountryRGB;
+
 	private String pwxHeadimg;
 
 	private String penName;
-	
-	//是否是回复的评论
+
+	// 是否是回复的评论
 	private boolean isreply;
 
 	public String getCommentId() {
@@ -180,7 +184,21 @@ public class BeComment implements Serializable {
 	public void setIsreply(boolean isreply) {
 		this.isreply = isreply;
 	}
-	
-	
+
+	public String getAbroadCountryRGB() {
+		return abroadCountryRGB;
+	}
+
+	public void setAbroadCountryRGB(String abroadCountryRGB) {
+		this.abroadCountryRGB = abroadCountryRGB;
+	}
+
+	public String getPabroadCountryRGB() {
+		return pabroadCountryRGB;
+	}
+
+	public void setPabroadCountryRGB(String pabroadCountryRGB) {
+		this.pabroadCountryRGB = pabroadCountryRGB;
+	}
 
 }

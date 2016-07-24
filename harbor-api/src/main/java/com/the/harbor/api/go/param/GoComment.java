@@ -31,6 +31,8 @@ public class GoComment implements Serializable {
 
 	private String abroadCountryName;
 
+	private String abroadCountryRGB;
+
 	private String wxHeadimg;
 
 	private String enName;
@@ -189,6 +191,14 @@ public class GoComment implements Serializable {
 
 	public void setPublishUserId(String publishUserId) {
 		this.publishUserId = publishUserId;
+	}
+
+	public String getAbroadCountryRGB() {
+		return abroadCountryRGB;
+	}
+
+	public void setAbroadCountryRGB(String abroadCountryRGB) {
+		this.abroadCountryRGB = abroadCountryRGB;
 	}
 
 }
