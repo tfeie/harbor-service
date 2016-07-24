@@ -14,7 +14,7 @@ public class BeDetail implements Serializable {
 
 	private String imageUrl;
 	
-	private String imgThumbnailUrl;
+	public String imgThumbnailUrl;
 
 	public String getId() {
 		return id;

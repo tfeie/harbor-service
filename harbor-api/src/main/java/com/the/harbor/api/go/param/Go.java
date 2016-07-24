@@ -2,6 +2,7 @@ package com.the.harbor.api.go.param;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Go implements Serializable {
@@ -77,6 +78,30 @@ public class Go implements Serializable {
 	private String enName;
 
 	private String homePageBg;
+	
+	public String employmentInfo;
+
+	public String getEmploymentInfo() {
+		List<String> list = new ArrayList<String>();
+		if (this.getIndustryName() != null && !"".equals(this.getIndustryName().trim())) {
+			list.add(this.getIndustryName());
+		}
+		if (this.getTitle() != null && !"".equals(this.getTitle().trim())) {
+			list.add(this.getTitle());
+		}
+		if (this.getAtCityName() != null && !"".equals(this.getAtCityName().trim())) {
+			list.add(this.getAtCityName());
+		}
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < list.size(); i++) {
+			sb.append(list.get(i)).append("/");
+		}
+		return sb.toString().substring(0, sb.toString().length() - 1);
+	}
+
+	public void setEmploymentInfo(String employmentInfo) {
+		this.employmentInfo = employmentInfo;
+	}
 
 	// 浏览总数
 	private long viewCount;

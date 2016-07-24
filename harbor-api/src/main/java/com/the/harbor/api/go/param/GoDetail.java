@@ -20,7 +20,7 @@ public class GoDetail implements Serializable {
 
 	private String imageUrl;
 	
-	private String imgThumbnailUrl;
+	public String imgThumbnailUrl;
 
 	public String getId() {
 		return id;
