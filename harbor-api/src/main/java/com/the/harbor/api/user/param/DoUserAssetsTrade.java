@@ -3,13 +3,15 @@ package com.the.harbor.api.user.param;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
+import com.the.harbor.base.vo.MNSBody;
+
 /**
  * 用户资产交易。
  * 
  * @author zhangchao
  *
  */
-public class DoUserAssetsTrade implements java.io.Serializable {
+public class DoUserAssetsTrade extends MNSBody {
 
 	private static final long serialVersionUID = 1L;
 

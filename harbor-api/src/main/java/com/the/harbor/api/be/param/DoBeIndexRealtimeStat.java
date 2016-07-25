@@ -2,13 +2,15 @@ package com.the.harbor.api.be.param;
 
 import java.io.Serializable;
 
+import com.the.harbor.base.vo.MNSBody;
+
 /**
  * be索引实时统计更新
  * 
  * @author zhangchao
  *
  */
-public class DoBeIndexRealtimeStat implements Serializable {
+public class DoBeIndexRealtimeStat extends MNSBody {
 
 	private static final long serialVersionUID = 1L;
 
@@ -19,9 +21,9 @@ public class DoBeIndexRealtimeStat implements Serializable {
 	private String beId;
 
 	private String statType;
-	
-	public DoBeIndexRealtimeStat(){
-		//序列化时候默认构造函数必须声明
+
+	public DoBeIndexRealtimeStat() {
+		// 序列化时候默认构造函数必须声明
 	}
 
 	public DoBeIndexRealtimeStat(String beId, String statType) {
