@@ -5,12 +5,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.mns.client.CloudAccount;
 import com.aliyun.mns.client.MNSClient;
 import com.aliyun.mns.model.Message;
+import com.the.harbor.base.vo.MNSBody;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSSettings;
 import com.the.harbor.commons.components.aliyuncs.mns.MessageReceiver;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
+import com.the.harbor.commons.indices.mq.MNSRecordHandle;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.service.interfaces.IUserInterfactionSV;
 
@@ -79,19 +82,36 @@ public class UserCommentListener implements InitializingBean {
 		String queueName = GlobalSettings.getCommentQueueName();
 		MessageReceiver receiver = new MessageReceiver(workerId, sMNSClient, queueName);
 		while (true) {
+			boolean success = true;
+			String error = null;
+			String mqId = null;
+			String mqType = null;
 			Message message = receiver.receiveMessage();
 			LOG.info("Thread" + workerId + " GOT ONE MESSAGE! " + message.getMessageId());
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
+					MNSBody notify = JSONObject.parseObject(message.getMessageBody(), MNSBody.class);
+					mqId = notify.getMqId();
+					mqType = notify.getMqType();
 					userInterfactionSV.process(message.getMessageBody());
 				}
 			} catch (Exception ex) {
 				LOG.error("评论消息处理失败", ex);
+				success = false;
+				error = ex.getMessage();
 			}
 			try {
-				sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
+				if (success) {
+					if (!StringUtil.isBlank(message.getReceiptHandle())) {
+						sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
+					}
+				}
+				if (!StringUtil.isBlank(mqId) && !StringUtil.isBlank(mqType)) {
+					MNSRecordHandle.processMNSRecord(mqId, mqType, success, error);
+				}
+
 			} catch (Exception ex) {
-				LOG.error("评论删除失败", ex);
+				LOG.error("消息删除失败", ex);
 			}
 
 		}

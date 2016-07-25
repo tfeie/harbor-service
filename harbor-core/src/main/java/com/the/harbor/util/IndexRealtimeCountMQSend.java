@@ -10,8 +10,12 @@ import com.aliyun.mns.common.ServiceException;
 import com.aliyun.mns.model.Message;
 import com.the.harbor.api.be.param.DoBeIndexRealtimeStat;
 import com.the.harbor.api.go.param.DoGoIndexRealtimeStat;
+import com.the.harbor.base.enumeration.mns.MQType;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
+import com.the.harbor.commons.indices.mq.MNSRecord;
+import com.the.harbor.commons.indices.mq.MNSRecordThread;
+import com.the.harbor.commons.util.UUIDUtil;
 
 public class IndexRealtimeCountMQSend {
 
@@ -19,9 +23,13 @@ public class IndexRealtimeCountMQSend {
 
 	public static void sendBeRealtimeIndexUpdateMQ(DoBeIndexRealtimeStat body) {
 		MNSClient client = MNSFactory.getMNSClient();
+		String sendStatus = MNSRecord.Status.SEND_SUCCESS.name();
+		String sendError = null;
 		try {
 			CloudQueue queue = client.getQueueRef(GlobalSettings.getBeIndexRealtimeCountQueueName());
 			Message message = new Message();
+			body.setMqId(UUIDUtil.genId32());
+			body.setMqType(MQType.MQ_HY_BE_INDEX_COUNT_BUILD.getValue());
 			message.setMessageBody(JSONObject.toJSONString(body));
 			queue.putMessage(message);
 		} catch (ClientException ce) {
@@ -37,17 +45,31 @@ public class IndexRealtimeCountMQSend {
 		} catch (Exception e) {
 			LOG.error("Unknown exception happened!", e);
 		}
+		
+		MNSRecord mns = new MNSRecord();
+		mns.setMqId(body.getMqId());
+		mns.setMqType(body.getMqType());
+		mns.setSendStatus(sendStatus);
+		mns.setSendError(sendError);
+		mns.setMqBody(body);
+		new Thread(new MNSRecordThread(mns)).start();
 		client.close();
 	}
 
 	public static void sendGoRealtimeIndexUpdateMQ(DoGoIndexRealtimeStat body) {
 		MNSClient client = MNSFactory.getMNSClient();
+		String sendStatus = MNSRecord.Status.SEND_SUCCESS.name();
+		String sendError = null;
 		try {
 			CloudQueue queue = client.getQueueRef(GlobalSettings.getGoIndexRealtimeCountQueueName());
 			Message message = new Message();
+			body.setMqId(UUIDUtil.genId32());
+			body.setMqType(MQType.MQ_HY_BE_INDEX_COUNT_BUILD.getValue());
 			message.setMessageBody(JSONObject.toJSONString(body));
 			queue.putMessage(message);
 		} catch (ClientException ce) {
+			sendStatus = MNSRecord.Status.SEND_FAIL.name();
+			sendError = "ClientException:" + ce.getMessage();
 			LOG.error("Something wrong with the network connection between client and MNS service."
 					+ "Please check your network and DNS availablity.", ce);
 		} catch (ServiceException se) {
@@ -56,10 +78,22 @@ public class IndexRealtimeCountMQSend {
 			} else if (se.getErrorCode().equals("TimeExpired")) {
 				LOG.error("The request is time expired. Please check your local machine timeclock", se);
 			}
-			LOG.error("go index realtimecount message put in Queue error", se);
+			LOG.error("message put in Queue error", se);
+			sendStatus = MNSRecord.Status.SEND_FAIL.name();
+			sendError = "ServiceException:" + se.getMessage();
 		} catch (Exception e) {
 			LOG.error("Unknown exception happened!", e);
+			sendStatus = MNSRecord.Status.SEND_FAIL.name();
+			sendError = e.getMessage();
 		}
+		
+		MNSRecord mns = new MNSRecord();
+		mns.setMqId(body.getMqId());
+		mns.setMqType(body.getMqType());
+		mns.setSendStatus(sendStatus);
+		mns.setSendError(sendError);
+		mns.setMqBody(body);
+		new Thread(new MNSRecordThread(mns)).start();
 		client.close();
 	}
 

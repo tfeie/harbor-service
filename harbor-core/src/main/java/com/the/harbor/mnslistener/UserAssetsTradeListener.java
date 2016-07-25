@@ -13,6 +13,7 @@ import com.the.harbor.api.user.param.DoUserAssetsTrade;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSSettings;
 import com.the.harbor.commons.components.aliyuncs.mns.MessageReceiver;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
+import com.the.harbor.commons.indices.mq.MNSRecordHandle;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 
@@ -87,18 +88,34 @@ public class UserAssetsTradeListener implements InitializingBean {
 		String queueName = GlobalSettings.getUserAssetsTradeQueueName();
 		MessageReceiver receiver = new MessageReceiver(workerId, sMNSClient, queueName);
 		while (true) {
+			boolean success = true;
+			String error = null;
+			String mqId = null;
+			String mqType = null;
 			Message message = receiver.receiveMessage();
 			LOG.info("Thread" + workerId + " GOT ONE MESSAGE! " + message.getMessageId());
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					DoUserAssetsTrade notify = JSON.parse(message.getMessageBody(), DoUserAssetsTrade.class);
+					mqId = notify.getMqId();
+					mqType = notify.getMqType();
 					userManagerSV.process(notify);
 				}
 			} catch (Exception ex) {
 				LOG.error("系统通知消息消费失败", ex);
+				success = false;
+				error = ex.getMessage();
 			}
 			try {
-				sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
+				if (success) {
+					if (!StringUtil.isBlank(message.getReceiptHandle())) {
+						sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
+					}
+				}
+				if (!StringUtil.isBlank(mqId) && !StringUtil.isBlank(mqType)) {
+					MNSRecordHandle.processMNSRecord(mqId, mqType, success, error);
+				}
+
 			} catch (Exception ex) {
 				LOG.error("消息删除失败", ex);
 			}

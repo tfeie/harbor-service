@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.aliyun.mns.client.CloudAccount;
 import com.aliyun.mns.client.MNSClient;
 import com.aliyun.mns.model.Message;
+import com.the.harbor.api.be.param.DoBeIndexRealtimeStat;
 import com.the.harbor.api.go.param.DoGoIndexRealtimeStat;
 import com.the.harbor.api.go.param.Go;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSSettings;
@@ -20,6 +21,7 @@ import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
+import com.the.harbor.commons.indices.mq.MNSRecordHandle;
 import com.the.harbor.commons.redisdata.util.HyGoUtil;
 import com.the.harbor.commons.util.StringUtil;
 
@@ -85,12 +87,18 @@ public class GoIndexRealtimeCountListener implements InitializingBean {
 		String queueName = GlobalSettings.getGoIndexRealtimeCountQueueName();
 		MessageReceiver receiver = new MessageReceiver(workerId, sMNSClient, queueName);
 		while (true) {
+			boolean success = true;
+			String error = null;
+			String mqId = null;
+			String mqType = null;
 			Message message = receiver.receiveMessage();
 			LOG.info("Thread" + workerId + " GOT ONE MESSAGE! " + message.getMessageId());
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					DoGoIndexRealtimeStat stat = JSONObject.parseObject(message.getMessageBody(),
 							DoGoIndexRealtimeStat.class);
+					mqId = stat.getMqId();
+					mqType = stat.getMqType();
 					if (!StringUtil.isBlank(stat.getGoId())) {
 						Client client = ElasticSearchFactory.getClient();
 						SearchResponse response = client.prepareSearch(HarborIndex.HY_GO_DB.getValue())
@@ -116,9 +124,19 @@ public class GoIndexRealtimeCountListener implements InitializingBean {
 				}
 			} catch (Exception ex) {
 				LOG.error("GO实时统计数据索引更新存储MNS消息消费失败", ex);
+				success = false;
+				error = ex.getMessage();
 			}
 			try {
-				sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
+				if (success) {
+					if (!StringUtil.isBlank(message.getReceiptHandle())) {
+						sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
+					}
+				}
+				if (!StringUtil.isBlank(mqId) && !StringUtil.isBlank(mqType)) {
+					MNSRecordHandle.processMNSRecord(mqId, mqType, success, error);
+				}
+
 			} catch (Exception ex) {
 				LOG.error("消息删除失败", ex);
 			}
