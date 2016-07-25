@@ -2,13 +2,15 @@ package com.the.harbor.api.go.param;
 
 import java.io.Serializable;
 
+import com.the.harbor.base.vo.MNSBody;
+
 /**
  * GO索引实时统计更新
  * 
  * @author zhangchao
  *
  */
-public class DoGoIndexRealtimeStat implements Serializable {
+public class DoGoIndexRealtimeStat extends MNSBody {
 
 	private static final long serialVersionUID = 1L;
 
