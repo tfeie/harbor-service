@@ -1091,7 +1091,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 
 	private void createInviteCodes(String userId) {
 		for (int i = 0; i < 5; i++) {
-			String inviteCode = RandomUtil.generateNumber(6);
+			String inviteCode = RandomUtil.generateNumber(4);
 			HyUserInvite record = new HyUserInvite();
 			record.setInviteCode(inviteCode);
 			record.setUserId(userId);
