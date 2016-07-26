@@ -416,7 +416,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		body.setSenderId(hyGo.getUserId());
 		body.setAccepterType(AccepterType.USER.getValue());
 		body.setAccepterId(hyGoOrder.getUserId());
-		body.setTitle("海牛提交了与您见面的时间地点");
+		body.setTitle("等待新秀确认");
 		body.setContent("[" + publishUser.getEnName() + "]提交了您预约的活动[" + hyGo.getTopic() + "]见面的时间与地点，您可以选择确认啦~");
 		body.setLink("../go/toAppointment.html?goOrderId=" + hyGoOrder.getOrderId());
 		NotifyMQSend.sendNotifyMQ(body);
