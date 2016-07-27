@@ -13,7 +13,7 @@ public class BeDetail implements Serializable {
 	private String detail;
 
 	private String imageUrl;
-	
+
 	public String imgThumbnailUrl;
 
 	public String getId() {
@@ -49,13 +49,11 @@ public class BeDetail implements Serializable {
 	}
 
 	public String getImgThumbnailUrl() {
-		return imageUrl+"@!be_thumbnail";
+		return (imageUrl == null || "".equals(imageUrl)) ? null : (imageUrl + "@!be_thumbnail");
 	}
 
 	public void setImgThumbnailUrl(String imgThumbnailUrl) {
 		this.imgThumbnailUrl = imgThumbnailUrl;
 	}
-	
-	
 
 }
