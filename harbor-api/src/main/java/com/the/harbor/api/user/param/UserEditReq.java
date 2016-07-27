@@ -107,6 +107,10 @@ public class UserEditReq implements Serializable {
 	@Length(min = 0, max = 40, message = "职位名称不能大于40个字符", groups = { IUserSV.UserEdit.class })
 	private String title;
 
+	private String atProvince;
+
+	private String atCity;
+
 	/**
 	 * 兴趣标签
 	 */
@@ -251,6 +255,22 @@ public class UserEditReq implements Serializable {
 
 	public void setSkillSelectedTags(List<UserTag> skillSelectedTags) {
 		this.skillSelectedTags = skillSelectedTags;
+	}
+
+	public String getAtProvince() {
+		return atProvince;
+	}
+
+	public void setAtProvince(String atProvince) {
+		this.atProvince = atProvince;
+	}
+
+	public String getAtCity() {
+		return atCity;
+	}
+
+	public void setAtCity(String atCity) {
+		this.atCity = atCity;
 	}
 
 }
