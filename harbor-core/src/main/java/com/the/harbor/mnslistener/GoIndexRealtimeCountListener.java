@@ -12,7 +12,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.aliyun.mns.client.CloudAccount;
 import com.aliyun.mns.client.MNSClient;
 import com.aliyun.mns.model.Message;
-import com.the.harbor.api.be.param.DoBeIndexRealtimeStat;
 import com.the.harbor.api.go.param.DoGoIndexRealtimeStat;
 import com.the.harbor.api.go.param.Go;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSSettings;
@@ -109,13 +108,14 @@ public class GoIndexRealtimeCountListener implements InitializingBean {
 						}
 						Go go = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Go.class);
 						if (DoGoIndexRealtimeStat.StatType.FAVOR.name().equals(stat.getStatType())) {
-							long count =HyGoUtil.getGoFavoredUserCount(go.getGoId());
+							long count = HyGoUtil.getGoFavoredUserCount(go.getGoId());
 							go.setFavorCount(count);
 						} else if (DoGoIndexRealtimeStat.StatType.GROUPJOIN.name().equals(stat.getStatType())) {
 							long joinCount = HyGoUtil.getGroupConfirmedJoinUsersCount(go.getGoId());
 							go.setJoinCount(joinCount);
 						} else if (DoGoIndexRealtimeStat.StatType.VIEW.name().equals(stat.getStatType())) {
-							go.setViewCount(0);
+							long count = HyGoUtil.getGoViewCount(stat.getGoId());
+							go.setViewCount(count);
 						}
 						client.prepareIndex(HarborIndex.HY_GO_DB.getValue().toLowerCase(),
 								HarborIndexType.HY_GO.getValue().toLowerCase(), go.getGoId()).setRefresh(true)

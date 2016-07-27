@@ -543,6 +543,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 	@Override
 	public void processDoGoView(DoGoView doGoView) {
+		HyGoUtil.userViewGo(doGoView.getGoId());
+		if(StringUtil.isBlank(doGoView.getUserId())){
+			return;
+		}
 		HyGoView record = new HyGoView();
 		record.setCreateDate(doGoView.getTime() == null ? DateUtil.getSysDate() : doGoView.getTime());
 		record.setViewId(HarborSeqUtil.createGoViewId());
