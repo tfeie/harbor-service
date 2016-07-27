@@ -109,7 +109,8 @@ public class GoIndexRealtimeCountListener implements InitializingBean {
 						}
 						Go go = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Go.class);
 						if (DoGoIndexRealtimeStat.StatType.FAVOR.name().equals(stat.getStatType())) {
-							go.setFavorCount(0);
+							long count =HyGoUtil.getGoFavoredUserCount(go.getGoId());
+							go.setFavorCount(count);
 						} else if (DoGoIndexRealtimeStat.StatType.GROUPJOIN.name().equals(stat.getStatType())) {
 							long joinCount = HyGoUtil.getGroupConfirmedJoinUsersCount(go.getGoId());
 							go.setJoinCount(joinCount);
