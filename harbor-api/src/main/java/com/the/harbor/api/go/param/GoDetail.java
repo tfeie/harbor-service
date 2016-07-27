@@ -55,7 +55,7 @@ public class GoDetail implements Serializable {
 	}
 
 	public String getImgThumbnailUrl() {
-		return imageUrl+"@!go_thumbnail";
+		return (imageUrl == null || "".equals(imageUrl)) ? null : (imageUrl + "@!go_thumbnail");
 	}
 
 	public void setImgThumbnailUrl(String imgThumbnailUrl) {
