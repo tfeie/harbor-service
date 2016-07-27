@@ -58,6 +58,7 @@ import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.redisdata.def.DoNotify;
 import com.the.harbor.commons.redisdata.def.HyCountryVo;
+import com.the.harbor.commons.redisdata.util.HyAreaUtil;
 import com.the.harbor.commons.redisdata.util.HyCountryUtil;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
 import com.the.harbor.commons.redisdata.util.HyIndustryUtil;
@@ -681,7 +682,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			userInfo.setAbroadCountryName(HyCountryUtil.getHyCountryName(hyUser.getAbroadCountry()));
 			HyCountryVo country = HyCountryUtil.getHyCountry(hyUser.getAbroadCountry());
 			userInfo.setAbroadCountryRGB(country == null ? null : country.getCountryRgb());
-			userInfo.setAtCityName(hyUser.getAtCity());
+			userInfo.setAtCityName(HyAreaUtil.getAreaName(hyUser.getAtCity()));
 			userInfo.setIndustryName(HyIndustryUtil.getHyIndustryName(hyUser.getIndustry()));
 			userInfo.setUserTypeName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
 					ParamCode.USER_TYPE.getValue(), hyUser.getAbroadCountry()));
