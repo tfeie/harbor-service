@@ -2,6 +2,7 @@ package com.the.harbor.service.interfaces;
 
 import java.util.List;
 
+import com.the.harbor.dao.mapper.bo.HyArea;
 import com.the.harbor.dao.mapper.bo.HyCfg;
 import com.the.harbor.dao.mapper.bo.HyCountry;
 import com.the.harbor.dao.mapper.bo.HyDicts;
@@ -22,5 +23,7 @@ public interface IBasicDataSV {
 	List<HyDicts> getAllHyDicts();
 
 	List<HyCfg> getAllCfgs();
+
+	List<HyArea> getAllAreas();
 
 }

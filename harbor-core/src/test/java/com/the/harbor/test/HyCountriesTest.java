@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.the.harbor.cacheimpl.HyAreaCacheImpl;
 import com.the.harbor.cacheimpl.HyCountryCacheImpl;
 import com.the.harbor.cacheimpl.HyDictsCacheImpl;
 import com.the.harbor.cacheimpl.HyIndustryCacheImpl;
 import com.the.harbor.cacheimpl.HyTagsCacheImpl;
 import com.the.harbor.commons.appserver.CacheServiceStart;
-import com.the.harbor.commons.redisdata.util.HyCountryUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({ "/context/core-context.xml" })
@@ -28,6 +28,9 @@ public class HyCountriesTest {
 
 	@Autowired
 	HyDictsCacheImpl cache4;
+
+	@Autowired
+	HyAreaCacheImpl cache5;
 
 	@Test
 	public void build() throws Exception {

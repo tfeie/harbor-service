@@ -5,7 +5,7 @@ public class HyArea {
 
     private String areaName;
 
-    private int areaLevel;
+    private String areaLevel;
 
     private String parentAreaCode;
 
@@ -27,12 +27,12 @@ public class HyArea {
         this.areaName = areaName == null ? null : areaName.trim();
     }
 
-    public int getAreaLevel() {
+    public String getAreaLevel() {
         return areaLevel;
     }
 
-    public void setAreaLevel(int areaLevel) {
-        this.areaLevel = areaLevel;
+    public void setAreaLevel(String areaLevel) {
+        this.areaLevel = areaLevel == null ? null : areaLevel.trim();
     }
 
     public String getParentAreaCode() {

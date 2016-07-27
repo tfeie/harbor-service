@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.the.harbor.base.enumeration.common.Status;
 import com.the.harbor.base.enumeration.hytags.TagCat;
+import com.the.harbor.dao.mapper.bo.HyArea;
+import com.the.harbor.dao.mapper.bo.HyAreaCriteria;
 import com.the.harbor.dao.mapper.bo.HyCfg;
 import com.the.harbor.dao.mapper.bo.HyCfgCriteria;
 import com.the.harbor.dao.mapper.bo.HyCountry;
@@ -20,6 +22,7 @@ import com.the.harbor.dao.mapper.bo.HyTags;
 import com.the.harbor.dao.mapper.bo.HyTagsCriteria;
 import com.the.harbor.dao.mapper.bo.HyUniversity;
 import com.the.harbor.dao.mapper.bo.HyUniversityCriteria;
+import com.the.harbor.dao.mapper.interfaces.HyAreaMapper;
 import com.the.harbor.dao.mapper.interfaces.HyCfgMapper;
 import com.the.harbor.dao.mapper.interfaces.HyCountryMapper;
 import com.the.harbor.dao.mapper.interfaces.HyDictsMapper;
@@ -49,6 +52,9 @@ public class BasicDataSVImpl implements IBasicDataSV {
 
 	@Autowired
 	private transient HyCfgMapper hyCfgMapper;
+
+	@Autowired
+	private transient HyAreaMapper hyAreaMapper;
 
 	@Override
 	public List<HyCfg> getAllCfgs() {
@@ -89,6 +95,13 @@ public class BasicDataSVImpl implements IBasicDataSV {
 		HyDictsCriteria sql = new HyDictsCriteria();
 		sql.setOrderByClause(" DISORDER asc");
 		return hyDictsMapper.selectByExample(sql);
+	}
+
+	@Override
+	public List<HyArea> getAllAreas() {
+		HyAreaCriteria sql = new HyAreaCriteria();
+		sql.setOrderByClause(" sort asc");
+		return hyAreaMapper.selectByExample(sql);
 	}
 
 }

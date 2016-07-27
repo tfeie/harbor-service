@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.the.harbor.dao.mapper.bo.HyArea" >
     <id column="AREA_CODE" property="areaCode" jdbcType="VARCHAR" />
     <result column="AREA_NAME" property="areaName" jdbcType="VARCHAR" />
-    <result column="AREA_LEVEL" property="areaLevel" jdbcType="INTEGER" />
+    <result column="AREA_LEVEL" property="areaLevel" jdbcType="VARCHAR" />
     <result column="PARENT_AREA_CODE" property="parentAreaCode" jdbcType="VARCHAR" />
     <result column="SORT" property="sort" jdbcType="INTEGER" />
   </resultMap>
@@ -106,7 +106,7 @@
   <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyArea" >
     insert into hy_area (AREA_CODE, AREA_NAME, AREA_LEVEL, 
       PARENT_AREA_CODE, SORT)
-    values (#{areaCode,jdbcType=VARCHAR}, #{areaName,jdbcType=VARCHAR}, #{areaLevel,jdbcType=INTEGER}, 
+    values (#{areaCode,jdbcType=VARCHAR}, #{areaName,jdbcType=VARCHAR}, #{areaLevel,jdbcType=VARCHAR}, 
       #{parentAreaCode,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyArea" >
@@ -118,7 +118,9 @@
       <if test="areaName != null" >
         AREA_NAME,
       </if>
-      AREA_LEVEL,
+      <if test="areaLevel != null" >
+        AREA_LEVEL,
+      </if>
       <if test="parentAreaCode != null" >
         PARENT_AREA_CODE,
       </if>
@@ -131,7 +133,9 @@
       <if test="areaName != null" >
         #{areaName,jdbcType=VARCHAR},
       </if>
-      #{areaLevel,jdbcType=INTEGER},
+      <if test="areaLevel != null" >
+        #{areaLevel,jdbcType=VARCHAR},
+      </if>
       <if test="parentAreaCode != null" >
         #{parentAreaCode,jdbcType=VARCHAR},
       </if>
@@ -154,7 +158,7 @@
         AREA_NAME = #{record.areaName,jdbcType=VARCHAR},
       </if>
       <if test="record.areaLevel != null" >
-        AREA_LEVEL = #{record.areaLevel,jdbcType=INTEGER},
+        AREA_LEVEL = #{record.areaLevel,jdbcType=VARCHAR},
       </if>
       <if test="record.parentAreaCode != null" >
         PARENT_AREA_CODE = #{record.parentAreaCode,jdbcType=VARCHAR},
@@ -171,7 +175,7 @@
     update hy_area
     set AREA_CODE = #{record.areaCode,jdbcType=VARCHAR},
       AREA_NAME = #{record.areaName,jdbcType=VARCHAR},
-      AREA_LEVEL = #{record.areaLevel,jdbcType=INTEGER},
+      AREA_LEVEL = #{record.areaLevel,jdbcType=VARCHAR},
       PARENT_AREA_CODE = #{record.parentAreaCode,jdbcType=VARCHAR},
       SORT = #{record.sort,jdbcType=INTEGER}
     <if test="_parameter != null" >
@@ -185,7 +189,7 @@
         AREA_NAME = #{areaName,jdbcType=VARCHAR},
       </if>
       <if test="areaLevel != null" >
-        AREA_LEVEL = #{areaLevel,jdbcType=INTEGER},
+        AREA_LEVEL = #{areaLevel,jdbcType=VARCHAR},
       </if>
       <if test="parentAreaCode != null" >
         PARENT_AREA_CODE = #{parentAreaCode,jdbcType=VARCHAR},
@@ -199,7 +203,7 @@
   <update id="updateByPrimaryKey" parameterType="com.the.harbor.dao.mapper.bo.HyArea" >
     update hy_area
     set AREA_NAME = #{areaName,jdbcType=VARCHAR},
-      AREA_LEVEL = #{areaLevel,jdbcType=INTEGER},
+      AREA_LEVEL = #{areaLevel,jdbcType=VARCHAR},
       PARENT_AREA_CODE = #{parentAreaCode,jdbcType=VARCHAR},
       SORT = #{sort,jdbcType=INTEGER}
     where AREA_CODE = #{areaCode,jdbcType=VARCHAR}

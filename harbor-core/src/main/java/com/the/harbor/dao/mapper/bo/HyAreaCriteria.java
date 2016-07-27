@@ -274,52 +274,62 @@ public class HyAreaCriteria {
             return (Criteria) this;
         }
 
-        public Criteria andAreaLevelEqualTo(int value) {
+        public Criteria andAreaLevelEqualTo(String value) {
             addCriterion("AREA_LEVEL =", value, "areaLevel");
             return (Criteria) this;
         }
 
-        public Criteria andAreaLevelNotEqualTo(int value) {
+        public Criteria andAreaLevelNotEqualTo(String value) {
             addCriterion("AREA_LEVEL <>", value, "areaLevel");
             return (Criteria) this;
         }
 
-        public Criteria andAreaLevelGreaterThan(int value) {
+        public Criteria andAreaLevelGreaterThan(String value) {
             addCriterion("AREA_LEVEL >", value, "areaLevel");
             return (Criteria) this;
         }
 
-        public Criteria andAreaLevelGreaterThanOrEqualTo(int value) {
+        public Criteria andAreaLevelGreaterThanOrEqualTo(String value) {
             addCriterion("AREA_LEVEL >=", value, "areaLevel");
             return (Criteria) this;
         }
 
-        public Criteria andAreaLevelLessThan(int value) {
+        public Criteria andAreaLevelLessThan(String value) {
             addCriterion("AREA_LEVEL <", value, "areaLevel");
             return (Criteria) this;
         }
 
-        public Criteria andAreaLevelLessThanOrEqualTo(int value) {
+        public Criteria andAreaLevelLessThanOrEqualTo(String value) {
             addCriterion("AREA_LEVEL <=", value, "areaLevel");
             return (Criteria) this;
         }
 
-        public Criteria andAreaLevelIn(List<Integer> values) {
+        public Criteria andAreaLevelLike(String value) {
+            addCriterion("AREA_LEVEL like", value, "areaLevel");
+            return (Criteria) this;
+        }
+
+        public Criteria andAreaLevelNotLike(String value) {
+            addCriterion("AREA_LEVEL not like", value, "areaLevel");
+            return (Criteria) this;
+        }
+
+        public Criteria andAreaLevelIn(List<String> values) {
             addCriterion("AREA_LEVEL in", values, "areaLevel");
             return (Criteria) this;
         }
 
-        public Criteria andAreaLevelNotIn(List<Integer> values) {
+        public Criteria andAreaLevelNotIn(List<String> values) {
             addCriterion("AREA_LEVEL not in", values, "areaLevel");
             return (Criteria) this;
         }
 
-        public Criteria andAreaLevelBetween(int value1, int value2) {
+        public Criteria andAreaLevelBetween(String value1, String value2) {
             addCriterion("AREA_LEVEL between", value1, value2, "areaLevel");
             return (Criteria) this;
         }
 
-        public Criteria andAreaLevelNotBetween(int value1, int value2) {
+        public Criteria andAreaLevelNotBetween(String value1, String value2) {
             addCriterion("AREA_LEVEL not between", value1, value2, "areaLevel");
             return (Criteria) this;
         }
