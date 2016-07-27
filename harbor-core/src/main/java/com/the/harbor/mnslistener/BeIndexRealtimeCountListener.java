@@ -114,7 +114,7 @@ public class BeIndexRealtimeCountListener implements InitializingBean {
 							long count = HyBeUtil.getBeDianzanCount(be.getBeId());
 							be.setDianzanCount(count);
 						} else if (DoBeIndexRealtimeStat.StatType.REWARD.name().equals(stat.getStatType())) {
-							long count = HyBeUtil.getRewardUserCount(be.getBeId());
+							long count = HyBeUtil.getBeRewardHBCount(be.getBeId());
 							be.setGiveHaibeiCount(count);
 						}
 						client.prepareIndex(HarborIndex.HY_BE_DB.getValue().toLowerCase(),
