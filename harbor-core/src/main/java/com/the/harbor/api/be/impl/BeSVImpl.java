@@ -204,22 +204,24 @@ public class BeSVImpl implements IBeSV {
 				}
 			}
 		}
-		
+
 		be.setContentSummary(contentSummary);
 		be.setImageURL(imageURL);
 		be.setHasimg(hasimg);
 		be.setHastext(hastext);
 		be.setCreateTimeInterval(DateUtil.getInterval(be.getCreateDate()));
 		// 发布用户信息
+		if (createUserInfo != null) {
+			be.setAtCityName(createUserInfo.getAtCityName());
+			be.setEnName(createUserInfo.getEnName());
+			be.setIndustryName(createUserInfo.getIndustryName());
+			be.setTitle(createUserInfo.getTitle());
+			be.setWxHeadimg(createUserInfo.getWxHeadimg());
+			be.setUserStatusName(createUserInfo.getUserStatusName());
+			be.setAbroadCountryName(createUserInfo.getAbroadCountryName());
+			be.setAbroadCountryRGB(createUserInfo.getAbroadCountryRGB());
+		}
 
-		be.setAtCityName(createUserInfo.getAtCityName());
-		be.setEnName(createUserInfo.getEnName());
-		be.setIndustryName(createUserInfo.getIndustryName());
-		be.setTitle(createUserInfo.getTitle());
-		be.setWxHeadimg(createUserInfo.getWxHeadimg());
-		be.setUserStatusName(createUserInfo.getUserStatusName());
-		be.setAbroadCountryName(createUserInfo.getAbroadCountryName());
-		be.setAbroadCountryRGB(createUserInfo.getAbroadCountryRGB());
 	}
 
 	@Override

@@ -449,17 +449,21 @@ public class GoSVImpl implements IGoSV {
 		go.setOrgModeName(
 				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.ORG_MODE.getValue(), go.getOrgMode()));
 		// 发布用户信息
-		go.setAtCityName(createUserInfo.getAtCityName());
-		go.setEnName(createUserInfo.getEnName());
-		go.setIndustryName(createUserInfo.getIndustryName());
-		go.setTitle(createUserInfo.getTitle());
-		go.setWxHeadimg(createUserInfo.getWxHeadimg());
-		go.setUserStatusName(createUserInfo.getUserStatusName());
-		go.setAbroadCountryName(createUserInfo.getAbroadCountryName());
-		go.setHomePageBg(createUserInfo.getHomePageBg());
+		if (createUserInfo != null) {
+			go.setAtCityName(createUserInfo.getAtCityName());
+			go.setEnName(createUserInfo.getEnName());
+			go.setIndustryName(createUserInfo.getIndustryName());
+			go.setTitle(createUserInfo.getTitle());
+			go.setWxHeadimg(createUserInfo.getWxHeadimg());
+			go.setUserStatusName(createUserInfo.getUserStatusName());
+			go.setAbroadCountryName(createUserInfo.getAbroadCountryName());
+			go.setHomePageBg(createUserInfo.getHomePageBg());
+			go.setAbroadCountryRGB(createUserInfo.getAbroadCountryRGB());
+		}
+		
 		go.setCreateTimeStr(DateUtil.getDateString(go.getCreateDate(), "MM月dd"));
 		go.setCreateTimeInterval(DateUtil.getInterval(go.getCreateDate()));
-		go.setAbroadCountryRGB(createUserInfo.getAbroadCountryRGB());
+		
 	}
 
 	/**
