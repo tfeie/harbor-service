@@ -2,6 +2,7 @@ package com.the.harbor.service.impl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -656,7 +657,8 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	@Override
 	public List<UserViewInfo> getUnAuthUsers() {
 		HyUserCriteria sql = new HyUserCriteria();
-		sql.or().andAuthStsEqualTo(AuthSts.SUBMITTED_APPLY.getValue());
+		sql.or().andAuthStsEqualTo(AuthSts.SUBMITTED_APPLY.getValue()).andUserStatusIn(Arrays
+				.asList(new String[] { UserStatus.AUTHORIZED_FAILURE.getValue(), UserStatus.UNAUTHORIZED.getValue() }));
 		List<HyUser> users = hyUserMapper.selectByExample(sql);
 		if (CollectionUtil.isEmpty(users)) {
 			return null;
@@ -682,7 +684,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			userInfo.setAbroadCountryName(HyCountryUtil.getHyCountryName(hyUser.getAbroadCountry()));
 			HyCountryVo country = HyCountryUtil.getHyCountry(hyUser.getAbroadCountry());
 			userInfo.setAbroadCountryRGB(country == null ? null : country.getCountryRgb());
-			if(!StringUtil.isBlank(hyUser.getAtCity())){
+			if (!StringUtil.isBlank(hyUser.getAtCity())) {
 				userInfo.setAtCityName(HyAreaUtil.getAreaName(hyUser.getAtCity()));
 			}
 			userInfo.setIndustryName(HyIndustryUtil.getHyIndustryName(hyUser.getIndustry()));
