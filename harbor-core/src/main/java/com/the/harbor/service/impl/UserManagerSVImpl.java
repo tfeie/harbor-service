@@ -283,7 +283,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	public String submitUserAuthInfo(UserAuthReq userStatusReq) {
 		HyUser user = this.getUserInfo(userStatusReq.getUserId());
 		if (user == null) {
-			throw new BusinessException("请先注册后再认证");
+			throw new BusinessException("审核的用户不存在");
 		}
 		if (UserStatus.AUTHORIZED_SUCCESS.getValue().equals(user.getUserStatus())) {
 			throw new BusinessException("已经认证通过");
@@ -315,7 +315,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		notify.setSenderId(userStatusReq.getUserId());
 		notify.setAccepterType(AccepterType.USER.getValue());
 		notify.setAccepterId(userStatusReq.getUserId());
-		notify.setTitle("您的认证申请审核结果");
+		notify.setTitle("认证审核结果");
 		notify.setContent(content);
 		notify.setLink(link);
 
