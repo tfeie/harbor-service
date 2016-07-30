@@ -696,7 +696,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 					ParamCode.MARITAL_STATUS.getValue(), hyUser.getAbroadCountry()));
 			userInfo.setConstellationName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
 					ParamCode.CONSTELLATION.getValue(), hyUser.getAbroadCountry()));
-			if (UserStatus.AUTHORIZED_SUCCESS.equals(hyUser.getUserStatus())) {
+			if (UserStatus.AUTHORIZED_SUCCESS.getValue().equals(hyUser.getUserStatus())) {
 				String userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
 						ParamCode.USER_STATUS.getValue(), hyUser.getUserStatus());
 				userInfo.setUserStatusName(userStatus);
