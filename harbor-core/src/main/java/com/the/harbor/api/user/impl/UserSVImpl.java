@@ -62,6 +62,7 @@ public class UserSVImpl implements IUserSV {
 	public Response submitUserCertification(UserCertificationReq userCertificationReq)
 			throws BusinessException, SystemException {
 		userManagerSV.submitUserCertification(userCertificationReq);
+		this.storeUserInfo2Redis(userCertificationReq.getUserId());
 		return ResponseBuilder.buildSuccessResponse("认证材料提交成功");
 	}
 
