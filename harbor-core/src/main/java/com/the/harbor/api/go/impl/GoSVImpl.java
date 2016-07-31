@@ -455,6 +455,7 @@ public class GoSVImpl implements IGoSV {
 			go.setIndustryName(createUserInfo.getIndustryName());
 			go.setTitle(createUserInfo.getTitle());
 			go.setWxHeadimg(createUserInfo.getWxHeadimg());
+			go.setUserStatus(createUserInfo.getUserStatus());
 			go.setUserStatusName(createUserInfo.getUserStatusName());
 			go.setAbroadCountryName(createUserInfo.getAbroadCountryName());
 			go.setHomePageBg(createUserInfo.getHomePageBg());
