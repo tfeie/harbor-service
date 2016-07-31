@@ -31,6 +31,9 @@ public class Be implements Serializable {
 	private String atCityName;
 
 	private String industryName;
+	
+	private String userStatus;
+
 
 	private String userStatusName;
 
@@ -298,5 +301,15 @@ public class Be implements Serializable {
 	public void setAbroadCountryRGB(String abroadCountryRGB) {
 		this.abroadCountryRGB = abroadCountryRGB;
 	}
+
+	public String getUserStatus() {
+		return userStatus;
+	}
+
+	public void setUserStatus(String userStatus) {
+		this.userStatus = userStatus;
+	}
+	
+	
 
 }

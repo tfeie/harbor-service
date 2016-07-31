@@ -25,6 +25,8 @@ public class BeComment implements Serializable {
 	private String createTimeInteval;
 
 	// 以下是发表人的信息
+	private String userStatus;
+
 	private String userStatusName;
 
 	private String abroadCountryName;
@@ -36,6 +38,9 @@ public class BeComment implements Serializable {
 	private String enName;
 
 	// 以下是上级发布人的信息
+	private String puserStatus;
+
+	
 	private String puserStatusName;
 
 	private String pabroadCountryName;
@@ -201,4 +206,21 @@ public class BeComment implements Serializable {
 		this.pabroadCountryRGB = pabroadCountryRGB;
 	}
 
+	public String getUserStatus() {
+		return userStatus;
+	}
+
+	public void setUserStatus(String userStatus) {
+		this.userStatus = userStatus;
+	}
+
+	public String getPuserStatus() {
+		return puserStatus;
+	}
+
+	public void setPuserStatus(String puserStatus) {
+		this.puserStatus = puserStatus;
+	}
+
+	
 }

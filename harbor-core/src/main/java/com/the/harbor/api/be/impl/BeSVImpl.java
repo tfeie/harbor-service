@@ -217,6 +217,7 @@ public class BeSVImpl implements IBeSV {
 			be.setIndustryName(createUserInfo.getIndustryName());
 			be.setTitle(createUserInfo.getTitle());
 			be.setWxHeadimg(createUserInfo.getWxHeadimg());
+			be.setUserStatus(createUserInfo.getUserStatus());
 			be.setUserStatusName(createUserInfo.getUserStatusName());
 			be.setAbroadCountryName(createUserInfo.getAbroadCountryName());
 			be.setAbroadCountryRGB(createUserInfo.getAbroadCountryRGB());

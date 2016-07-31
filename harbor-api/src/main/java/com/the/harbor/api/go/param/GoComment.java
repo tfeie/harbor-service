@@ -36,6 +36,9 @@ public class GoComment implements Serializable {
 	private String wxHeadimg;
 
 	private String enName;
+	
+	private String userStatus;
+
 
 	// 以下是上级发布人的信息
 	private String puserStatusName;
@@ -45,6 +48,9 @@ public class GoComment implements Serializable {
 	private String pwxHeadimg;
 
 	private String penName;
+	
+	private String puserStatus;
+
 
 	// 是否是回复的评论
 	private boolean isreply;
@@ -200,5 +206,23 @@ public class GoComment implements Serializable {
 	public void setAbroadCountryRGB(String abroadCountryRGB) {
 		this.abroadCountryRGB = abroadCountryRGB;
 	}
+
+	public String getUserStatus() {
+		return userStatus;
+	}
+
+	public void setUserStatus(String userStatus) {
+		this.userStatus = userStatus;
+	}
+
+	public String getPuserStatus() {
+		return puserStatus;
+	}
+
+	public void setPuserStatus(String puserStatus) {
+		this.puserStatus = puserStatus;
+	}
+	
+	
 
 }

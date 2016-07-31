@@ -58,6 +58,9 @@ public class GoJoin implements Serializable {
 	private String atCityName;
 
 	private String industryName;
+	
+	private String userStatus;
+
 
 	private String userStatusName;
 
@@ -305,5 +308,15 @@ public class GoJoin implements Serializable {
 	public void setHomePageBg(String homePageBg) {
 		this.homePageBg = homePageBg;
 	}
+
+	public String getUserStatus() {
+		return userStatus;
+	}
+
+	public void setUserStatus(String userStatus) {
+		this.userStatus = userStatus;
+	}
+	
+	
 
 }
