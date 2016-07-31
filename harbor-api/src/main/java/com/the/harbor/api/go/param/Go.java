@@ -69,6 +69,8 @@ public class Go implements Serializable {
 
 	private String industryName;
 
+	private String userStatus;
+
 	private String userStatusName;
 
 	private String title;
@@ -409,6 +411,14 @@ public class Go implements Serializable {
 
 	public void setAbroadCountryRGB(String abroadCountryRGB) {
 		this.abroadCountryRGB = abroadCountryRGB;
+	}
+
+	public String getUserStatus() {
+		return userStatus;
+	}
+
+	public void setUserStatus(String userStatus) {
+		this.userStatus = userStatus;
 	}
 
 }
