@@ -926,10 +926,9 @@ public class UserManagerSVImpl implements IUserManagerSV {
 				// 如果业务类型涉及到海贝交易，且是支出方
 				if (BusiType.REWARD_HB_FOR_BE.getValue().equals(notify.getBusiType())) {
 					// 我打赏别人海贝
-					HyUserHbAssets hbr = new HyUserHbAssets();
-					hbr.setAssetsId(assets.getAssetsId());
-					hbr.setTotalDashang(hb.getTotalDashang() + notify.getTradeBalance());
-					hyUserHbAssetsMapper.updateByPrimaryKeySelective(hbr);
+					hb.setAssetsId(assets.getAssetsId());
+					hb.setTotalDashang(hb.getTotalDashang() + notify.getTradeBalance());
+					hyUserHbAssetsMapper.updateByPrimaryKeySelective(hb);
 				}
 			}
 
@@ -978,10 +977,9 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			// 如果业务类型涉及到海贝交易，且被被打赏的，则进行加入
 			if (BusiType.REWARD_HB_FOR_BE.getValue().equals(notify.getBusiType())) {
 				// 我获得别人打赏的海贝
-				HyUserHbAssets hbr = new HyUserHbAssets();
-				hbr.setAssetsId(assets.getAssetsId());
-				hbr.setTotalBeishang(hb.getTotalBeishang() + notify.getTradeBalance());
-				hyUserHbAssetsMapper.updateByPrimaryKeySelective(hbr);
+				hb.setAssetsId(assets.getAssetsId());
+				hb.setTotalBeishang(hb.getTotalBeishang() + notify.getTradeBalance());
+				hyUserHbAssetsMapper.updateByPrimaryKeySelective(hb);
 			}
 
 		}
