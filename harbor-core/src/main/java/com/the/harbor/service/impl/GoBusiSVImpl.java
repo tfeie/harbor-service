@@ -974,7 +974,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			orderCount = hyGoOrderMapper.countByExample(sql);
 		} else if (GoType.GROUP.getValue().equals(goType)) {
 			HyGoJoinCriteria sql = new HyGoJoinCriteria();
-			sql.or().andUserIdEqualTo(userId).andGoTypeEqualTo(goType);
+			List<String> statusList = new ArrayList<String>();
+			statusList.add(com.the.harbor.base.enumeration.hygojoin.OrderStatus.AGREE.getValue());
+			statusList.add(com.the.harbor.base.enumeration.hygojoin.OrderStatus.FINISH.getValue());
+			sql.or().andUserIdEqualTo(userId).andGoTypeEqualTo(goType).andOrderStatusIn(statusList);
 			orderCount = hyGoJoinMapper.countByExample(sql);
 		}
 		return orderCount;
@@ -999,7 +1002,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		int start = (req.getPageNo() - 1) * req.getPageSize();
 		int end = req.getPageNo() * req.getPageSize();
 		HyGoJoinCriteria sql = new HyGoJoinCriteria();
-		sql.or().andUserIdEqualTo(userId).andGoTypeEqualTo(goType);
+		List<String> statusList = new ArrayList<String>();
+		statusList.add(com.the.harbor.base.enumeration.hygojoin.OrderStatus.AGREE.getValue());
+		statusList.add(com.the.harbor.base.enumeration.hygojoin.OrderStatus.FINISH.getValue());
+		sql.or().andUserIdEqualTo(userId).andGoTypeEqualTo(goType).andOrderStatusIn(statusList);
 		sql.setLimitStart(start);
 		sql.setLimitEnd(end);
 		return hyGoJoinMapper.selectByExample(sql);
