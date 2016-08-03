@@ -723,6 +723,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				}
 			}
 		} else {
+			orderId = UUIDUtil.genId32();
 			// 如果没有申请过，则提交一个新的申请
 			if (needPay) {
 				/* 如果是需要支付，则产生一笔支付流水 */
@@ -736,7 +737,6 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				payOrderId = paymentBusiSV.createPaymentOrder(createPaymentOrderReq);
 			}
 			// 产生一个申请
-			orderId = UUIDUtil.genId32();
 			Timestamp sysdate = DateUtil.getSysDate();
 			HyGoJoin record = new HyGoJoin();
 			record.setGoId(goId);
