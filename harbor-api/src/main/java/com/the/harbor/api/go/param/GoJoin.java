@@ -29,6 +29,9 @@ public class GoJoin implements Serializable {
 
 	private int giveHb;
 
+	// 发起时间的小时时间差
+	private int diffHours;
+
 	// 是否有帮助翻译
 	private String helpValueName;
 
@@ -58,9 +61,8 @@ public class GoJoin implements Serializable {
 	private String atCityName;
 
 	private String industryName;
-	
-	private String userStatus;
 
+	private String userStatus;
 
 	private String userStatusName;
 
@@ -316,7 +318,13 @@ public class GoJoin implements Serializable {
 	public void setUserStatus(String userStatus) {
 		this.userStatus = userStatus;
 	}
-	
-	
+
+	public int getDiffHours() {
+		return diffHours;
+	}
+
+	public void setDiffHours(int diffHours) {
+		this.diffHours = diffHours;
+	}
 
 }
