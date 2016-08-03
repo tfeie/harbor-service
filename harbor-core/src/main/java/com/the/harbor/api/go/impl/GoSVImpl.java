@@ -660,7 +660,8 @@ public class GoSVImpl implements IGoSV {
 					ParamCode.HELP_VALUE.getValue(), hyGoJoin.getHelpValue()));
 			goJoin.setOrgModeName(go.getOrgModeName());
 			goJoin.setOrderCount(goBusiSV.getOrderCount(go.getGoId(), go.getGoType()));
-
+			long time = DateUtil.getSysDate().getTime() - hyGoJoin.getCreateDate().getTime();
+			goJoin.setDiffHours((int) (time / 3600000));
 			UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(goJoin.getUserId());
 			goJoin.setAbroadCountryName(userInfo.getAbroadCountryName());
 			goJoin.setAbroadCountryRGB(userInfo.getAbroadCountryRGB());
