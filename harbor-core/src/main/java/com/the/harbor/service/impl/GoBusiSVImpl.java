@@ -712,6 +712,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 					createPaymentOrderReq.setPayType(PayType.WEIXIN.getValue());
 					createPaymentOrderReq.setSummary("GROUP活动[" + hyGo.getGoId() + "]报名缴费");
 					createPaymentOrderReq.setUserId(hyGo.getUserId());
+					createPaymentOrderReq.setSourceNo(orderId);
 					payOrderId = paymentBusiSV.createPaymentOrder(createPaymentOrderReq);
 
 					// 更新到预约订单记录中
@@ -731,6 +732,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				createPaymentOrderReq.setPayType(PayType.WEIXIN.getValue());
 				createPaymentOrderReq.setSummary("GROUP活动[" + hyGo.getGoId() + "]报名缴费");
 				createPaymentOrderReq.setUserId(hyGo.getUserId());
+				createPaymentOrderReq.setSourceNo(orderId);
 				payOrderId = paymentBusiSV.createPaymentOrder(createPaymentOrderReq);
 			}
 			// 产生一个申请
