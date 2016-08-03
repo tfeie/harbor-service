@@ -597,18 +597,18 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				if (GoType.GROUP.getValue().equals(go.getGoType())) {
 					if (go.getUserId().equals(doGoComment.getPublishUserId())) {
 						// 有疑问？ 发送给小白端
-						notify.setLink("../go/comments.html?goOrderId=" + doGoComment.getOrderId());
+						notify.setLink("../go/comments.html?goOrderId=" + doGoComment.getOrderId()+"&backURL=../user/messagecenter.html");
 					} else {
 						// 有疑问，顺序颠倒？发送给海牛端
-						notify.setLink("../go/hainiugroupcomments.html?goOrderId=" + doGoComment.getOrderId());
+						notify.setLink("../go/hainiugroupcomments.html?goOrderId=" + doGoComment.getOrderId()+"&backURL=../user/messagecenter.html");
 					}
 				} else {
 					if (go.getUserId().equals(doGoComment.getPublishUserId())) {
 						// 有疑问？ 发送给小白端
-						notify.setLink("../go/toFeedback.html?goOrderId=" + doGoComment.getOrderId());
+						notify.setLink("../go/toFeedback.html?goOrderId=" + doGoComment.getOrderId()+"&backURL=../user/messagecenter.html");
 					} else {
 						// 有疑问，顺序颠倒？发送给海牛端
-						notify.setLink("../go/toHainiuFeedback.html?goOrderId=" + doGoComment.getOrderId());
+						notify.setLink("../go/toHainiuFeedback.html?goOrderId=" + doGoComment.getOrderId()+"&backURL=../user/messagecenter.html");
 					}
 
 				}
