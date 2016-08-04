@@ -368,5 +368,8 @@ public interface IGoSV {
 	 */
 	GoJoinQueryResp queryUserJoinGo(@NotNull(message = "参数为空") GoJoinQueryReq goJoinQueryReq)
 			throws BusinessException, SystemException;
+	
+	Response doGoFavorite(@NotNull(message = "参数为空") GroupApplyReq groupApplyReq)
+			throws BusinessException, SystemException;
 
 }
