@@ -1190,5 +1190,21 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		List<HyGoJoin> list = hyGoJoinMapper.selectByExample(sql);
 		return list;
 	}
+	
+	@Override
+	public void doGoFavorite(GroupApplyReq groupApplyReq) {
+		String userId = groupApplyReq.getUserId();
+		String goId = groupApplyReq.getGoId();
+		/* 判断用户是否已经收藏此活动 */
+		boolean joint = HyGoUtil.checkUserGoFavorite(goId, userId);
+		if (joint) {
+			throw new BusinessException("您已经收藏此活动，不能重复收藏哦~");
+		}
+		DoGoFavorite body = new DoGoFavorite();
+		body.setHandleType(DoGoFavorite.HandleType.DO.name());
+		body.setGoId(goId);
+		body.setUserId(userId);
+		UserFavorMQSend.sendMQ(body);
+	}
 
 }

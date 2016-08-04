@@ -84,5 +84,6 @@ public interface IGoBusiSV {
 	List<GoJoin> getGoJoins(String goId);
 
 	List<GoOrder> getGoOrders(String goId);
-
+	
+	void doGoFavorite(GroupApplyReq groupApplyReq);
 }

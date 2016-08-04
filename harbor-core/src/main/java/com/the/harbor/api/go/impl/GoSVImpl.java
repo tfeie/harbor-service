@@ -681,5 +681,11 @@ public class GoSVImpl implements IGoSV {
 		resp.setResponseHeader(responseHeader);
 		return resp;
 	}
+	
+	@Override
+	public Response doGoFavorite(GroupApplyReq groupApplyReq) throws BusinessException, SystemException {
+		goBusiSV.doGoFavorite(groupApplyReq);
+		return ResponseBuilder.buildSuccessResponse("收藏成功");
+	}
 
 }
