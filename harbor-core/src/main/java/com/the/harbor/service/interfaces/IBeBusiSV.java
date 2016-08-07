@@ -22,4 +22,6 @@ public interface IBeBusiSV {
 	void processDoBeFavoriteMQ(DoBeFavorite doBeFavorite);
 
 	void processDoBeView(DoBeView doBeView);
+
+	void processBeDelete(String beId);
 }

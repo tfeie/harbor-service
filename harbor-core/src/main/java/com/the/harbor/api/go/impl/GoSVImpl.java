@@ -24,6 +24,8 @@ import com.the.harbor.api.go.param.CheckUserOrderGoReq;
 import com.the.harbor.api.go.param.CheckUserOrderGoResp;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderResp;
+import com.the.harbor.api.go.param.DeleteGoReq;
+import com.the.harbor.api.go.param.DoGoDelete;
 import com.the.harbor.api.go.param.GiveHBReq;
 import com.the.harbor.api.go.param.Go;
 import com.the.harbor.api.go.param.GoCreateReq;
@@ -90,6 +92,7 @@ import com.the.harbor.dao.mapper.bo.HyGoJoin;
 import com.the.harbor.dao.mapper.bo.HyGoOrder;
 import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
+import com.the.harbor.util.BeGoDeleteMQSend;
 
 @Service(validation = "true")
 public class GoSVImpl implements IGoSV {
@@ -357,6 +360,7 @@ public class GoSVImpl implements IGoSV {
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
 		builder.must(QueryBuilders.termQuery("userId", queryMyGoReq.getUserId()))
 				.must(QueryBuilders.termQuery("goType", queryMyGoReq.getGoType()));
+		builder.mustNot((QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue())));
 		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_GO_DB.getValue())
 				.setTypes(HarborIndexType.HY_GO.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
 				.addSort(sortBuilder).execute().actionGet();
@@ -388,6 +392,7 @@ public class GoSVImpl implements IGoSV {
 		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
 		builder.must(QueryBuilders.termQuery("goType", queryGoReq.getGoType()));
+		builder.mustNot((QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue())));
 		if (!StringUtil.isBlank(queryGoReq.getPolyTagId())) {
 			builder.must(QueryBuilders.termQuery("goTags.polyTagId", queryGoReq.getPolyTagId()));
 		}
@@ -462,10 +467,10 @@ public class GoSVImpl implements IGoSV {
 			go.setHomePageBg(createUserInfo.getHomePageBg());
 			go.setAbroadCountryRGB(createUserInfo.getAbroadCountryRGB());
 		}
-		
+
 		go.setCreateTimeStr(DateUtil.getDateString(go.getCreateDate(), "MM月dd"));
 		go.setCreateTimeInterval(DateUtil.getInterval(go.getCreateDate()));
-		
+
 	}
 
 	/**
@@ -681,11 +686,30 @@ public class GoSVImpl implements IGoSV {
 		resp.setResponseHeader(responseHeader);
 		return resp;
 	}
-	
+
 	@Override
 	public Response doGoFavorite(GroupApplyReq groupApplyReq) throws BusinessException, SystemException {
 		goBusiSV.doGoFavorite(groupApplyReq);
 		return ResponseBuilder.buildSuccessResponse("收藏成功");
+	}
+
+	@Override
+	public Response deleteGo(DeleteGoReq deleteGoReq) throws BusinessException, SystemException {
+		Go go = this.getGoInfo(deleteGoReq.getGoId());
+		if (go != null) {
+			// 将搜索引擎数据标记为撤销
+			go.setStatus(com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue());
+			ElasticSearchFactory.getClient()
+					.prepareIndex(HarborIndex.HY_GO_DB.getValue().toLowerCase(),
+							HarborIndexType.HY_GO.getValue().toLowerCase(), go.getGoId())
+					.setRefresh(true).setSource(JSON.toJSONString(go)).execute().actionGet();
+			// 发送删除消息处理
+			DoGoDelete body = new DoGoDelete();
+			body.setGoId(deleteGoReq.getGoId());
+			body.setGoType(go.getGoType());
+			BeGoDeleteMQSend.sendMQ(body);
+		}
+		return ResponseBuilder.buildSuccessResponse("删除成功");
 	}
 
 }

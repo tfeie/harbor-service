@@ -26,6 +26,8 @@ import com.the.harbor.api.be.param.BeDetail;
 import com.the.harbor.api.be.param.BeQueryReq;
 import com.the.harbor.api.be.param.BeQueryResp;
 import com.the.harbor.api.be.param.BeTag;
+import com.the.harbor.api.be.param.DeleteBeReq;
+import com.the.harbor.api.be.param.DoBeDelete;
 import com.the.harbor.api.be.param.GiveHBReq;
 import com.the.harbor.api.be.param.QueryMyBeReq;
 import com.the.harbor.api.be.param.QueryMyBeResp;
@@ -35,6 +37,7 @@ import com.the.harbor.api.be.param.QueryOneBeReq;
 import com.the.harbor.api.be.param.QueryOneBeResp;
 import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.base.constants.ExceptCodeConstants;
+import com.the.harbor.base.enumeration.common.Status;
 import com.the.harbor.base.enumeration.hybe.BeDetailType;
 import com.the.harbor.base.enumeration.hygo.GoDetailType;
 import com.the.harbor.base.enumeration.hytags.TagCat;
@@ -49,14 +52,13 @@ import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
-import com.the.harbor.commons.redisdata.def.HyCountryVo;
 import com.the.harbor.commons.redisdata.util.HyBeUtil;
-import com.the.harbor.commons.redisdata.util.HyCountryUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.service.interfaces.IBeBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
+import com.the.harbor.util.BeGoDeleteMQSend;
 
 @Service(validation = "true")
 public class BeSVImpl implements IBeSV {
@@ -140,6 +142,8 @@ public class BeSVImpl implements IBeSV {
 		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
 		builder.must(QueryBuilders.termQuery("userId", queryMyBeReq.getUserId()));
+		builder.mustNot(
+				(QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.common.Status.INVALID.getValue())));
 		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
 				.setTypes(HarborIndexType.HY_BE.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
 				.addSort(sortBuilder).execute().actionGet();
@@ -231,6 +235,8 @@ public class BeSVImpl implements IBeSV {
 		int end = beQueryReq.getPageNo() * beQueryReq.getPageSize();
 		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
+		builder.mustNot(
+				(QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.common.Status.INVALID.getValue())));
 		if (!StringUtil.isBlank(beQueryReq.getTagId())) {
 			builder.must(QueryBuilders.termQuery("beTags.tagId", beQueryReq.getTagId()));
 		}
@@ -308,6 +314,24 @@ public class BeSVImpl implements IBeSV {
 		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(be.getUserId());
 		this.fillBeInfo(be, createUserInfo);
 		return be;
+	}
+
+	@Override
+	public Response deleteBe(DeleteBeReq deleteBeReq) throws BusinessException, SystemException {
+		Be be = this.getBe(deleteBeReq.getBeId());
+		if (be != null) {
+			be.setStatus(Status.INVALID.getValue());
+			ElasticSearchFactory.getClient()
+					.prepareIndex(HarborIndex.HY_BE_DB.getValue().toLowerCase(),
+							HarborIndexType.HY_BE.getValue().toLowerCase(), be.getBeId())
+					.setRefresh(true).setSource(JSON.toJSONString(be)).execute().actionGet();
+
+			// 发送删除消息处理
+			DoBeDelete body = new DoBeDelete();
+			body.setBeId(be.getBeId());
+			BeGoDeleteMQSend.sendMQ(body);
+		}
+		return ResponseBuilder.buildSuccessResponse("删除成功");
 	}
 
 }

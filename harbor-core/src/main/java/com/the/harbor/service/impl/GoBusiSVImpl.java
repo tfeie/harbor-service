@@ -544,7 +544,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 	@Override
 	public void processDoGoView(DoGoView doGoView) {
 		HyGoUtil.userViewGo(doGoView.getGoId());
-		if(StringUtil.isBlank(doGoView.getUserId())){
+		if (StringUtil.isBlank(doGoView.getUserId())) {
 			return;
 		}
 		HyGoView record = new HyGoView();
@@ -597,18 +597,22 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				if (GoType.GROUP.getValue().equals(go.getGoType())) {
 					if (go.getUserId().equals(doGoComment.getPublishUserId())) {
 						// 有疑问？ 发送给小白端
-						notify.setLink("../go/comments.html?goOrderId=" + doGoComment.getOrderId()+"&backURL=../user/messagecenter.html");
+						notify.setLink("../go/comments.html?goOrderId=" + doGoComment.getOrderId()
+								+ "&backURL=../user/messagecenter.html");
 					} else {
 						// 有疑问，顺序颠倒？发送给海牛端
-						notify.setLink("../go/hainiugroupcomments.html?goOrderId=" + doGoComment.getOrderId()+"&backURL=../user/messagecenter.html");
+						notify.setLink("../go/hainiugroupcomments.html?goOrderId=" + doGoComment.getOrderId()
+								+ "&backURL=../user/messagecenter.html");
 					}
 				} else {
 					if (go.getUserId().equals(doGoComment.getPublishUserId())) {
 						// 有疑问？ 发送给小白端
-						notify.setLink("../go/toFeedback.html?goOrderId=" + doGoComment.getOrderId()+"&backURL=../user/messagecenter.html");
+						notify.setLink("../go/toFeedback.html?goOrderId=" + doGoComment.getOrderId()
+								+ "&backURL=../user/messagecenter.html");
 					} else {
 						// 有疑问，顺序颠倒？发送给海牛端
-						notify.setLink("../go/toHainiuFeedback.html?goOrderId=" + doGoComment.getOrderId()+"&backURL=../user/messagecenter.html");
+						notify.setLink("../go/toHainiuFeedback.html?goOrderId=" + doGoComment.getOrderId()
+								+ "&backURL=../user/messagecenter.html");
 					}
 
 				}
@@ -1190,7 +1194,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		List<HyGoJoin> list = hyGoJoinMapper.selectByExample(sql);
 		return list;
 	}
-	
+
 	@Override
 	public void doGoFavorite(GroupApplyReq groupApplyReq) {
 		String userId = groupApplyReq.getUserId();
@@ -1205,6 +1209,28 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		body.setGoId(goId);
 		body.setUserId(userId);
 		UserFavorMQSend.sendMQ(body);
+	}
+
+	@Override
+	public void processGoDelete(String goId, String goType) {
+		HyGo record = new HyGo();
+		record.setStatus(com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue());
+		record.setGoId(goId);
+		hyGoMapper.updateByPrimaryKeySelective(record);
+		this.processGoFavorDelete(goId, goType);
+	}
+
+	private void processGoFavorDelete(String goId, String goType) {
+		HyGoFavoriteCriteria sql = new HyGoFavoriteCriteria();
+		sql.or().andGoIdEqualTo(goId);
+		List<HyGoFavorite> list = hyGoFavoriteMapper.selectByExample(sql);
+		if (CollectionUtil.isEmpty(list)) {
+			return;
+		}
+		for (HyGoFavorite go : list) {
+			// hyGoFavoriteMapper.deleteByPrimaryKey(go.getFavoriteId());
+			HyGoUtil.userCancelFavorGo(go.getUserId(), goType, goId);
+		}
 	}
 
 }

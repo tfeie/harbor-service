@@ -1,6 +1,7 @@
 package com.the.harbor.service.impl;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -363,5 +364,36 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		record.setBeId(doBeView.getBeId());
 		hyBeViewMapper.insert(record);
 	}
+
+	private void deleteBe(String beId) {
+		HyBe record = new HyBe();
+		record.setBeId(beId);
+		record.setInvalidDate(DateUtil.getSysDate());
+		record.setStatus(Status.INVALID.getValue());
+		hyBeMapper.updateByPrimaryKeySelective(record);
+	}
+
+	@Override
+	public void processBeDelete(String beId) {
+		//BE实现
+		this.deleteBe(beId);
+		//取消BE搜藏
+		this.processDeleteBeFavor(beId);
+	}
+
+	private void processDeleteBeFavor(String beId) {
+		HyBeFavoriteCriteria sql = new HyBeFavoriteCriteria();
+		sql.or().andBeIdEqualTo(beId);
+		List<HyBeFavorite> list = hyBeFavoriteMapper.selectByExample(sql);
+		if(CollectionUtil.isEmpty(list)){
+			return;
+		}
+		for(HyBeFavorite be:list){
+			//hyBeFavoriteMapper.deleteByPrimaryKey(be.getFavoriteId());
+			HyBeUtil.userCancelFavorBe(be.getUserId(), beId);
+		}
+	}
+	
+	
 
 }

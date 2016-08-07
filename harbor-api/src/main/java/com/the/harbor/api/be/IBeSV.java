@@ -6,6 +6,7 @@ import com.the.harbor.api.be.param.BeCreateReq;
 import com.the.harbor.api.be.param.BeCreateResp;
 import com.the.harbor.api.be.param.BeQueryReq;
 import com.the.harbor.api.be.param.BeQueryResp;
+import com.the.harbor.api.be.param.DeleteBeReq;
 import com.the.harbor.api.be.param.GiveHBReq;
 import com.the.harbor.api.be.param.QueryMyBeReq;
 import com.the.harbor.api.be.param.QueryMyBeResp;
@@ -36,6 +37,10 @@ public interface IBeSV {
 	}
 
 	@interface QueryMyFavorBe {
+
+	}
+
+	@interface DeleteBe {
 
 	}
 
@@ -101,5 +106,15 @@ public interface IBeSV {
 	 * @throws SystemException
 	 */
 	Response giveHaibei(@NotNull(message = "参数为空") GiveHBReq giveHBReq) throws BusinessException, SystemException;
+
+	/**
+	 * 删除BE
+	 * 
+	 * @param deleteBeReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	Response deleteBe(@NotNull(message = "参数为空") DeleteBeReq deleteBeReq) throws BusinessException, SystemException;
 
 }
