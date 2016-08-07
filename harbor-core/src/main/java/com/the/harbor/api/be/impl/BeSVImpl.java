@@ -143,7 +143,7 @@ public class BeSVImpl implements IBeSV {
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
 		builder.must(QueryBuilders.termQuery("userId", queryMyBeReq.getUserId()));
 		builder.mustNot(
-				(QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.common.Status.INVALID.getValue())));
+				QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.common.Status.INVALID.getValue()));
 		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
 				.setTypes(HarborIndexType.HY_BE.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
 				.addSort(sortBuilder).execute().actionGet();
@@ -236,7 +236,7 @@ public class BeSVImpl implements IBeSV {
 		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
 		builder.mustNot(
-				(QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.common.Status.INVALID.getValue())));
+				QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.common.Status.INVALID.getValue()));
 		if (!StringUtil.isBlank(beQueryReq.getTagId())) {
 			builder.must(QueryBuilders.termQuery("beTags.tagId", beQueryReq.getTagId()));
 		}
