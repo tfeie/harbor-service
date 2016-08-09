@@ -13,6 +13,10 @@ public class HyBe {
 
     private Timestamp invalidDate;
 
+    private String topFlag;
+
+    private Timestamp topDate;
+
     public String getBeId() {
         return beId;
     }
@@ -51,5 +55,21 @@ public class HyBe {
 
     public void setInvalidDate(Timestamp invalidDate) {
         this.invalidDate = invalidDate;
+    }
+
+    public String getTopFlag() {
+        return topFlag;
+    }
+
+    public void setTopFlag(String topFlag) {
+        this.topFlag = topFlag == null ? null : topFlag.trim();
+    }
+
+    public Timestamp getTopDate() {
+        return topDate;
+    }
+
+    public void setTopDate(Timestamp topDate) {
+        this.topDate = topDate;
     }
 }

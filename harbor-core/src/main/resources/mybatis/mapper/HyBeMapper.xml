@@ -7,6 +7,8 @@
     <result column="STATUS" property="status" jdbcType="VARCHAR" />
     <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
     <result column="INVALID_DATE" property="invalidDate" jdbcType="TIMESTAMP" />
+    <result column="TOP_FLAG" property="topFlag" jdbcType="VARCHAR" />
+    <result column="TOP_DATE" property="topDate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -67,7 +69,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    BE_ID, USER_ID, STATUS, CREATE_DATE, INVALID_DATE
+    BE_ID, USER_ID, STATUS, CREATE_DATE, INVALID_DATE, TOP_FLAG, TOP_DATE
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyBeCriteria" >
     select
@@ -105,9 +107,11 @@
   </delete>
   <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyBe" >
     insert into hy_be (BE_ID, USER_ID, STATUS, 
-      CREATE_DATE, INVALID_DATE)
+      CREATE_DATE, INVALID_DATE, TOP_FLAG, 
+      TOP_DATE)
     values (#{beId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
-      #{createDate,jdbcType=TIMESTAMP}, #{invalidDate,jdbcType=TIMESTAMP})
+      #{createDate,jdbcType=TIMESTAMP}, #{invalidDate,jdbcType=TIMESTAMP}, #{topFlag,jdbcType=VARCHAR}, 
+      #{topDate,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyBe" >
     insert into hy_be
@@ -127,6 +131,12 @@
       <if test="invalidDate != null" >
         INVALID_DATE,
       </if>
+      <if test="topFlag != null" >
+        TOP_FLAG,
+      </if>
+      <if test="topDate != null" >
+        TOP_DATE,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="beId != null" >
@@ -143,6 +153,12 @@
       </if>
       <if test="invalidDate != null" >
         #{invalidDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="topFlag != null" >
+        #{topFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="topDate != null" >
+        #{topDate,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -170,6 +186,12 @@
       <if test="record.invalidDate != null" >
         INVALID_DATE = #{record.invalidDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.topFlag != null" >
+        TOP_FLAG = #{record.topFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="record.topDate != null" >
+        TOP_DATE = #{record.topDate,jdbcType=TIMESTAMP},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -181,7 +203,9 @@
       USER_ID = #{record.userId,jdbcType=VARCHAR},
       STATUS = #{record.status,jdbcType=VARCHAR},
       CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
-      INVALID_DATE = #{record.invalidDate,jdbcType=TIMESTAMP}
+      INVALID_DATE = #{record.invalidDate,jdbcType=TIMESTAMP},
+      TOP_FLAG = #{record.topFlag,jdbcType=VARCHAR},
+      TOP_DATE = #{record.topDate,jdbcType=TIMESTAMP}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -201,6 +225,12 @@
       <if test="invalidDate != null" >
         INVALID_DATE = #{invalidDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="topFlag != null" >
+        TOP_FLAG = #{topFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="topDate != null" >
+        TOP_DATE = #{topDate,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where BE_ID = #{beId,jdbcType=VARCHAR}
   </update>
@@ -209,7 +239,9 @@
     set USER_ID = #{userId,jdbcType=VARCHAR},
       STATUS = #{status,jdbcType=VARCHAR},
       CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
-      INVALID_DATE = #{invalidDate,jdbcType=TIMESTAMP}
+      INVALID_DATE = #{invalidDate,jdbcType=TIMESTAMP},
+      TOP_FLAG = #{topFlag,jdbcType=VARCHAR},
+      TOP_DATE = #{topDate,jdbcType=TIMESTAMP}
     where BE_ID = #{beId,jdbcType=VARCHAR}
   </update>
 </mapper>

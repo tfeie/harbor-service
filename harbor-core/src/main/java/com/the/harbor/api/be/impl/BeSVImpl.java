@@ -35,10 +35,12 @@ import com.the.harbor.api.be.param.QueryMyFavorBeReq;
 import com.the.harbor.api.be.param.QueryMyFavorBeResp;
 import com.the.harbor.api.be.param.QueryOneBeReq;
 import com.the.harbor.api.be.param.QueryOneBeResp;
+import com.the.harbor.api.be.param.TopBeReq;
 import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.base.constants.ExceptCodeConstants;
 import com.the.harbor.base.enumeration.common.Status;
 import com.the.harbor.base.enumeration.hybe.BeDetailType;
+import com.the.harbor.base.enumeration.hybe.TopFlag;
 import com.the.harbor.base.enumeration.hygo.GoDetailType;
 import com.the.harbor.base.enumeration.hytags.TagCat;
 import com.the.harbor.base.enumeration.hytags.TagType;
@@ -142,7 +144,8 @@ public class BeSVImpl implements IBeSV {
 		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
 		builder.must(QueryBuilders.termQuery("userId", queryMyBeReq.getUserId()));
-		builder.must(QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.common.Status.VALID.getValue().toLowerCase()));
+		builder.must(QueryBuilders.termQuery("status",
+				com.the.harbor.base.enumeration.common.Status.VALID.getValue().toLowerCase()));
 		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
 				.setTypes(HarborIndexType.HY_BE.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
 				.addSort(sortBuilder).execute().actionGet();
@@ -234,7 +237,8 @@ public class BeSVImpl implements IBeSV {
 		int end = beQueryReq.getPageNo() * beQueryReq.getPageSize();
 		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
-		builder.must(QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.common.Status.VALID.getValue().toLowerCase()));
+		builder.must(QueryBuilders.termQuery("status",
+				com.the.harbor.base.enumeration.common.Status.VALID.getValue().toLowerCase()));
 		if (!StringUtil.isBlank(beQueryReq.getTagId())) {
 			builder.must(QueryBuilders.termQuery("beTags.tagId", beQueryReq.getTagId()));
 		}
@@ -328,6 +332,28 @@ public class BeSVImpl implements IBeSV {
 			DoBeDelete body = new DoBeDelete();
 			body.setBeId(be.getBeId());
 			BeGoDeleteMQSend.sendMQ(body);
+		}
+		return ResponseBuilder.buildSuccessResponse("删除成功");
+	}
+
+	@Override
+	public Response topBe(TopBeReq topBeReq) throws BusinessException, SystemException {
+		Be be = this.getBe(topBeReq.getBeId());
+		if (be != null) {
+			if (topBeReq.isTop()) {
+				be.setTopFlag(TopFlag.YES.getValue());
+				be.setTopDate(DateUtil.getSysDate());
+			} else {
+				be.setTopFlag(TopFlag.NO.getValue());
+				be.setTopDate(null);
+			}
+
+			ElasticSearchFactory.getClient()
+					.prepareIndex(HarborIndex.HY_BE_DB.getValue().toLowerCase(),
+							HarborIndexType.HY_BE.getValue().toLowerCase(), be.getBeId())
+					.setRefresh(true).setSource(JSON.toJSONString(be)).execute().actionGet();
+			beBusiSV.topBe(be.getBeId(), be.getTopFlag(), be.getTopDate());
+
 		}
 		return ResponseBuilder.buildSuccessResponse("删除成功");
 	}

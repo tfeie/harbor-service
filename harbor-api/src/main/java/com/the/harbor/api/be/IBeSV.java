@@ -14,6 +14,7 @@ import com.the.harbor.api.be.param.QueryMyFavorBeReq;
 import com.the.harbor.api.be.param.QueryMyFavorBeResp;
 import com.the.harbor.api.be.param.QueryOneBeReq;
 import com.the.harbor.api.be.param.QueryOneBeResp;
+import com.the.harbor.api.be.param.TopBeReq;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.base.vo.Response;
@@ -41,6 +42,10 @@ public interface IBeSV {
 	}
 
 	@interface DeleteBe {
+
+	}
+
+	@interface TopBe {
 
 	}
 
@@ -116,5 +121,14 @@ public interface IBeSV {
 	 * @throws SystemException
 	 */
 	Response deleteBe(@NotNull(message = "参数为空") DeleteBeReq deleteBeReq) throws BusinessException, SystemException;
+
+	/**
+	 * 置顶或取消置顶BE
+	 * @param topBeReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	Response topBe(@NotNull(message = "参数为空") TopBeReq topBeReq) throws BusinessException, SystemException;
 
 }

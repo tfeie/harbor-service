@@ -25,6 +25,7 @@ import com.the.harbor.api.be.param.GiveHBReq;
 import com.the.harbor.api.user.param.DoUserAssetsTrade;
 import com.the.harbor.base.enumeration.common.BusiErrorCode;
 import com.the.harbor.base.enumeration.common.Status;
+import com.the.harbor.base.enumeration.hybe.TopFlag;
 import com.the.harbor.base.enumeration.hynotify.AccepterType;
 import com.the.harbor.base.enumeration.hynotify.NotifyType;
 import com.the.harbor.base.enumeration.hynotify.SenderType;
@@ -112,7 +113,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		record.setCreateDate(sysdate);
 		record.setStatus(Status.VALID.getValue());
 		record.setUserId(beCreateReq.getUserId());
-
+		record.setTopFlag(TopFlag.NO.getValue());
 		// 复制内容
 		BeanUtils.copyProperties(record, be);
 		hyBeMapper.insert(record);
@@ -392,6 +393,15 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			//hyBeFavoriteMapper.deleteByPrimaryKey(be.getFavoriteId());
 			HyBeUtil.userCancelFavorBe(be.getUserId(), beId);
 		}
+	}
+
+	@Override
+	public void topBe(String beId, String topFlag, Timestamp topDate) {
+		HyBe record = new HyBe();
+		record.setBeId(beId);
+		record.setTopDate(topDate);
+		record.setTopFlag(topFlag);
+		hyBeMapper.updateByPrimaryKeySelective(record);
 	}
 	
 	
