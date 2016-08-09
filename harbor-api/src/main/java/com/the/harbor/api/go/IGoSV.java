@@ -35,6 +35,7 @@ import com.the.harbor.api.go.param.QueryMyJointGoResp;
 import com.the.harbor.api.go.param.QueryOrderGoRecordReq;
 import com.the.harbor.api.go.param.QueryOrderGoRecordResp;
 import com.the.harbor.api.go.param.SubmitGoHelpReq;
+import com.the.harbor.api.go.param.TopGoReq;
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.base.exception.BusinessException;
@@ -136,6 +137,10 @@ public interface IGoSV {
 	}
 
 	@interface DeleteGo {
+
+	}
+
+	@interface TopGo {
 
 	}
 
@@ -386,5 +391,15 @@ public interface IGoSV {
 	 * @throws SystemException
 	 */
 	Response deleteGo(@NotNull(message = "参数为空") DeleteGoReq deleteGoReq) throws BusinessException, SystemException;
+
+	/**
+	 * 置顶或取消置顶
+	 * 
+	 * @param deleteGoReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	Response topGo(@NotNull(message = "参数为空") TopGoReq topGoReq) throws BusinessException, SystemException;
 
 }

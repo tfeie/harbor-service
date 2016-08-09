@@ -33,6 +33,10 @@ public class HyGo {
 
     private Timestamp endDate;
 
+    private String topFlag;
+
+    private Timestamp topDate;
+
     public String getGoId() {
         return goId;
     }
@@ -151,5 +155,21 @@ public class HyGo {
 
     public void setEndDate(Timestamp endDate) {
         this.endDate = endDate;
+    }
+
+    public String getTopFlag() {
+        return topFlag;
+    }
+
+    public void setTopFlag(String topFlag) {
+        this.topFlag = topFlag == null ? null : topFlag.trim();
+    }
+
+    public Timestamp getTopDate() {
+        return topDate;
+    }
+
+    public void setTopDate(Timestamp topDate) {
+        this.topDate = topDate;
     }
 }

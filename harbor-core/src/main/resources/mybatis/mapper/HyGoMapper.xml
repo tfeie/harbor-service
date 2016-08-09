@@ -17,6 +17,8 @@
     <result column="STATUS" property="status" jdbcType="VARCHAR" />
     <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
     <result column="END_DATE" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="TOP_FLAG" property="topFlag" jdbcType="VARCHAR" />
+    <result column="TOP_DATE" property="topDate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -78,7 +80,8 @@
   </sql>
   <sql id="Base_Column_List" >
     GO_ID, USER_ID, GO_TYPE, TOPIC, INVITE_MEMBERS, EXPECTED_START_TIME, EXPECTED_DURATION, 
-    PAY_MODE, FIXED_PRICE, ORG_MODE, LOCATION, MY_STORY, STATUS, CREATE_DATE, END_DATE
+    PAY_MODE, FIXED_PRICE, ORG_MODE, LOCATION, MY_STORY, STATUS, CREATE_DATE, END_DATE, 
+    TOP_FLAG, TOP_DATE
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyGoCriteria" >
     select
@@ -119,14 +122,14 @@
       TOPIC, INVITE_MEMBERS, EXPECTED_START_TIME, 
       EXPECTED_DURATION, PAY_MODE, FIXED_PRICE, 
       ORG_MODE, LOCATION, MY_STORY, 
-      STATUS, CREATE_DATE, END_DATE
-      )
+      STATUS, CREATE_DATE, END_DATE, 
+      TOP_FLAG, TOP_DATE)
     values (#{goId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{goType,jdbcType=VARCHAR}, 
       #{topic,jdbcType=VARCHAR}, #{inviteMembers,jdbcType=VARCHAR}, #{expectedStartTime,jdbcType=VARCHAR}, 
       #{expectedDuration,jdbcType=VARCHAR}, #{payMode,jdbcType=VARCHAR}, #{fixedPrice,jdbcType=BIGINT}, 
       #{orgMode,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR}, #{myStory,jdbcType=VARCHAR}, 
-      #{status,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}
-      )
+      #{status,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, 
+      #{topFlag,jdbcType=VARCHAR}, #{topDate,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyGo" >
     insert into hy_go
@@ -174,6 +177,12 @@
       <if test="endDate != null" >
         END_DATE,
       </if>
+      <if test="topFlag != null" >
+        TOP_FLAG,
+      </if>
+      <if test="topDate != null" >
+        TOP_DATE,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="goId != null" >
@@ -218,6 +227,12 @@
       </if>
       <if test="endDate != null" >
         #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="topFlag != null" >
+        #{topFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="topDate != null" >
+        #{topDate,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -275,6 +290,12 @@
       <if test="record.endDate != null" >
         END_DATE = #{record.endDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.topFlag != null" >
+        TOP_FLAG = #{record.topFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="record.topDate != null" >
+        TOP_DATE = #{record.topDate,jdbcType=TIMESTAMP},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -296,7 +317,9 @@
       MY_STORY = #{record.myStory,jdbcType=VARCHAR},
       STATUS = #{record.status,jdbcType=VARCHAR},
       CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
-      END_DATE = #{record.endDate,jdbcType=TIMESTAMP}
+      END_DATE = #{record.endDate,jdbcType=TIMESTAMP},
+      TOP_FLAG = #{record.topFlag,jdbcType=VARCHAR},
+      TOP_DATE = #{record.topDate,jdbcType=TIMESTAMP}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -346,6 +369,12 @@
       <if test="endDate != null" >
         END_DATE = #{endDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="topFlag != null" >
+        TOP_FLAG = #{topFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="topDate != null" >
+        TOP_DATE = #{topDate,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where GO_ID = #{goId,jdbcType=VARCHAR}
   </update>
@@ -364,7 +393,9 @@
       MY_STORY = #{myStory,jdbcType=VARCHAR},
       STATUS = #{status,jdbcType=VARCHAR},
       CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
-      END_DATE = #{endDate,jdbcType=TIMESTAMP}
+      END_DATE = #{endDate,jdbcType=TIMESTAMP},
+      TOP_FLAG = #{topFlag,jdbcType=VARCHAR},
+      TOP_DATE = #{topDate,jdbcType=TIMESTAMP}
     where GO_ID = #{goId,jdbcType=VARCHAR}
   </update>
 </mapper>

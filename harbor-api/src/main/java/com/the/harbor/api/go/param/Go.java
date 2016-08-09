@@ -39,6 +39,10 @@ public class Go implements Serializable {
 
 	private Timestamp endDate;
 
+	private String topFlag;
+
+	private Timestamp topDate;
+
 	// 活动类型
 	private String goTypeName;
 
@@ -421,4 +425,21 @@ public class Go implements Serializable {
 		this.userStatus = userStatus;
 	}
 
+	public String getTopFlag() {
+		return topFlag;
+	}
+
+	public void setTopFlag(String topFlag) {
+		this.topFlag = topFlag;
+	}
+
+	public Timestamp getTopDate() {
+		return topDate;
+	}
+
+	public void setTopDate(Timestamp topDate) {
+		this.topDate = topDate;
+	}
+
+	
 }

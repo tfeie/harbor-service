@@ -1144,6 +1144,136 @@ public class HyGoCriteria {
             addCriterion("END_DATE not between", value1, value2, "endDate");
             return (Criteria) this;
         }
+
+        public Criteria andTopFlagIsNull() {
+            addCriterion("TOP_FLAG is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopFlagIsNotNull() {
+            addCriterion("TOP_FLAG is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopFlagEqualTo(String value) {
+            addCriterion("TOP_FLAG =", value, "topFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopFlagNotEqualTo(String value) {
+            addCriterion("TOP_FLAG <>", value, "topFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopFlagGreaterThan(String value) {
+            addCriterion("TOP_FLAG >", value, "topFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopFlagGreaterThanOrEqualTo(String value) {
+            addCriterion("TOP_FLAG >=", value, "topFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopFlagLessThan(String value) {
+            addCriterion("TOP_FLAG <", value, "topFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopFlagLessThanOrEqualTo(String value) {
+            addCriterion("TOP_FLAG <=", value, "topFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopFlagLike(String value) {
+            addCriterion("TOP_FLAG like", value, "topFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopFlagNotLike(String value) {
+            addCriterion("TOP_FLAG not like", value, "topFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopFlagIn(List<String> values) {
+            addCriterion("TOP_FLAG in", values, "topFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopFlagNotIn(List<String> values) {
+            addCriterion("TOP_FLAG not in", values, "topFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopFlagBetween(String value1, String value2) {
+            addCriterion("TOP_FLAG between", value1, value2, "topFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopFlagNotBetween(String value1, String value2) {
+            addCriterion("TOP_FLAG not between", value1, value2, "topFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopDateIsNull() {
+            addCriterion("TOP_DATE is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopDateIsNotNull() {
+            addCriterion("TOP_DATE is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopDateEqualTo(Timestamp value) {
+            addCriterion("TOP_DATE =", value, "topDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopDateNotEqualTo(Timestamp value) {
+            addCriterion("TOP_DATE <>", value, "topDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopDateGreaterThan(Timestamp value) {
+            addCriterion("TOP_DATE >", value, "topDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopDateGreaterThanOrEqualTo(Timestamp value) {
+            addCriterion("TOP_DATE >=", value, "topDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopDateLessThan(Timestamp value) {
+            addCriterion("TOP_DATE <", value, "topDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopDateLessThanOrEqualTo(Timestamp value) {
+            addCriterion("TOP_DATE <=", value, "topDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopDateIn(List<Timestamp> values) {
+            addCriterion("TOP_DATE in", values, "topDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopDateNotIn(List<Timestamp> values) {
+            addCriterion("TOP_DATE not in", values, "topDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopDateBetween(Timestamp value1, Timestamp value2) {
+            addCriterion("TOP_DATE between", value1, value2, "topDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andTopDateNotBetween(Timestamp value1, Timestamp value2) {
+            addCriterion("TOP_DATE not between", value1, value2, "topDate");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

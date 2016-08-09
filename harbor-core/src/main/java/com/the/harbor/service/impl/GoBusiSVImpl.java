@@ -47,6 +47,7 @@ import com.the.harbor.base.enumeration.hygo.GoType;
 import com.the.harbor.base.enumeration.hygo.OrgMode;
 import com.the.harbor.base.enumeration.hygo.PayMode;
 import com.the.harbor.base.enumeration.hygo.Status;
+import com.the.harbor.base.enumeration.hygo.TopFlag;
 import com.the.harbor.base.enumeration.hygoorder.OrderStatus;
 import com.the.harbor.base.enumeration.hynotify.AccepterType;
 import com.the.harbor.base.enumeration.hynotify.NotifyType;
@@ -158,6 +159,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		go.setMyStory(GoType.ONE_ON_ONE.getValue().equals(goCreateReq.getGoType()) ? goCreateReq.getMyStory() : null);
 		go.setCreateDate(sysdate);
 		go.setStatus(Status.ING.getValue());
+		go.setTopFlag(TopFlag.NO.getValue());
 		// 复制内容
 		BeanUtils.copyProperties(go, bgo);
 		// 写表
@@ -1231,6 +1233,15 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			// hyGoFavoriteMapper.deleteByPrimaryKey(go.getFavoriteId());
 			HyGoUtil.userCancelFavorGo(go.getUserId(), goType, goId);
 		}
+	}
+
+	@Override
+	public void topGo(String goId, String topFlag, Timestamp topDate) {
+		HyGo record = new HyGo();
+		record.setTopFlag(topFlag);
+		record.setTopDate(topDate);
+		record.setGoId(goId);
+		hyGoMapper.updateByPrimaryKeySelective(record);
 	}
 
 }

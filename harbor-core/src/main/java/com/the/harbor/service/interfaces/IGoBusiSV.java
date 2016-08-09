@@ -1,5 +1,6 @@
 package com.the.harbor.service.interfaces;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import com.the.harbor.api.go.param.CheckUserOrderGoReq;
@@ -88,4 +89,6 @@ public interface IGoBusiSV {
 	void doGoFavorite(GroupApplyReq groupApplyReq);
 
 	void processGoDelete(String goId,String goType);
+
+	void topGo(String goId, String topFlag, Timestamp topDate);
 }

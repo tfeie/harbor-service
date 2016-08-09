@@ -59,6 +59,7 @@ import com.the.harbor.api.go.param.QueryMyJointGoResp;
 import com.the.harbor.api.go.param.QueryOrderGoRecordReq;
 import com.the.harbor.api.go.param.QueryOrderGoRecordResp;
 import com.the.harbor.api.go.param.SubmitGoHelpReq;
+import com.the.harbor.api.go.param.TopGoReq;
 import com.the.harbor.api.go.param.UpdateGoJoinPayReq;
 import com.the.harbor.api.go.param.UpdateGoOrderPayReq;
 import com.the.harbor.api.user.param.UserViewInfo;
@@ -360,7 +361,8 @@ public class GoSVImpl implements IGoSV {
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
 		builder.must(QueryBuilders.termQuery("userId", queryMyGoReq.getUserId()))
 				.must(QueryBuilders.termQuery("goType", queryMyGoReq.getGoType()));
-		builder.mustNot(QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue().toLowerCase()));
+		builder.mustNot(QueryBuilders.termQuery("status",
+				com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue().toLowerCase()));
 		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_GO_DB.getValue())
 				.setTypes(HarborIndexType.HY_GO.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
 				.addSort(sortBuilder).execute().actionGet();
@@ -389,10 +391,12 @@ public class GoSVImpl implements IGoSV {
 	public QueryGoResp queryGoes(QueryGoReq queryGoReq) throws BusinessException, SystemException {
 		int start = (queryGoReq.getPageNo() - 1) * queryGoReq.getPageSize();
 		int end = queryGoReq.getPageNo() * queryGoReq.getPageSize();
-		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
+		SortBuilder topDateSortBuilder = SortBuilders.fieldSort("topDate").order(SortOrder.DESC);
+		SortBuilder createDateSortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
 		builder.must(QueryBuilders.termQuery("goType", queryGoReq.getGoType()));
-		builder.mustNot(QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue().toLowerCase()));
+		builder.mustNot(QueryBuilders.termQuery("status",
+				com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue().toLowerCase()));
 		if (!StringUtil.isBlank(queryGoReq.getPolyTagId())) {
 			builder.must(QueryBuilders.termQuery("goTags.polyTagId", queryGoReq.getPolyTagId()));
 		}
@@ -404,7 +408,7 @@ public class GoSVImpl implements IGoSV {
 		}
 		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_GO_DB.getValue())
 				.setTypes(HarborIndexType.HY_GO.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
-				.addSort(sortBuilder).execute().actionGet();
+				.addSort(topDateSortBuilder).addSort(createDateSortBuilder).execute().actionGet();
 		SearchHits hits = response.getHits();
 		long total = hits.getTotalHits();
 		List<Go> result = new ArrayList<Go>();
@@ -708,6 +712,29 @@ public class GoSVImpl implements IGoSV {
 			body.setGoId(deleteGoReq.getGoId());
 			body.setGoType(go.getGoType());
 			BeGoDeleteMQSend.sendMQ(body);
+		}
+		return ResponseBuilder.buildSuccessResponse("删除成功");
+	}
+
+	@Override
+	public Response topGo(TopGoReq topGoReq) throws BusinessException, SystemException {
+		Go go = this.getGoInfo(topGoReq.getGoId());
+		if (go != null) {
+			if (topGoReq.isTop()) {
+				go.setTopFlag(com.the.harbor.base.enumeration.hygo.TopFlag.YES.getValue());
+				go.setTopDate(DateUtil.getSysDate());
+			} else {
+				go.setTopFlag(com.the.harbor.base.enumeration.hygo.TopFlag.NO.getValue());
+				go.setTopDate(null);
+			}
+			ElasticSearchFactory.getClient()
+					.prepareIndex(HarborIndex.HY_GO_DB.getValue().toLowerCase(),
+							HarborIndexType.HY_GO.getValue().toLowerCase(), go.getGoId())
+					.setRefresh(true).setSource(JSON.toJSONString(go)).execute().actionGet();
+
+			// 修改数据库置顶状态
+
+			goBusiSV.topGo(go.getGoId(), go.getTopFlag(), go.getTopDate());
 		}
 		return ResponseBuilder.buildSuccessResponse("删除成功");
 	}

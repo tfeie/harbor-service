@@ -18,6 +18,10 @@ public class Be implements Serializable {
 	private Timestamp createDate;
 
 	private Timestamp invalidDate;
+	
+	private String topFlag;
+
+	private Timestamp topDate;
 
 	private List<BeDetail> beDetails;
 
@@ -308,6 +312,22 @@ public class Be implements Serializable {
 
 	public void setUserStatus(String userStatus) {
 		this.userStatus = userStatus;
+	}
+
+	public String getTopFlag() {
+		return topFlag;
+	}
+
+	public void setTopFlag(String topFlag) {
+		this.topFlag = topFlag;
+	}
+
+	public Timestamp getTopDate() {
+		return topDate;
+	}
+
+	public void setTopDate(Timestamp topDate) {
+		this.topDate = topDate;
 	}
 	
 	
