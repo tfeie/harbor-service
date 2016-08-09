@@ -360,7 +360,7 @@ public class GoSVImpl implements IGoSV {
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
 		builder.must(QueryBuilders.termQuery("userId", queryMyGoReq.getUserId()))
 				.must(QueryBuilders.termQuery("goType", queryMyGoReq.getGoType()));
-		builder.mustNot(QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue()));
+		builder.mustNot(QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue().toLowerCase()));
 		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_GO_DB.getValue())
 				.setTypes(HarborIndexType.HY_GO.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
 				.addSort(sortBuilder).execute().actionGet();
@@ -392,7 +392,7 @@ public class GoSVImpl implements IGoSV {
 		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
 		builder.must(QueryBuilders.termQuery("goType", queryGoReq.getGoType()));
-		builder.mustNot(QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue()));
+		builder.mustNot(QueryBuilders.termQuery("status", com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue().toLowerCase()));
 		if (!StringUtil.isBlank(queryGoReq.getPolyTagId())) {
 			builder.must(QueryBuilders.termQuery("goTags.polyTagId", queryGoReq.getPolyTagId()));
 		}
