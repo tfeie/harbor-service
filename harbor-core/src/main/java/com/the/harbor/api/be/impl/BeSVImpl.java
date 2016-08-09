@@ -235,7 +235,9 @@ public class BeSVImpl implements IBeSV {
 	public BeQueryResp queryBes(BeQueryReq beQueryReq) throws BusinessException, SystemException {
 		int start = (beQueryReq.getPageNo() - 1) * beQueryReq.getPageSize();
 		int end = beQueryReq.getPageNo() * beQueryReq.getPageSize();
-		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
+		SortBuilder topSortBuilder = SortBuilders.fieldSort("topDate").order(SortOrder.DESC);
+
+		SortBuilder createSortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
 		builder.must(QueryBuilders.termQuery("status",
 				com.the.harbor.base.enumeration.common.Status.VALID.getValue().toLowerCase()));
@@ -250,7 +252,7 @@ public class BeSVImpl implements IBeSV {
 		}
 		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
 				.setTypes(HarborIndexType.HY_BE.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
-				.addSort(sortBuilder).execute().actionGet();
+				.addSort(topSortBuilder).addSort(createSortBuilder).execute().actionGet();
 		SearchHits hits = response.getHits();
 		long total = hits.getTotalHits();
 		List<Be> result = new ArrayList<Be>();
