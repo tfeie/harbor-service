@@ -300,7 +300,10 @@ public class BeSVImpl implements IBeSV {
 				queryMyFavorBeReq.getPageSize(), false);
 		List<Be> result = new ArrayList<Be>();
 		for (String beId : beIds) {
-			result.add(this.getBe(beId));
+			Be be =this.getBe(beId);
+			if(be!=null){
+				result.add(be);
+			}
 		}
 		PageInfo<Be> pageInfo = new PageInfo<Be>();
 		pageInfo.setCount(Integer.parseInt(total + ""));
