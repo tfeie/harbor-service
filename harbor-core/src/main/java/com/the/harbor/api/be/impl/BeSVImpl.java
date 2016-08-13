@@ -252,6 +252,11 @@ public class BeSVImpl implements IBeSV {
 		if (!StringUtil.isBlank(beQueryReq.getSearchKey())) {
 			builder.must(QueryBuilders.queryStringQuery(beQueryReq.getSearchKey()));
 		}
+		if(!beQueryReq.isQueryhide()){
+			//不查询隐藏记录
+			builder.must(QueryBuilders.termQuery("hideFlag",HideFlag.NO.getValue()));
+		}
+		
 		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
 				.setTypes(HarborIndexType.HY_BE.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
 				.addSort(topSortBuilder).addSort(createSortBuilder).execute().actionGet();
@@ -366,7 +371,7 @@ public class BeSVImpl implements IBeSV {
 	public Response hideBe(HideBeReq hideBeReq) throws BusinessException, SystemException {
 		Be be = this.getBe(hideBeReq.getBeId());
 		if (be != null) {
-			be.setHideFlag(hideBeReq.isHide()?HideFlag.YES.getValue():HideFlag.NO.getValue());
+			be.setHideFlag(hideBeReq.isHide() ? HideFlag.YES.getValue() : HideFlag.NO.getValue());
 
 			ElasticSearchFactory.getClient()
 					.prepareIndex(HarborIndex.HY_BE_DB.getValue().toLowerCase(),

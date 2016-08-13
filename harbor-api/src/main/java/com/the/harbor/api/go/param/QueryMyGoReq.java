@@ -18,6 +18,9 @@ public class QueryMyGoReq implements Serializable {
 	@NotNull(message = "活动分类为空", groups = { IGoSV.QueryMyGoes.class })
 	@StringEnum(enumClazz = GoType.class, message = "活动分类传入不合规", groups = { IGoSV.QueryMyGoes.class })
 	private String goType;
+	
+	//是否显示查询已经隐藏的
+	private boolean queryhide;
 
 	private Integer pageNo;
 
@@ -54,5 +57,15 @@ public class QueryMyGoReq implements Serializable {
 	public void setPageSize(Integer pageSize) {
 		this.pageSize = pageSize;
 	}
+
+	public boolean isQueryhide() {
+		return queryhide;
+	}
+
+	public void setQueryhide(boolean queryhide) {
+		this.queryhide = queryhide;
+	}
+	
+	
 
 }

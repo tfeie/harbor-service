@@ -399,6 +399,10 @@ public class GoSVImpl implements IGoSV {
 		builder.must(QueryBuilders.termQuery("goType", queryGoReq.getGoType()));
 		builder.mustNot(QueryBuilders.termQuery("status",
 				com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue().toLowerCase()));
+		if(!queryGoReq.isQueryhide()){
+			//不查询隐藏记录
+			builder.must(QueryBuilders.termQuery("hideFlag",HideFlag.NO.getValue()));
+		}
 		if (!StringUtil.isBlank(queryGoReq.getPolyTagId())) {
 			builder.must(QueryBuilders.termQuery("goTags.polyTagId", queryGoReq.getPolyTagId()));
 		}

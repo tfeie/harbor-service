@@ -11,6 +11,9 @@ public class BeQueryReq implements Serializable {
 
 	// 实际标签
 	private String tagId;
+	
+	//是否显示查询已经隐藏的
+	private boolean queryhide;
 
 	// 搜索关键字
 	private String searchKey;
@@ -60,5 +63,15 @@ public class BeQueryReq implements Serializable {
 	public void setPageSize(Integer pageSize) {
 		this.pageSize = pageSize;
 	}
+
+	public boolean isQueryhide() {
+		return queryhide;
+	}
+
+	public void setQueryhide(boolean queryhide) {
+		this.queryhide = queryhide;
+	}
+	
+	
 
 }
