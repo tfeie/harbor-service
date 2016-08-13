@@ -29,6 +29,7 @@ import com.the.harbor.api.be.param.BeTag;
 import com.the.harbor.api.be.param.DeleteBeReq;
 import com.the.harbor.api.be.param.DoBeDelete;
 import com.the.harbor.api.be.param.GiveHBReq;
+import com.the.harbor.api.be.param.HideBeReq;
 import com.the.harbor.api.be.param.QueryMyBeReq;
 import com.the.harbor.api.be.param.QueryMyBeResp;
 import com.the.harbor.api.be.param.QueryMyFavorBeReq;
@@ -40,6 +41,7 @@ import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.base.constants.ExceptCodeConstants;
 import com.the.harbor.base.enumeration.common.Status;
 import com.the.harbor.base.enumeration.hybe.BeDetailType;
+import com.the.harbor.base.enumeration.hybe.HideFlag;
 import com.the.harbor.base.enumeration.hybe.TopFlag;
 import com.the.harbor.base.enumeration.hygo.GoDetailType;
 import com.the.harbor.base.enumeration.hytags.TagCat;
@@ -357,7 +359,23 @@ public class BeSVImpl implements IBeSV {
 			beBusiSV.topBe(be.getBeId(), be.getTopFlag(), be.getTopDate());
 
 		}
-		return ResponseBuilder.buildSuccessResponse("删除成功");
+		return ResponseBuilder.buildSuccessResponse("操作成功");
+	}
+
+	@Override
+	public Response hideBe(HideBeReq hideBeReq) throws BusinessException, SystemException {
+		Be be = this.getBe(hideBeReq.getBeId());
+		if (be != null) {
+			be.setHideFlag(hideBeReq.isHide()?HideFlag.YES.getValue():HideFlag.NO.getValue());
+
+			ElasticSearchFactory.getClient()
+					.prepareIndex(HarborIndex.HY_BE_DB.getValue().toLowerCase(),
+							HarborIndexType.HY_BE.getValue().toLowerCase(), be.getBeId())
+					.setRefresh(true).setSource(JSON.toJSONString(be)).execute().actionGet();
+			beBusiSV.hideBe(be.getBeId(), be.getHideFlag());
+
+		}
+		return ResponseBuilder.buildSuccessResponse("操作成功");
 	}
 
 }

@@ -1274,6 +1274,76 @@ public class HyGoCriteria {
             addCriterion("TOP_DATE not between", value1, value2, "topDate");
             return (Criteria) this;
         }
+
+        public Criteria andHideFlagIsNull() {
+            addCriterion("HIDE_FLAG is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHideFlagIsNotNull() {
+            addCriterion("HIDE_FLAG is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHideFlagEqualTo(String value) {
+            addCriterion("HIDE_FLAG =", value, "hideFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andHideFlagNotEqualTo(String value) {
+            addCriterion("HIDE_FLAG <>", value, "hideFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andHideFlagGreaterThan(String value) {
+            addCriterion("HIDE_FLAG >", value, "hideFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andHideFlagGreaterThanOrEqualTo(String value) {
+            addCriterion("HIDE_FLAG >=", value, "hideFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andHideFlagLessThan(String value) {
+            addCriterion("HIDE_FLAG <", value, "hideFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andHideFlagLessThanOrEqualTo(String value) {
+            addCriterion("HIDE_FLAG <=", value, "hideFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andHideFlagLike(String value) {
+            addCriterion("HIDE_FLAG like", value, "hideFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andHideFlagNotLike(String value) {
+            addCriterion("HIDE_FLAG not like", value, "hideFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andHideFlagIn(List<String> values) {
+            addCriterion("HIDE_FLAG in", values, "hideFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andHideFlagNotIn(List<String> values) {
+            addCriterion("HIDE_FLAG not in", values, "hideFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andHideFlagBetween(String value1, String value2) {
+            addCriterion("HIDE_FLAG between", value1, value2, "hideFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andHideFlagNotBetween(String value1, String value2) {
+            addCriterion("HIDE_FLAG not between", value1, value2, "hideFlag");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

@@ -44,6 +44,7 @@ import com.the.harbor.base.enumeration.common.BusiErrorCode;
 import com.the.harbor.base.enumeration.dict.ParamCode;
 import com.the.harbor.base.enumeration.dict.TypeCode;
 import com.the.harbor.base.enumeration.hygo.GoType;
+import com.the.harbor.base.enumeration.hygo.HideFlag;
 import com.the.harbor.base.enumeration.hygo.OrgMode;
 import com.the.harbor.base.enumeration.hygo.PayMode;
 import com.the.harbor.base.enumeration.hygo.Status;
@@ -160,6 +161,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		go.setCreateDate(sysdate);
 		go.setStatus(Status.ING.getValue());
 		go.setTopFlag(TopFlag.NO.getValue());
+		go.setHideFlag(HideFlag.NO.getValue());
+
 		// 复制内容
 		BeanUtils.copyProperties(go, bgo);
 		// 写表
@@ -1240,6 +1243,14 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		HyGo record = new HyGo();
 		record.setTopFlag(topFlag);
 		record.setTopDate(topDate);
+		record.setGoId(goId);
+		hyGoMapper.updateByPrimaryKeySelective(record);
+	}
+
+	@Override
+	public void hideGo(String goId, String hideFlag) {
+		HyGo record = new HyGo();
+		record.setHideFlag(hideFlag);
 		record.setGoId(goId);
 		hyGoMapper.updateByPrimaryKeySelective(record);
 	}

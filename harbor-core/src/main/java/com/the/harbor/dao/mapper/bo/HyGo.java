@@ -37,6 +37,8 @@ public class HyGo {
 
     private Timestamp topDate;
 
+    private String hideFlag;
+
     public String getGoId() {
         return goId;
     }
@@ -171,5 +173,13 @@ public class HyGo {
 
     public void setTopDate(Timestamp topDate) {
         this.topDate = topDate;
+    }
+
+    public String getHideFlag() {
+        return hideFlag;
+    }
+
+    public void setHideFlag(String hideFlag) {
+        this.hideFlag = hideFlag == null ? null : hideFlag.trim();
     }
 }

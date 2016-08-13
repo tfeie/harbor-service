@@ -91,4 +91,6 @@ public interface IGoBusiSV {
 	void processGoDelete(String goId,String goType);
 
 	void topGo(String goId, String topFlag, Timestamp topDate);
+
+	void hideGo(String goId, String hideFlag);
 }

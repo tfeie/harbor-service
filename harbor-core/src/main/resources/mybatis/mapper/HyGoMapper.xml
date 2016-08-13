@@ -19,6 +19,7 @@
     <result column="END_DATE" property="endDate" jdbcType="TIMESTAMP" />
     <result column="TOP_FLAG" property="topFlag" jdbcType="VARCHAR" />
     <result column="TOP_DATE" property="topDate" jdbcType="TIMESTAMP" />
+    <result column="HIDE_FLAG" property="hideFlag" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -81,7 +82,7 @@
   <sql id="Base_Column_List" >
     GO_ID, USER_ID, GO_TYPE, TOPIC, INVITE_MEMBERS, EXPECTED_START_TIME, EXPECTED_DURATION, 
     PAY_MODE, FIXED_PRICE, ORG_MODE, LOCATION, MY_STORY, STATUS, CREATE_DATE, END_DATE, 
-    TOP_FLAG, TOP_DATE
+    TOP_FLAG, TOP_DATE, HIDE_FLAG
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyGoCriteria" >
     select
@@ -123,13 +124,15 @@
       EXPECTED_DURATION, PAY_MODE, FIXED_PRICE, 
       ORG_MODE, LOCATION, MY_STORY, 
       STATUS, CREATE_DATE, END_DATE, 
-      TOP_FLAG, TOP_DATE)
+      TOP_FLAG, TOP_DATE, HIDE_FLAG
+      )
     values (#{goId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{goType,jdbcType=VARCHAR}, 
       #{topic,jdbcType=VARCHAR}, #{inviteMembers,jdbcType=VARCHAR}, #{expectedStartTime,jdbcType=VARCHAR}, 
       #{expectedDuration,jdbcType=VARCHAR}, #{payMode,jdbcType=VARCHAR}, #{fixedPrice,jdbcType=BIGINT}, 
       #{orgMode,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR}, #{myStory,jdbcType=VARCHAR}, 
       #{status,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, 
-      #{topFlag,jdbcType=VARCHAR}, #{topDate,jdbcType=TIMESTAMP})
+      #{topFlag,jdbcType=VARCHAR}, #{topDate,jdbcType=TIMESTAMP}, #{hideFlag,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyGo" >
     insert into hy_go
@@ -183,6 +186,9 @@
       <if test="topDate != null" >
         TOP_DATE,
       </if>
+      <if test="hideFlag != null" >
+        HIDE_FLAG,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="goId != null" >
@@ -233,6 +239,9 @@
       </if>
       <if test="topDate != null" >
         #{topDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="hideFlag != null" >
+        #{hideFlag,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -296,6 +305,9 @@
       <if test="record.topDate != null" >
         TOP_DATE = #{record.topDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.hideFlag != null" >
+        HIDE_FLAG = #{record.hideFlag,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -319,7 +331,8 @@
       CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
       END_DATE = #{record.endDate,jdbcType=TIMESTAMP},
       TOP_FLAG = #{record.topFlag,jdbcType=VARCHAR},
-      TOP_DATE = #{record.topDate,jdbcType=TIMESTAMP}
+      TOP_DATE = #{record.topDate,jdbcType=TIMESTAMP},
+      HIDE_FLAG = #{record.hideFlag,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -375,6 +388,9 @@
       <if test="topDate != null" >
         TOP_DATE = #{topDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="hideFlag != null" >
+        HIDE_FLAG = #{hideFlag,jdbcType=VARCHAR},
+      </if>
     </set>
     where GO_ID = #{goId,jdbcType=VARCHAR}
   </update>
@@ -395,7 +411,8 @@
       CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
       END_DATE = #{endDate,jdbcType=TIMESTAMP},
       TOP_FLAG = #{topFlag,jdbcType=VARCHAR},
-      TOP_DATE = #{topDate,jdbcType=TIMESTAMP}
+      TOP_DATE = #{topDate,jdbcType=TIMESTAMP},
+      HIDE_FLAG = #{hideFlag,jdbcType=VARCHAR}
     where GO_ID = #{goId,jdbcType=VARCHAR}
   </update>
 </mapper>

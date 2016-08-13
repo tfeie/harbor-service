@@ -48,6 +48,7 @@ import com.the.harbor.api.go.param.GoQueryResp;
 import com.the.harbor.api.go.param.GoTag;
 import com.the.harbor.api.go.param.GroupApplyReq;
 import com.the.harbor.api.go.param.GroupApplyResp;
+import com.the.harbor.api.go.param.HideGoReq;
 import com.the.harbor.api.go.param.QueryGoReq;
 import com.the.harbor.api.go.param.QueryGoResp;
 import com.the.harbor.api.go.param.QueryMyFavorGoReq;
@@ -68,6 +69,7 @@ import com.the.harbor.base.enumeration.dict.ParamCode;
 import com.the.harbor.base.enumeration.dict.TypeCode;
 import com.the.harbor.base.enumeration.hygo.GoDetailType;
 import com.the.harbor.base.enumeration.hygo.GoType;
+import com.the.harbor.base.enumeration.hygo.HideFlag;
 import com.the.harbor.base.enumeration.hygo.OrgMode;
 import com.the.harbor.base.enumeration.hygo.PayMode;
 import com.the.harbor.base.enumeration.hytags.TagCat;
@@ -736,7 +738,21 @@ public class GoSVImpl implements IGoSV {
 
 			goBusiSV.topGo(go.getGoId(), go.getTopFlag(), go.getTopDate());
 		}
-		return ResponseBuilder.buildSuccessResponse("删除成功");
+		return ResponseBuilder.buildSuccessResponse("操作成功");
+	}
+
+	@Override
+	public Response hideGo(HideGoReq hideGoReq) throws BusinessException, SystemException {
+		Go go = this.getGoInfo(hideGoReq.getGoId());
+		if (go != null) {
+			go.setHideFlag(hideGoReq.isHide() ? HideFlag.YES.getValue() : HideFlag.NO.getValue());
+			ElasticSearchFactory.getClient()
+					.prepareIndex(HarborIndex.HY_GO_DB.getValue().toLowerCase(),
+							HarborIndexType.HY_GO.getValue().toLowerCase(), go.getGoId())
+					.setRefresh(true).setSource(JSON.toJSONString(go)).execute().actionGet();
+			goBusiSV.hideGo(go.getGoId(), go.getHideFlag());
+		}
+		return ResponseBuilder.buildSuccessResponse("操作成功");
 	}
 
 }

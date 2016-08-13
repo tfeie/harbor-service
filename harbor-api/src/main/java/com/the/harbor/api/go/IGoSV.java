@@ -24,6 +24,7 @@ import com.the.harbor.api.go.param.GoQueryReq;
 import com.the.harbor.api.go.param.GoQueryResp;
 import com.the.harbor.api.go.param.GroupApplyReq;
 import com.the.harbor.api.go.param.GroupApplyResp;
+import com.the.harbor.api.go.param.HideGoReq;
 import com.the.harbor.api.go.param.QueryGoReq;
 import com.the.harbor.api.go.param.QueryGoResp;
 import com.the.harbor.api.go.param.QueryMyFavorGoReq;
@@ -141,6 +142,10 @@ public interface IGoSV {
 	}
 
 	@interface TopGo {
+
+	}
+
+	@interface HideGo {
 
 	}
 
@@ -401,5 +406,15 @@ public interface IGoSV {
 	 * @throws SystemException
 	 */
 	Response topGo(@NotNull(message = "参数为空") TopGoReq topGoReq) throws BusinessException, SystemException;
+
+	/**
+	 * 隐藏BE
+	 * 
+	 * @param hideGoReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	Response hideGo(@NotNull(message = "参数为空") HideGoReq hideGoReq) throws BusinessException, SystemException;
 
 }
