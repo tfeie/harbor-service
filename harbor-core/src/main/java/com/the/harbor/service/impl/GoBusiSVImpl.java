@@ -220,10 +220,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			throw new BusinessException("GO_0001", "预约的活动不存在");
 		}
 		// 判断是否重复参加
-		HyGoOrder o = this.getHyGoOrder(goOrderCreateReq.getUserId(), goOrderCreateReq.getGoId());
+		/**HyGoOrder o = this.getHyGoOrder(goOrderCreateReq.getUserId(), goOrderCreateReq.getGoId());
 		if (o != null && !OrderStatus.CANCEL.getValue().equals(o.getOrderStatus())) {
 			throw new BusinessException("GO_0001", "您已经预约了此活动");
-		}
+		}**/
 		String orderId = HarborSeqUtil.createGoOrderId();
 		Timestamp sysdate = DateUtil.getSysDate();
 		HyGoOrder record = new HyGoOrder();
