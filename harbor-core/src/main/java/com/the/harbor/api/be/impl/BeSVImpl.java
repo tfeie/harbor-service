@@ -252,11 +252,11 @@ public class BeSVImpl implements IBeSV {
 		if (!StringUtil.isBlank(beQueryReq.getSearchKey())) {
 			builder.must(QueryBuilders.queryStringQuery(beQueryReq.getSearchKey()));
 		}
-		if(!beQueryReq.isQueryhide()){
-			//不查询隐藏记录
-			builder.must(QueryBuilders.termQuery("hideFlag",HideFlag.NO.getValue()));
+		if (!beQueryReq.isQueryhide()) {
+			// 不查询隐藏记录
+			builder.must(QueryBuilders.termQuery("hideFlag", HideFlag.NO.getValue()));
 		}
-		
+
 		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
 				.setTypes(HarborIndexType.HY_BE.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
 				.addSort(topSortBuilder).addSort(createSortBuilder).execute().actionGet();
@@ -300,8 +300,8 @@ public class BeSVImpl implements IBeSV {
 				queryMyFavorBeReq.getPageSize(), false);
 		List<Be> result = new ArrayList<Be>();
 		for (String beId : beIds) {
-			Be be =this.getBe(beId);
-			if(be!=null){
+			Be be = this.getBe(beId);
+			if (be != null) {
 				result.add(be);
 			}
 		}
@@ -334,6 +334,10 @@ public class BeSVImpl implements IBeSV {
 	public Response deleteBe(DeleteBeReq deleteBeReq) throws BusinessException, SystemException {
 		Be be = this.getBe(deleteBeReq.getBeId());
 		if (be != null) {
+			// 判断是否是发布者
+			if (!be.getUserId().equals(deleteBeReq.getUserId())) {
+				throw new BusinessException("您无权删除");
+			}
 			be.setStatus(Status.INVALID.getValue());
 			ElasticSearchFactory.getClient()
 					.prepareIndex(HarborIndex.HY_BE_DB.getValue().toLowerCase(),

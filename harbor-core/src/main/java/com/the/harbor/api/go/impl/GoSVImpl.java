@@ -399,9 +399,9 @@ public class GoSVImpl implements IGoSV {
 		builder.must(QueryBuilders.termQuery("goType", queryGoReq.getGoType()));
 		builder.mustNot(QueryBuilders.termQuery("status",
 				com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue().toLowerCase()));
-		if(!queryGoReq.isQueryhide()){
-			//不查询隐藏记录
-			builder.must(QueryBuilders.termQuery("hideFlag",HideFlag.NO.getValue()));
+		if (!queryGoReq.isQueryhide()) {
+			// 不查询隐藏记录
+			builder.must(QueryBuilders.termQuery("hideFlag", HideFlag.NO.getValue()));
 		}
 		if (!StringUtil.isBlank(queryGoReq.getPolyTagId())) {
 			builder.must(QueryBuilders.termQuery("goTags.polyTagId", queryGoReq.getPolyTagId()));
@@ -707,9 +707,13 @@ public class GoSVImpl implements IGoSV {
 	public Response deleteGo(DeleteGoReq deleteGoReq) throws BusinessException, SystemException {
 		Go go = this.getGoInfo(deleteGoReq.getGoId());
 		if (go != null) {
-			//判断是否可以删除
-			int count  = goBusiSV.getOrderCount(go.getGoId(), go.getGoType());
-			if(count>0){
+			// 判断是否是发布者
+			if (!go.getUserId().equals(deleteGoReq.getUserId())) {
+				throw new BusinessException("您无权删除");
+			}
+			// 判断是否可以删除
+			int count = goBusiSV.getOrderCount(go.getGoId(), go.getGoType());
+			if (count > 0) {
 				throw new BusinessException("有人已报名，不可删除");
 			}
 			// 将搜索引擎数据标记为撤销
