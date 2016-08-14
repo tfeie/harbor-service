@@ -707,6 +707,11 @@ public class GoSVImpl implements IGoSV {
 	public Response deleteGo(DeleteGoReq deleteGoReq) throws BusinessException, SystemException {
 		Go go = this.getGoInfo(deleteGoReq.getGoId());
 		if (go != null) {
+			//判断是否可以删除
+			int count  = goBusiSV.getOrderCount(go.getGoId(), go.getGoType());
+			if(count>0){
+				throw new BusinessException("有人已报名，不可删除");
+			}
 			// 将搜索引擎数据标记为撤销
 			go.setStatus(com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue());
 			ElasticSearchFactory.getClient()

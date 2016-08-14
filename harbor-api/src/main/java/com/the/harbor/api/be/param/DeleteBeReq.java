@@ -13,12 +13,23 @@ public class DeleteBeReq implements Serializable {
 	@NotNull(message = "BE标识为空", groups = { IBeSV.DeleteBe.class })
 	private String beId;
 
+	@NotNull(message = "操作用户为空", groups = { IBeSV.DeleteBe.class })
+	private String userId;
+
 	public String getBeId() {
 		return beId;
 	}
 
 	public void setBeId(String beId) {
 		this.beId = beId;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 }

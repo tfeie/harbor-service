@@ -13,6 +13,9 @@ public class DeleteGoReq implements Serializable {
 	@NotNull(message = "活动ID为空", groups = { IGoSV.DeleteGo.class })
 	private String goId;
 
+	@NotNull(message = "操作用户为空", groups = { IGoSV.DeleteGo.class })
+	private String userId;
+
 	public String getGoId() {
 		return goId;
 	}
@@ -20,7 +23,13 @@ public class DeleteGoReq implements Serializable {
 	public void setGoId(String goId) {
 		this.goId = goId;
 	}
-	
-	
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
 }
