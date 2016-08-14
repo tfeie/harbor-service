@@ -13,6 +13,7 @@ import com.the.harbor.api.user.param.CreateUserBuyHBOrderReq;
 import com.the.harbor.api.user.param.CreateUserBuyHBOrderResp;
 import com.the.harbor.api.user.param.CreateUserBuyMemberOrderReq;
 import com.the.harbor.api.user.param.CreateUserBuyMemberOrderResp;
+import com.the.harbor.api.user.param.DoIMUserSync;
 import com.the.harbor.api.user.param.UserAuthReq;
 import com.the.harbor.api.user.param.UserCertificationReq;
 import com.the.harbor.api.user.param.UserEditReq;
@@ -44,6 +45,7 @@ import com.the.harbor.commons.redisdata.util.HyUserUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.service.interfaces.IUserManagerSV;
+import com.the.harbor.util.IMUserSyncMQSend;
 
 @Service(validation = "true")
 public class UserSVImpl implements IUserSV {
@@ -55,6 +57,12 @@ public class UserSVImpl implements IUserSV {
 	public Response userRegister(UserRegReq userRegReq) throws BusinessException, SystemException {
 		String userId = userManagerSV.userRegister(userRegReq);
 		this.storeUserInfo2Redis(userId);
+
+		// 发送IM账号同步通知
+		DoIMUserSync body = new DoIMUserSync();
+		body.setHandleType(DoIMUserSync.HandleType.ADD.name());
+		body.setUserId(userId);
+		IMUserSyncMQSend.sendMQ(body);
 		return ResponseBuilder.buildSuccessResponse("用户注册成功");
 	}
 
@@ -201,6 +209,12 @@ public class UserSVImpl implements IUserSV {
 
 		// 存储数据
 		this.storeUserInfo2Redis(userEditReq.getUserId());
+
+		// 发送IM账号同步通知
+		DoIMUserSync body = new DoIMUserSync();
+		body.setHandleType(DoIMUserSync.HandleType.UPDATE.name());
+		body.setUserId(userEditReq.getUserId());
+		IMUserSyncMQSend.sendMQ(body);
 		return ResponseBuilder.buildSuccessResponse("用户资料编辑成功");
 	}
 
