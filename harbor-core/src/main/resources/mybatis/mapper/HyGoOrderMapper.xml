@@ -23,6 +23,7 @@
     <result column="STS_DATE" property="stsDate" jdbcType="TIMESTAMP" />
     <result column="HELP_VALUE" property="helpValue" jdbcType="VARCHAR" />
     <result column="GIVE_HB" property="giveHb" jdbcType="INTEGER" />
+    <result column="SPONSOR_ID" property="sponsorId" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -86,7 +87,7 @@
     ORDER_ID, USER_ID, GO_ID, GO_TYPE, ORDER_STATUS, QUESTIONS, SELF_INTRO, PAY_ORDER_ID, 
     CONFIRM_DATE, EXPECTED_TIME1, EXPECTED_TIME2, EXPECTED_LOCATION1, EXPECTED_LOCATION2, 
     CONFIRM_TIME, CONFIRM_LOCATION, CREATE_DATE, PAY_STS_DATE, CONFIRM_STS_DATE, STS_DATE, 
-    HELP_VALUE, GIVE_HB
+    HELP_VALUE, GIVE_HB, SPONSOR_ID
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyGoOrderCriteria" >
     select
@@ -129,16 +130,16 @@
       EXPECTED_TIME1, EXPECTED_TIME2, EXPECTED_LOCATION1, 
       EXPECTED_LOCATION2, CONFIRM_TIME, CONFIRM_LOCATION, 
       CREATE_DATE, PAY_STS_DATE, CONFIRM_STS_DATE, 
-      STS_DATE, HELP_VALUE, GIVE_HB
-      )
+      STS_DATE, HELP_VALUE, GIVE_HB, 
+      SPONSOR_ID)
     values (#{orderId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{goId,jdbcType=VARCHAR}, 
       #{goType,jdbcType=VARCHAR}, #{orderStatus,jdbcType=VARCHAR}, #{questions,jdbcType=VARCHAR}, 
       #{selfIntro,jdbcType=VARCHAR}, #{payOrderId,jdbcType=VARCHAR}, #{confirmDate,jdbcType=TIMESTAMP}, 
       #{expectedTime1,jdbcType=VARCHAR}, #{expectedTime2,jdbcType=VARCHAR}, #{expectedLocation1,jdbcType=VARCHAR}, 
       #{expectedLocation2,jdbcType=VARCHAR}, #{confirmTime,jdbcType=VARCHAR}, #{confirmLocation,jdbcType=VARCHAR}, 
       #{createDate,jdbcType=TIMESTAMP}, #{payStsDate,jdbcType=TIMESTAMP}, #{confirmStsDate,jdbcType=TIMESTAMP}, 
-      #{stsDate,jdbcType=TIMESTAMP}, #{helpValue,jdbcType=VARCHAR}, #{giveHb,jdbcType=INTEGER}
-      )
+      #{stsDate,jdbcType=TIMESTAMP}, #{helpValue,jdbcType=VARCHAR}, #{giveHb,jdbcType=INTEGER}, 
+      #{sponsorId,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyGoOrder" >
     insert into hy_go_order
@@ -204,6 +205,9 @@
         HELP_VALUE,
       </if>
       GIVE_HB,
+      <if test="sponsorId != null" >
+        SPONSOR_ID,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="orderId != null" >
@@ -267,6 +271,9 @@
         #{helpValue,jdbcType=VARCHAR},
       </if>
       #{giveHb,jdbcType=INTEGER},
+      <if test="sponsorId != null" >
+        #{sponsorId,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyGoOrderCriteria" resultType="java.lang.Integer" >
@@ -341,6 +348,9 @@
       <if test="record.giveHb != null" >
         GIVE_HB = #{record.giveHb,jdbcType=INTEGER},
       </if>
+      <if test="record.sponsorId != null" >
+        SPONSOR_ID = #{record.sponsorId,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -368,7 +378,8 @@
       CONFIRM_STS_DATE = #{record.confirmStsDate,jdbcType=TIMESTAMP},
       STS_DATE = #{record.stsDate,jdbcType=TIMESTAMP},
       HELP_VALUE = #{record.helpValue,jdbcType=VARCHAR},
-      GIVE_HB = #{record.giveHb,jdbcType=INTEGER}
+      GIVE_HB = #{record.giveHb,jdbcType=INTEGER},
+      SPONSOR_ID = #{record.sponsorId,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -436,6 +447,9 @@
       <if test="giveHb != null" >
         GIVE_HB = #{giveHb,jdbcType=INTEGER},
       </if>
+      <if test="sponsorId != null" >
+        SPONSOR_ID = #{sponsorId,jdbcType=VARCHAR},
+      </if>
     </set>
     where ORDER_ID = #{orderId,jdbcType=VARCHAR}
   </update>
@@ -460,7 +474,8 @@
       CONFIRM_STS_DATE = #{confirmStsDate,jdbcType=TIMESTAMP},
       STS_DATE = #{stsDate,jdbcType=TIMESTAMP},
       HELP_VALUE = #{helpValue,jdbcType=VARCHAR},
-      GIVE_HB = #{giveHb,jdbcType=INTEGER}
+      GIVE_HB = #{giveHb,jdbcType=INTEGER},
+      SPONSOR_ID = #{sponsorId,jdbcType=VARCHAR}
     where ORDER_ID = #{orderId,jdbcType=VARCHAR}
   </update>
 </mapper>

@@ -27,6 +27,12 @@ public class UserWealthQueryResp extends Response {
 	// 可用现金 元
 	private String cashBlanceYuan;
 
+	// 益友
+	private int yiyou;
+
+	// 助人
+	private int zhuren;
+
 	public String getUserId() {
 		return userId;
 	}
@@ -97,6 +103,22 @@ public class UserWealthQueryResp extends Response {
 
 	public void setCashBlanceYuan(String cashBlanceYuan) {
 		this.cashBlanceYuan = cashBlanceYuan;
+	}
+
+	public int getYiyou() {
+		return yiyou;
+	}
+
+	public void setYiyou(int yiyou) {
+		this.yiyou = yiyou;
+	}
+
+	public int getZhuren() {
+		return zhuren;
+	}
+
+	public void setZhuren(int zhuren) {
+		this.zhuren = zhuren;
 	}
 
 }

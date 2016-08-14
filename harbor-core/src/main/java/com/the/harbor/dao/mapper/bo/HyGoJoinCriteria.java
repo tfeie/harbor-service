@@ -794,6 +794,76 @@ public class HyGoJoinCriteria {
             addCriterion("GIVE_HB not between", value1, value2, "giveHb");
             return (Criteria) this;
         }
+
+        public Criteria andSponsorIdIsNull() {
+            addCriterion("SPONSOR_ID is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSponsorIdIsNotNull() {
+            addCriterion("SPONSOR_ID is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSponsorIdEqualTo(String value) {
+            addCriterion("SPONSOR_ID =", value, "sponsorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSponsorIdNotEqualTo(String value) {
+            addCriterion("SPONSOR_ID <>", value, "sponsorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSponsorIdGreaterThan(String value) {
+            addCriterion("SPONSOR_ID >", value, "sponsorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSponsorIdGreaterThanOrEqualTo(String value) {
+            addCriterion("SPONSOR_ID >=", value, "sponsorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSponsorIdLessThan(String value) {
+            addCriterion("SPONSOR_ID <", value, "sponsorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSponsorIdLessThanOrEqualTo(String value) {
+            addCriterion("SPONSOR_ID <=", value, "sponsorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSponsorIdLike(String value) {
+            addCriterion("SPONSOR_ID like", value, "sponsorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSponsorIdNotLike(String value) {
+            addCriterion("SPONSOR_ID not like", value, "sponsorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSponsorIdIn(List<String> values) {
+            addCriterion("SPONSOR_ID in", values, "sponsorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSponsorIdNotIn(List<String> values) {
+            addCriterion("SPONSOR_ID not in", values, "sponsorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSponsorIdBetween(String value1, String value2) {
+            addCriterion("SPONSOR_ID between", value1, value2, "sponsorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSponsorIdNotBetween(String value1, String value2) {
+            addCriterion("SPONSOR_ID not between", value1, value2, "sponsorId");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

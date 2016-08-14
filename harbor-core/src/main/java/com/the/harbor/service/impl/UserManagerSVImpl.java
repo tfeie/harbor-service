@@ -102,6 +102,7 @@ import com.the.harbor.dao.mapper.interfaces.HyUserInviteMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserMapper;
 import com.the.harbor.dao.mapper.interfaces.HyUserTagsMapper;
 import com.the.harbor.service.interfaces.IBeBusiSV;
+import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IPaymentBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.HarborSeqUtil;
@@ -134,6 +135,9 @@ public class UserManagerSVImpl implements IUserManagerSV {
 
 	@Autowired
 	private transient IBeBusiSV beBusiSV;
+
+	@Autowired
+	private transient IGoBusiSV goBusiSV;
 
 	@Autowired
 	private transient IPaymentBusiSV paymentBusiSV;
@@ -1022,6 +1026,10 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		}
 		// 获取用户所有BE被赞
 		resp.setTotalDianzan(beBusiSV.getBesCount(userId));
+		//查询益友总数
+		resp.setYiyou(goBusiSV.getGoYiYouCount(userId));
+		//查询助人总数
+		resp.setZhuren(goBusiSV.getZhuRenCount(userId));
 		resp.setUserId(userId);
 		return resp;
 	}

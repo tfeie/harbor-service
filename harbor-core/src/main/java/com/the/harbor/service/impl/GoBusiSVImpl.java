@@ -49,6 +49,7 @@ import com.the.harbor.base.enumeration.hygo.OrgMode;
 import com.the.harbor.base.enumeration.hygo.PayMode;
 import com.the.harbor.base.enumeration.hygo.Status;
 import com.the.harbor.base.enumeration.hygo.TopFlag;
+import com.the.harbor.base.enumeration.hygojoin.HelpValue;
 import com.the.harbor.base.enumeration.hygoorder.OrderStatus;
 import com.the.harbor.base.enumeration.hynotify.AccepterType;
 import com.the.harbor.base.enumeration.hynotify.NotifyType;
@@ -235,6 +236,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		record.setSelfIntro(goOrderCreateReq.getSelfIntro());
 		record.setCreateDate(sysdate);
 		record.setStsDate(sysdate);
+		record.setSponsorId(hyGo.getUserId());
 		hyGoOrderMapper.insert(record);
 
 		// 发送用户自动收藏的消息
@@ -756,6 +758,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			record.setPayOrderId(payOrderId);
 			record.setStsDate(sysdate);
 			record.setUserId(userId);
+			record.setSponsorId(hyGo.getUserId());
 			hyGoJoinMapper.insert(record);
 		}
 		GroupApplyResp resp = new GroupApplyResp();
@@ -1253,6 +1256,20 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		record.setHideFlag(hideFlag);
 		record.setGoId(goId);
 		hyGoMapper.updateByPrimaryKeySelective(record);
+	}
+
+	@Override
+	public int getGoYiYouCount(String userId) {
+		HyGoJoinCriteria sql = new HyGoJoinCriteria();
+		sql.or().andHelpValueEqualTo(HelpValue.YIYOU.getValue()).andSponsorIdEqualTo(userId);
+		return hyGoJoinMapper.countByExample(sql);
+	}
+
+	@Override
+	public int getZhuRenCount(String userId) {
+		HyGoOrderCriteria sql = new HyGoOrderCriteria();
+		sql.or().andHelpValueEqualTo(com.the.harbor.base.enumeration.hygoorder.HelpValue.BE_HELPFULL.getValue()).andSponsorIdEqualTo(userId);
+		return hyGoOrderMapper.countByExample(sql);
 	}
 
 }

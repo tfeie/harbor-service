@@ -23,6 +23,8 @@ public class HyGoJoin {
 
     private int giveHb;
 
+    private String sponsorId;
+
     public String getOrderId() {
         return orderId;
     }
@@ -101,5 +103,13 @@ public class HyGoJoin {
 
     public void setGiveHb(int giveHb) {
         this.giveHb = giveHb;
+    }
+
+    public String getSponsorId() {
+        return sponsorId;
+    }
+
+    public void setSponsorId(String sponsorId) {
+        this.sponsorId = sponsorId == null ? null : sponsorId.trim();
     }
 }

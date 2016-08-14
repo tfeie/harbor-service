@@ -93,4 +93,8 @@ public interface IGoBusiSV {
 	void topGo(String goId, String topFlag, Timestamp topDate);
 
 	void hideGo(String goId, String hideFlag);
+
+	int getGoYiYouCount(String userId);
+
+	int getZhuRenCount(String userId);
 }
