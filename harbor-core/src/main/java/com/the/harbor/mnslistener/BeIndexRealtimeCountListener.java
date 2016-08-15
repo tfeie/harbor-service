@@ -1,5 +1,7 @@
 package com.the.harbor.mnslistener;
 
+import java.util.Set;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -13,6 +15,7 @@ import com.aliyun.mns.client.CloudAccount;
 import com.aliyun.mns.client.MNSClient;
 import com.aliyun.mns.model.Message;
 import com.the.harbor.api.be.param.Be;
+import com.the.harbor.api.be.param.BeComment;
 import com.the.harbor.api.be.param.DoBeIndexRealtimeStat;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSSettings;
 import com.the.harbor.commons.components.aliyuncs.mns.MessageReceiver;
@@ -108,7 +111,19 @@ public class BeIndexRealtimeCountListener implements InitializingBean {
 						}
 						Be be = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Be.class);
 						if (DoBeIndexRealtimeStat.StatType.COMMENT.name().equals(stat.getStatType())) {
-							long count = HyBeUtil.getBeCommentsCount(be.getBeId());
+							Set<String> set = HyBeUtil.getBeCommentIds(be.getBeId(), 0, -1);
+							long count = 0;
+							// 只计算有效的评论记录
+							for (String commentId : set) {
+								String commentData = HyBeUtil.getBeComment(commentId);
+								if (!StringUtil.isBlank(commentData)) {
+									BeComment b = JSONObject.parseObject(commentData, BeComment.class);
+									if (com.the.harbor.base.enumeration.hybecomments.Status.NORMAL.getValue()
+											.equals(b.getStatus())) {
+										count++;
+									}
+								}
+							}
 							be.setCommentCount(count);
 						} else if (DoBeIndexRealtimeStat.StatType.DIANZAN.name().equals(stat.getStatType())) {
 							long count = HyBeUtil.getBeDianzanCount(be.getBeId());

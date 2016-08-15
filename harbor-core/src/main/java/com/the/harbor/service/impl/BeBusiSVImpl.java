@@ -25,8 +25,8 @@ import com.the.harbor.api.be.param.GiveHBReq;
 import com.the.harbor.api.user.param.DoUserAssetsTrade;
 import com.the.harbor.base.enumeration.common.BusiErrorCode;
 import com.the.harbor.base.enumeration.common.Status;
-import com.the.harbor.base.enumeration.hybe.TopFlag;
 import com.the.harbor.base.enumeration.hybe.HideFlag;
+import com.the.harbor.base.enumeration.hybe.TopFlag;
 import com.the.harbor.base.enumeration.hynotify.AccepterType;
 import com.the.harbor.base.enumeration.hynotify.NotifyType;
 import com.the.harbor.base.enumeration.hynotify.SenderType;
@@ -211,6 +211,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			record.setParentCommentId(doBeComment.getParentCommentId());
 			record.setParentUserId(doBeComment.getParentUserId());
 			record.setUserId(doBeComment.getUserId());
+			record.setStatus(com.the.harbor.base.enumeration.hybecomments.Status.NORMAL.getValue());
 			hyBeCommentsMapper.insert(record);
 
 			// 给被评论方发个消息
@@ -248,14 +249,18 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			HyBeUtil.recordBeComment(record.getCommentId(), JSON.toJSONString(b));
 
 		} else if (DoBeComment.HandleType.CANCEL.name().equals(doBeComment.getHandleType())) {
-			// 如果是取消赞，则删除
+			// 如果是删除评论
 			if (!StringUtil.isBlank(doBeComment.getCommentId())) {
-				HyBeComments record = hyBeCommentsMapper.selectByPrimaryKey(doBeComment.getCommentId());
-				if (record != null) {
-					hyBeCommentsMapper.deleteByPrimaryKey(doBeComment.getCommentId());
-					// 从REDIS中删除
-					HyBeUtil.deleteBeCommentId(record.getBeId(), record.getCommentId());
-					HyBeUtil.deleteBeComment(record.getCommentId());
+				HyBeComments record = new HyBeComments();
+				record.setCommentId(doBeComment.getCommentId());
+				record.setStatus(com.the.harbor.base.enumeration.hybecomments.Status.DELETED.getValue());
+				hyBeCommentsMapper.updateByPrimaryKeySelective(record);
+
+				String becomment = HyBeUtil.getBeComment(doBeComment.getCommentId());
+				if (!StringUtil.isBlank(becomment)) {
+					BeComment b = JSON.parseObject(becomment, BeComment.class);
+					b.setStatus(com.the.harbor.base.enumeration.hybecomments.Status.DELETED.getValue());
+					HyBeUtil.recordBeComment(doBeComment.getCommentId(), JSON.toJSONString(b));
 				}
 			}
 		}
@@ -378,9 +383,9 @@ public class BeBusiSVImpl implements IBeBusiSV {
 
 	@Override
 	public void processBeDelete(String beId) {
-		//BE实现
+		// BE实现
 		this.deleteBe(beId);
-		//取消BE搜藏
+		// 取消BE搜藏
 		this.processDeleteBeFavor(beId);
 	}
 
@@ -388,11 +393,11 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		HyBeFavoriteCriteria sql = new HyBeFavoriteCriteria();
 		sql.or().andBeIdEqualTo(beId);
 		List<HyBeFavorite> list = hyBeFavoriteMapper.selectByExample(sql);
-		if(CollectionUtil.isEmpty(list)){
+		if (CollectionUtil.isEmpty(list)) {
 			return;
 		}
-		for(HyBeFavorite be:list){
-			//hyBeFavoriteMapper.deleteByPrimaryKey(be.getFavoriteId());
+		for (HyBeFavorite be : list) {
+			// hyBeFavoriteMapper.deleteByPrimaryKey(be.getFavoriteId());
 			HyBeUtil.userCancelFavorBe(be.getUserId(), beId);
 		}
 	}
@@ -413,7 +418,5 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		record.setHideFlag(hideFlag);
 		hyBeMapper.updateByPrimaryKeySelective(record);
 	}
-	
-	
 
 }

@@ -64,6 +64,7 @@ import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.def.DoNotify;
+import com.the.harbor.commons.redisdata.util.HyBeUtil;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
 import com.the.harbor.commons.redisdata.util.HyGoUtil;
 import com.the.harbor.commons.util.AmountUtils;
@@ -220,10 +221,12 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			throw new BusinessException("GO_0001", "预约的活动不存在");
 		}
 		// 判断是否重复参加
-		/**HyGoOrder o = this.getHyGoOrder(goOrderCreateReq.getUserId(), goOrderCreateReq.getGoId());
-		if (o != null && !OrderStatus.CANCEL.getValue().equals(o.getOrderStatus())) {
-			throw new BusinessException("GO_0001", "您已经预约了此活动");
-		}**/
+		/**
+		 * HyGoOrder o = this.getHyGoOrder(goOrderCreateReq.getUserId(),
+		 * goOrderCreateReq.getGoId()); if (o != null &&
+		 * !OrderStatus.CANCEL.getValue().equals(o.getOrderStatus())) { throw
+		 * new BusinessException("GO_0001", "您已经预约了此活动"); }
+		 **/
 		String orderId = HarborSeqUtil.createGoOrderId();
 		Timestamp sysdate = DateUtil.getSysDate();
 		HyGoOrder record = new HyGoOrder();
@@ -574,6 +577,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			HyGoComments record = new HyGoComments();
 			BeanUtils.copyProperties(doGoComment, record);
 			record.setCreateDate(doGoComment.getSysdate() == null ? DateUtil.getSysDate() : doGoComment.getSysdate());
+			record.setStatus(com.the.harbor.base.enumeration.hygocomments.Status.NORMAL.getValue());
 			hyGoCommentsMapper.insert(record);
 
 			// 给被评论方发个消息
@@ -635,14 +639,18 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 			// 给
 		} else if (DoGoComment.HandleType.CANCEL.name().equals(doGoComment.getHandleType())) {
-			// 如果是取消赞，则删除
+			// 如果是删除评论
 			if (!StringUtil.isBlank(doGoComment.getCommentId())) {
-				HyGoComments record = hyGoCommentsMapper.selectByPrimaryKey(doGoComment.getCommentId());
-				if (record != null) {
-					hyGoCommentsMapper.deleteByPrimaryKey(doGoComment.getCommentId());
-					// 从REDIS中删除
-					HyGoUtil.deleteGoOrderCommentId(record.getGoId(), record.getOrderId(), record.getCommentId());
-					HyGoUtil.deleteGoComment(record.getCommentId());
+				HyGoComments record = new HyGoComments();
+				record.setCommentId(doGoComment.getCommentId());
+				record.setStatus(com.the.harbor.base.enumeration.hygocomments.Status.DELETED.getValue());
+				hyGoCommentsMapper.updateByPrimaryKeySelective(record);
+
+				String gocomment = HyGoUtil.getGoComment(doGoComment.getCommentId());
+				if (!StringUtil.isBlank(gocomment)) {
+					GoComment b = JSON.parseObject(gocomment, GoComment.class);
+					b.setStatus(com.the.harbor.base.enumeration.hygocomments.Status.DELETED.getValue());
+					HyBeUtil.recordBeComment(doGoComment.getCommentId(), JSON.toJSONString(b));
 				}
 			}
 		}
@@ -1268,7 +1276,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 	@Override
 	public int getZhuRenCount(String userId) {
 		HyGoOrderCriteria sql = new HyGoOrderCriteria();
-		sql.or().andHelpValueEqualTo(com.the.harbor.base.enumeration.hygoorder.HelpValue.BE_HELPFULL.getValue()).andSponsorIdEqualTo(userId);
+		sql.or().andHelpValueEqualTo(com.the.harbor.base.enumeration.hygoorder.HelpValue.BE_HELPFULL.getValue())
+				.andSponsorIdEqualTo(userId);
 		return hyGoOrderMapper.countByExample(sql);
 	}
 
