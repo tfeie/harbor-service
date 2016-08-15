@@ -55,6 +55,9 @@ public class BeComment implements Serializable {
 
 	// 是否是回复的评论
 	private boolean isreply;
+	
+	//界面是是否可以被删除
+	private boolean candelete;
 
 	public String getCommentId() {
 		return commentId;
@@ -230,6 +233,14 @@ public class BeComment implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public boolean isCandelete() {
+		return candelete;
+	}
+
+	public void setCandelete(boolean candelete) {
+		this.candelete = candelete;
 	}
 
 	
