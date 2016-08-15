@@ -97,4 +97,6 @@ public interface IGoBusiSV {
 	int getGoYiYouCount(String userId);
 
 	int getZhuRenCount(String userId);
+
+	int getGoHelpCount(String goId, String goType);
 }

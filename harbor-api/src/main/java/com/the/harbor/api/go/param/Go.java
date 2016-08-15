@@ -124,6 +124,9 @@ public class Go implements Serializable {
 
 	// GROUP参加人数
 	private long joinCount;
+	
+	//益友助人统计
+	private int helpCount;
 
 	// 创建时间格式显示
 	private String createTimeStr;
@@ -449,6 +452,14 @@ public class Go implements Serializable {
 
 	public void setHideFlag(String hideFlag) {
 		this.hideFlag = hideFlag;
+	}
+
+	public int getHelpCount() {
+		return helpCount;
+	}
+
+	public void setHelpCount(int helpCount) {
+		this.helpCount = helpCount;
 	}
 
 	

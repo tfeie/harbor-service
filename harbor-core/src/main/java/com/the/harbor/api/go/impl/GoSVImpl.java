@@ -481,6 +481,8 @@ public class GoSVImpl implements IGoSV {
 		go.setCreateTimeStr(DateUtil.getDateString(go.getCreateDate(), "MM月dd"));
 		go.setCreateTimeInterval(DateUtil.getInterval(go.getCreateDate()));
 
+		go.setHelpCount(goBusiSV.getGoHelpCount(go.getGoId(), go.getGoType()));
+
 	}
 
 	/**

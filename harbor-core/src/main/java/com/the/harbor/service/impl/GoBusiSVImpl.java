@@ -1281,4 +1281,19 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		return hyGoOrderMapper.countByExample(sql);
 	}
 
+	@Override
+	public int getGoHelpCount(String goId, String goType) {
+		if (GoType.GROUP.getValue().equals(goType)) {
+			HyGoJoinCriteria sql = new HyGoJoinCriteria();
+			sql.or().andHelpValueEqualTo(HelpValue.YIYOU.getValue()).andGoIdEqualTo(goId);
+			return hyGoJoinMapper.countByExample(sql);
+		} else if (GoType.ONE_ON_ONE.getValue().equals(goType)) {
+			HyGoOrderCriteria sql = new HyGoOrderCriteria();
+			sql.or().andHelpValueEqualTo(com.the.harbor.base.enumeration.hygoorder.HelpValue.BE_HELPFULL.getValue())
+					.andGoIdEqualTo(goId);
+			return hyGoOrderMapper.countByExample(sql);
+		}
+		return 0;
+	}
+
 }
