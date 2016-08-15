@@ -20,6 +20,8 @@ public class BeComment implements Serializable {
 	private String parentCommentId;
 
 	private String parentUserId;
+	
+	private String status;
 
 	// 发布时间差描述
 	private String createTimeInteval;
@@ -222,5 +224,14 @@ public class BeComment implements Serializable {
 		this.puserStatus = puserStatus;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	
 	
 }

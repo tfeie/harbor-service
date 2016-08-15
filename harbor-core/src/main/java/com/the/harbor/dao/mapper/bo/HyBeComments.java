@@ -17,6 +17,8 @@ public class HyBeComments {
 
     private String parentUserId;
 
+    private String status;
+
     public String getCommentId() {
         return commentId;
     }
@@ -71,5 +73,13 @@ public class HyBeComments {
 
     public void setParentUserId(String parentUserId) {
         this.parentUserId = parentUserId == null ? null : parentUserId.trim();
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status == null ? null : status.trim();
     }
 }
