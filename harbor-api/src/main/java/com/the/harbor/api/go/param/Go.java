@@ -42,7 +42,7 @@ public class Go implements Serializable {
 	private String topFlag;
 
 	private Timestamp topDate;
-	
+
 	private String hideFlag;
 
 	// 活动类型
@@ -65,6 +65,9 @@ public class Go implements Serializable {
 
 	// 活动标签
 	private List<GoTag> goTags;
+
+	// ONO活动海牛的故事
+	private List<GoStory> goStories;
 
 	// 发布用户信息
 	private String abroadCountryName;
@@ -124,8 +127,8 @@ public class Go implements Serializable {
 
 	// GROUP参加人数
 	private long joinCount;
-	
-	//益友助人统计
+
+	// 益友助人统计
 	private int helpCount;
 
 	// 创建时间格式显示
@@ -462,5 +465,12 @@ public class Go implements Serializable {
 		this.helpCount = helpCount;
 	}
 
-	
+	public List<GoStory> getGoStories() {
+		return goStories;
+	}
+
+	public void setGoStories(List<GoStory> goStories) {
+		this.goStories = goStories;
+	}
+
 }

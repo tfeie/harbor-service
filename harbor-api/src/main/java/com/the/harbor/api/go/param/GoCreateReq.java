@@ -43,6 +43,9 @@ public class GoCreateReq implements Serializable {
 	private String location;
 
 	private String myStory;
+	
+	// ONO活动海牛的故事
+	private List<GoStory> goStories;
 
 	// 活动明细
 	@NotNull(message = "请填写活动明细", groups = { IGoSV.CreateGo.class })
@@ -155,5 +158,15 @@ public class GoCreateReq implements Serializable {
 	public void setPrice(String price) {
 		this.price = price;
 	}
+
+	public List<GoStory> getGoStories() {
+		return goStories;
+	}
+
+	public void setGoStories(List<GoStory> goStories) {
+		this.goStories = goStories;
+	}
+	
+	
 
 }

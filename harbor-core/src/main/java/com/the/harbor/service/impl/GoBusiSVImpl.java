@@ -30,6 +30,7 @@ import com.the.harbor.api.go.param.GoOrderCreateReq;
 import com.the.harbor.api.go.param.GoOrderFinishReq;
 import com.the.harbor.api.go.param.GoOrderMeetLocaltionConfirmReq;
 import com.the.harbor.api.go.param.GoOrderMeetLocaltionReq;
+import com.the.harbor.api.go.param.GoStory;
 import com.the.harbor.api.go.param.GoTag;
 import com.the.harbor.api.go.param.GroupApplyReq;
 import com.the.harbor.api.go.param.GroupApplyResp;
@@ -81,6 +82,7 @@ import com.the.harbor.dao.mapper.bo.HyGoJoin;
 import com.the.harbor.dao.mapper.bo.HyGoJoinCriteria;
 import com.the.harbor.dao.mapper.bo.HyGoOrder;
 import com.the.harbor.dao.mapper.bo.HyGoOrderCriteria;
+import com.the.harbor.dao.mapper.bo.HyGoStory;
 import com.the.harbor.dao.mapper.bo.HyGoTags;
 import com.the.harbor.dao.mapper.bo.HyGoView;
 import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
@@ -91,6 +93,7 @@ import com.the.harbor.dao.mapper.interfaces.HyGoFavoriteMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoJoinMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoOrderMapper;
+import com.the.harbor.dao.mapper.interfaces.HyGoStoryMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoTagsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyGoViewMapper;
 import com.the.harbor.service.interfaces.IGoBusiSV;
@@ -135,6 +138,9 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 	@Autowired
 	private transient HyGoJoinMapper hyGoJoinMapper;
+
+	@Autowired
+	private transient HyGoStoryMapper hyGoStoryMapper;
 
 	@Override
 	public String createGo(GoCreateReq goCreateReq) {
@@ -199,6 +205,20 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				record.setStatus(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
 				sortId++;
 				hyGoTagsMapper.insert(record);
+			}
+		}
+		/* 4. 活动发起者的故事会 */
+		if (!CollectionUtil.isEmpty(goCreateReq.getGoStories())) {
+			// 复制内容
+			bgo.setGoStories(goCreateReq.getGoStories());
+			for (GoStory d : goCreateReq.getGoStories()) {
+				HyGoStory gd = new HyGoStory();
+				BeanUtils.copyProperties(d, gd);
+				gd.setCreateDate(sysdate);
+				gd.setGoId(goId);
+				gd.setId(HarborSeqUtil.createGoDetailId());
+				gd.setStatus(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
+				hyGoStoryMapper.insert(gd);
 			}
 		}
 		// 将GO的数据发送给MNS处理

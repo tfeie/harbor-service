@@ -45,6 +45,7 @@ import com.the.harbor.api.go.param.GoOrderQueryReq;
 import com.the.harbor.api.go.param.GoOrderQueryResp;
 import com.the.harbor.api.go.param.GoQueryReq;
 import com.the.harbor.api.go.param.GoQueryResp;
+import com.the.harbor.api.go.param.GoStory;
 import com.the.harbor.api.go.param.GoTag;
 import com.the.harbor.api.go.param.GroupApplyReq;
 import com.the.harbor.api.go.param.GroupApplyResp;
@@ -204,6 +205,32 @@ public class GoSVImpl implements IGoSV {
 			if (!valid) {
 				throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "标签类目取值不合规");
 			}
+		}
+		
+		if (GoType.ONE_ON_ONE.getValue().equals(goCreateReq.getGoType())){
+			if(CollectionUtil.isEmpty(goCreateReq.getGoStories())){
+				throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "请填写您的故事");
+			}
+			
+			for (GoStory detail : goCreateReq.getGoStories()) {
+				if (StringUtil.isBlank(detail.getType())) {
+					throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "故事详情类型为空");
+				}
+				boolean valid = ValidatorUtil.validate(detail.getType(), GoDetailType.class.getEnumConstants());
+				if (!valid) {
+					throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "故事详情类型取值不合规");
+				}
+				if (GoDetailType.TEXT.getValue().equals(detail.getType())) {
+					if (StringUtil.isBlank(detail.getDetail())) {
+						throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "故事详情为空");
+					}
+				} else if (GoDetailType.IMAGE.getValue().equals(detail.getType())) {
+					if (StringUtil.isBlank(detail.getImageUrl())) {
+						throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "请上传故事图片");
+					}
+				}
+			}
+			
 		}
 	}
 
