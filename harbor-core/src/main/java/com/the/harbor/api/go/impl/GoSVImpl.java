@@ -133,10 +133,6 @@ public class GoSVImpl implements IGoSV {
 				throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "请输入预期开始时间");
 			}
 		} else if (GoType.ONE_ON_ONE.getValue().equals(goCreateReq.getGoType())) {
-			// 我的故事不能为空
-			if (StringUtil.isBlank(goCreateReq.getMyStory())) {
-				throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "请输入我的故事");
-			}
 			if (!PayMode.FIXED_FEE.getValue().equals(goCreateReq.getPayMode())) {
 				throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "One On One的活动付费方式只能选择固定费用");
 			}
