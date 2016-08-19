@@ -133,7 +133,7 @@ public class PaymentBusiSVImpl implements IPaymentBusiSV {
 					req.setRecNumbers(recNumbers);
 					req.setSmsFreeSignName(GlobalSettings.getSMSFreeSignName());
 					req.setSmsParams(smsParams);
-					req.setSmsTemplateCode(HyCfgUtil.getSMSCodeOfOnOApplied());
+					req.setSmsTemplateCode(HyCfgUtil.getSMSCodeOfGroupUserJoin());
 					SMSSender.send(req);
 				}
 			}
