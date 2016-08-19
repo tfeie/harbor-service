@@ -3,6 +3,9 @@ package com.the.harbor.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mortbay.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +44,9 @@ import com.the.harbor.util.UserAssetsTradeMQSend;
 @Component
 @Transactional
 public class PaymentBusiSVImpl implements IPaymentBusiSV {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(PaymentBusiSVImpl.class);
+
 
 	@Autowired
 	private HyPaymentOrderMapper hyPaymentOrderMapper;
@@ -118,12 +124,14 @@ public class PaymentBusiSVImpl implements IPaymentBusiSV {
 			updateGoJoinPayReq.setPayStatus("SUCCESS");
 			goBusiSV.updateGoJoinPay(updateGoJoinPayReq);
 			
+			LOG.debug("GROUP活动支付成功，开始短信通知发起者");
 			//GROUP活动支付成功通知发起者
 			HyGoJoin hyGoJoin = goBusiSV.getHyGoJoin(payOrder.getSourceNo());
 			if (hyGoJoin != null) {
 				// 获取活动信息
 				HyGo hyGo = goBusiSV.getHyGo(hyGoJoin.getGoId());
 				UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(hyGo.getUserId());
+				LOG.debug("GROUP活动短信通知"+userInfo.getMobilePhone()+"...");
 				if (userInfo != null && !StringUtil.isBlank(userInfo.getMobilePhone())) {
 					SMSSendRequest req = new SMSSendRequest();
 					List<String> recNumbers = new ArrayList<String>();
@@ -135,6 +143,7 @@ public class PaymentBusiSVImpl implements IPaymentBusiSV {
 					req.setSmsParams(smsParams);
 					req.setSmsTemplateCode(HyCfgUtil.getSMSCodeOfGroupUserJoin());
 					SMSSender.send(req);
+					Log.debug("GROUP活动短信通知结束");
 				}
 			}
 			
@@ -169,13 +178,14 @@ public class PaymentBusiSVImpl implements IPaymentBusiSV {
 			updateGoOrderPayReq.setPayOrderId(payOrder.getPayOrderId());
 			updateGoOrderPayReq.setPayStatus("SUCCESS");
 			goBusiSV.updateGoOrderPay(updateGoOrderPayReq);
-
+			LOG.debug("ONO活动支付成功，开始短信通知发起者");
 			// 支付成功后，给活动发起方发生短信提醒
 			HyGoOrder hyGoOrder = goBusiSV.getHyGoOrder(payOrder.getSourceNo());
 			if (hyGoOrder != null) {
 				// 获取活动信息
 				HyGo hyGo = goBusiSV.getHyGo(hyGoOrder.getGoId());
 				UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(hyGo.getUserId());
+				LOG.debug("ONO活动短信通知"+userInfo.getMobilePhone()+"...");
 				if (userInfo != null && !StringUtil.isBlank(userInfo.getMobilePhone())) {
 					SMSSendRequest req = new SMSSendRequest();
 					List<String> recNumbers = new ArrayList<String>();
@@ -187,6 +197,7 @@ public class PaymentBusiSVImpl implements IPaymentBusiSV {
 					req.setSmsParams(smsParams);
 					req.setSmsTemplateCode(HyCfgUtil.getSMSCodeOfOnOApplied());
 					SMSSender.send(req);
+					LOG.debug("ONO活动短信通知完成..");
 				}
 			}
 		}
