@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.the.harbor.api.go.param.CheckUserOrderGoReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.DoGoComment;
@@ -61,11 +62,15 @@ import com.the.harbor.base.enumeration.hypaymentorder.PayType;
 import com.the.harbor.base.enumeration.hyuser.SystemUser;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.exception.BusinessException;
+import com.the.harbor.commons.components.aliyuncs.sms.SMSSender;
+import com.the.harbor.commons.components.aliyuncs.sms.param.SMSSendRequest;
 import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
+import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.def.DoNotify;
 import com.the.harbor.commons.redisdata.util.HyBeUtil;
+import com.the.harbor.commons.redisdata.util.HyCfgUtil;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
 import com.the.harbor.commons.redisdata.util.HyGoUtil;
 import com.the.harbor.commons.util.AmountUtils;
@@ -657,7 +662,22 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			HyGoUtil.recordGoOrderCommentId(record.getGoId(), record.getOrderId(), record.getCommentId());
 			HyGoUtil.recordGoComment(record.getCommentId(), JSON.toJSONString(b));
 
-			// 给
+			// 给活动发起者发送短信提醒
+			if (GoType.GROUP.getValue().equals(go.getGoType())) {
+				UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(go.getUserId());
+				if (userInfo != null && !StringUtil.isBlank(userInfo.getMobilePhone())) {
+					SMSSendRequest req = new SMSSendRequest();
+					List<String> recNumbers = new ArrayList<String>();
+					recNumbers.add(userInfo.getMobilePhone());
+					JSONObject smsParams = new JSONObject();
+					smsParams.put("goTopic", go.getTopic());
+					req.setRecNumbers(recNumbers);
+					req.setSmsFreeSignName(GlobalSettings.getSMSFreeSignName());
+					req.setSmsParams(smsParams);
+					req.setSmsTemplateCode(HyCfgUtil.getSMSCodeOfGroupUserComments());
+					SMSSender.send(req);
+				}
+			}
 		} else if (DoGoComment.HandleType.CANCEL.name().equals(doGoComment.getHandleType())) {
 			// 如果是删除评论
 			if (!StringUtil.isBlank(doGoComment.getCommentId())) {
@@ -938,6 +958,22 @@ public class GoBusiSVImpl implements IGoBusiSV {
 						doGoJoinConfirm.getPublishUserName() + "同意您参加group活动[" + doGoJoinConfirm.getTopic() + "]，查看详情");
 				body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId());
 				NotifyMQSend.sendNotifyMQ(body);
+
+				// GROUP活动发起方确认同意，短信通知给参与方
+				UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(goJoin.getUserId());
+				if (userInfo != null && !StringUtil.isBlank(userInfo.getMobilePhone())) {
+					SMSSendRequest req = new SMSSendRequest();
+					List<String> recNumbers = new ArrayList<String>();
+					recNumbers.add(userInfo.getMobilePhone());
+					JSONObject smsParams = new JSONObject();
+					smsParams.put("goTopic", go.getTopic());
+					smsParams.put("result", "通过");
+					req.setRecNumbers(recNumbers);
+					req.setSmsFreeSignName(GlobalSettings.getSMSFreeSignName());
+					req.setSmsParams(smsParams);
+					req.setSmsTemplateCode(HyCfgUtil.getSMSCodeOfGroupAuditResult());
+					SMSSender.send(req);
+				}
 			}
 
 		} else if (DoGoJoinConfirm.HandleType.REJECT.name().equals(doGoJoinConfirm.getHandleType())) {
@@ -964,6 +1000,23 @@ public class GoBusiSVImpl implements IGoBusiSV {
 						+ "],您支付的费用将于3天内退回您的账户。查看详情");
 				body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId());
 				NotifyMQSend.sendNotifyMQ(body);
+
+				HyGo go = this.getHyGo(goJoin.getGoId());
+				// GROUP活动发起方不同意，短信通知给参与方
+				UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(goJoin.getUserId());
+				if (userInfo != null && !StringUtil.isBlank(userInfo.getMobilePhone())) {
+					SMSSendRequest req = new SMSSendRequest();
+					List<String> recNumbers = new ArrayList<String>();
+					recNumbers.add(userInfo.getMobilePhone());
+					JSONObject smsParams = new JSONObject();
+					smsParams.put("goTopic", go.getTopic());
+					smsParams.put("result", "不通过");
+					req.setRecNumbers(recNumbers);
+					req.setSmsFreeSignName(GlobalSettings.getSMSFreeSignName());
+					req.setSmsParams(smsParams);
+					req.setSmsTemplateCode(HyCfgUtil.getSMSCodeOfGroupAuditResult());
+					SMSSender.send(req);
+				}
 			}
 
 		}
