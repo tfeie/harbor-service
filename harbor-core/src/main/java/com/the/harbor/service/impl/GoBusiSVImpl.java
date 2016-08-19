@@ -417,6 +417,22 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		body.setLink(link);
 		NotifyMQSend.sendNotifyMQ(body);
 
+		/* 通知小白短信审核结果 */
+		UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(hyGoOrder.getUserId());
+		if (userInfo != null && !StringUtil.isBlank(userInfo.getMobilePhone())) {
+			SMSSendRequest req = new SMSSendRequest();
+			List<String> recNumbers = new ArrayList<String>();
+			recNumbers.add(userInfo.getMobilePhone());
+			JSONObject smsParams = new JSONObject();
+			smsParams.put("goTopic", hyGo.getTopic());
+			smsParams.put("result", "confirm".equals(goOrderConfirmReq.getAckFlag()) ? "通过" : "不通过");
+			req.setRecNumbers(recNumbers);
+			req.setSmsFreeSignName(GlobalSettings.getSMSFreeSignName());
+			req.setSmsParams(smsParams);
+			req.setSmsTemplateCode(HyCfgUtil.getSMSCodeOfOnOAuditResult());
+			SMSSender.send(req);
+		}
+
 	}
 
 	@Override
@@ -725,7 +741,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 					}
 				}
 
-			}else if(GoType.ONE_ON_ONE.getValue().equals(go.getGoType())){
+			} else if (GoType.ONE_ON_ONE.getValue().equals(go.getGoType())) {
 				// 只有当是别人发起的评论时候，才发短信通知活动发起者
 				if (!doGoComment.getPublishUserId().equals(go.getUserId())) {
 					UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(go.getUserId());
