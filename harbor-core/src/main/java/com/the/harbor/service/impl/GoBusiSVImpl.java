@@ -664,19 +664,23 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 			// 给活动发起者发送短信提醒
 			if (GoType.GROUP.getValue().equals(go.getGoType())) {
-				UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(go.getUserId());
-				if (userInfo != null && !StringUtil.isBlank(userInfo.getMobilePhone())) {
-					SMSSendRequest req = new SMSSendRequest();
-					List<String> recNumbers = new ArrayList<String>();
-					recNumbers.add(userInfo.getMobilePhone());
-					JSONObject smsParams = new JSONObject();
-					smsParams.put("goTopic", go.getTopic());
-					req.setRecNumbers(recNumbers);
-					req.setSmsFreeSignName(GlobalSettings.getSMSFreeSignName());
-					req.setSmsParams(smsParams);
-					req.setSmsTemplateCode(HyCfgUtil.getSMSCodeOfGroupUserComments());
-					SMSSender.send(req);
+				//只有当是别人发起的评论时候，才发短讯
+				if (!doGoComment.getPublishUserId().equals(go.getUserId())) {
+					UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(go.getUserId());
+					if (userInfo != null && !StringUtil.isBlank(userInfo.getMobilePhone())) {
+						SMSSendRequest req = new SMSSendRequest();
+						List<String> recNumbers = new ArrayList<String>();
+						recNumbers.add(userInfo.getMobilePhone());
+						JSONObject smsParams = new JSONObject();
+						smsParams.put("goTopic", go.getTopic());
+						req.setRecNumbers(recNumbers);
+						req.setSmsFreeSignName(GlobalSettings.getSMSFreeSignName());
+						req.setSmsParams(smsParams);
+						req.setSmsTemplateCode(HyCfgUtil.getSMSCodeOfGroupUserComments());
+						SMSSender.send(req);
+					}
 				}
+				
 			}
 		} else if (DoGoComment.HandleType.CANCEL.name().equals(doGoComment.getHandleType())) {
 			// 如果是删除评论
