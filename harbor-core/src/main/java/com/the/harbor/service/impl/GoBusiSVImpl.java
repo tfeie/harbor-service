@@ -456,6 +456,20 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		body.setLink("../go/toAppointment.html?goOrderId=" + hyGoOrder.getOrderId());
 		NotifyMQSend.sendNotifyMQ(body);
 
+		// 将海牛设置的时间与地点短信告知小白
+		UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(hyGoOrder.getUserId());
+		if (userInfo != null && !StringUtil.isBlank(userInfo.getMobilePhone())) {
+			SMSSendRequest req = new SMSSendRequest();
+			List<String> recNumbers = new ArrayList<String>();
+			recNumbers.add(userInfo.getMobilePhone());
+			JSONObject smsParams = new JSONObject();
+			smsParams.put("goTopic", hyGo.getTopic());
+			req.setRecNumbers(recNumbers);
+			req.setSmsFreeSignName(GlobalSettings.getSMSFreeSignName());
+			req.setSmsParams(smsParams);
+			req.setSmsTemplateCode(HyCfgUtil.getSMSCodeOfOnOHNSetMeetingInfo());
+			SMSSender.send(req);
+		}
 	}
 
 	@Override
@@ -492,6 +506,22 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		body.setContent("[" + orderUser.getEnName() + "]确认了活动[" + hyGo.getTopic() + "]见面的时间与地点，点击查看~");
 		body.setLink("../go/toHainiuAppointment.html?goOrderId=" + hyGoOrder.getOrderId());
 		NotifyMQSend.sendNotifyMQ(body);
+
+		// 小白将选择的时间与地点短信通知海牛
+		UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(hyGo.getUserId());
+		if (userInfo != null && !StringUtil.isBlank(userInfo.getMobilePhone())) {
+			SMSSendRequest req = new SMSSendRequest();
+			List<String> recNumbers = new ArrayList<String>();
+			recNumbers.add(userInfo.getMobilePhone());
+			JSONObject smsParams = new JSONObject();
+			smsParams.put("goTopic", hyGo.getTopic());
+			smsParams.put("userName", orderUser.getEnName());
+			req.setRecNumbers(recNumbers);
+			req.setSmsFreeSignName(GlobalSettings.getSMSFreeSignName());
+			req.setSmsParams(smsParams);
+			req.setSmsTemplateCode(HyCfgUtil.getSMSCodeOfOnOXBChooseMeetingInfo());
+			SMSSender.send(req);
+		}
 	}
 
 	@Override
@@ -544,6 +574,20 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		body.setContent("您确认了[" + orderUser.getEnName() + "]预约您活动[" + hyGo.getTopic() + "]服务结束，您可以进入互评~");
 		body.setLink("../go/toHainiuFeedback.html?goOrderId=" + hyGoOrder.getOrderId());
 		NotifyMQSend.sendNotifyMQ(body);
+
+		// 给小白发送一条短信提醒活动已经结束
+		if (orderUser != null && !StringUtil.isBlank(orderUser.getMobilePhone())) {
+			SMSSendRequest req = new SMSSendRequest();
+			List<String> recNumbers = new ArrayList<String>();
+			recNumbers.add(orderUser.getMobilePhone());
+			JSONObject smsParams = new JSONObject();
+			smsParams.put("goTopic", hyGo.getTopic());
+			req.setRecNumbers(recNumbers);
+			req.setSmsFreeSignName(GlobalSettings.getSMSFreeSignName());
+			req.setSmsParams(smsParams);
+			req.setSmsTemplateCode(HyCfgUtil.getSMSCodeOfOnOHNEnd());
+			SMSSender.send(req);
+		}
 	}
 
 	@Override
@@ -664,7 +708,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 			// 给活动发起者发送短信提醒
 			if (GoType.GROUP.getValue().equals(go.getGoType())) {
-				//只有当是别人发起的评论时候，才发短讯
+				// 只有当是别人发起的评论时候，才发短信通知活动发起者
 				if (!doGoComment.getPublishUserId().equals(go.getUserId())) {
 					UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(go.getUserId());
 					if (userInfo != null && !StringUtil.isBlank(userInfo.getMobilePhone())) {
@@ -680,7 +724,24 @@ public class GoBusiSVImpl implements IGoBusiSV {
 						SMSSender.send(req);
 					}
 				}
-				
+
+			}else if(GoType.ONE_ON_ONE.getValue().equals(go.getGoType())){
+				// 只有当是别人发起的评论时候，才发短信通知活动发起者
+				if (!doGoComment.getPublishUserId().equals(go.getUserId())) {
+					UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(go.getUserId());
+					if (userInfo != null && !StringUtil.isBlank(userInfo.getMobilePhone())) {
+						SMSSendRequest req = new SMSSendRequest();
+						List<String> recNumbers = new ArrayList<String>();
+						recNumbers.add(userInfo.getMobilePhone());
+						JSONObject smsParams = new JSONObject();
+						smsParams.put("goTopic", go.getTopic());
+						req.setRecNumbers(recNumbers);
+						req.setSmsFreeSignName(GlobalSettings.getSMSFreeSignName());
+						req.setSmsParams(smsParams);
+						req.setSmsTemplateCode(HyCfgUtil.getSMSCodeOfOnOXBComment());
+						SMSSender.send(req);
+					}
+				}
 			}
 		} else if (DoGoComment.HandleType.CANCEL.name().equals(doGoComment.getHandleType())) {
 			// 如果是删除评论
