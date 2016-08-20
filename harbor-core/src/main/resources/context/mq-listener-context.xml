@@ -34,6 +34,7 @@
 	<bean id="BeDeleteListener" class="com.the.harbor.mnslistener.BeDeleteListener" />
 	<bean id="GoDeleteListener" class="com.the.harbor.mnslistener.GoDeleteListener" />
 	<bean id="UserSyncToOpenIMListener" class="com.the.harbor.mnslistener.UserSyncToOpenIMListener" />
+	<bean id="IMOffMsgListener" class="com.the.harbor.mnslistener.IMOffMsgListener" />
 
 	<import resource="core-context.xml" />
 </beans>
