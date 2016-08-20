@@ -91,7 +91,16 @@ public class UserSyncToOpenIMListener implements InitializingBean {
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					DoIMUserSync notify = JSONObject.parseObject(message.getMessageBody(), DoIMUserSync.class);
-					userInterfactionSV.userSync2OpenIM(notify);
+					try{
+						userInterfactionSV.userSync2OpenIM(notify);
+					}catch(Exception ex){
+						LOG.error("同步用户信息到OpenIM失败",ex);
+					}
+					try{
+						userInterfactionSV.userSync2OpenSearch(notify);
+					}catch(Exception ex){
+						LOG.error("同步用户信息到OpenIM失败",ex);
+					}
 				}
 			} catch (Exception ex) {
 				LOG.error("消息处理失败", ex);

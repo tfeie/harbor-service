@@ -10,7 +10,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.opensearch.CloudsearchClient;
+import com.aliyun.opensearch.CloudsearchDoc;
 import com.taobao.api.ApiException;
 import com.taobao.api.domain.Userinfos;
 import com.taobao.api.request.OpenimUsersAddRequest;
@@ -36,6 +39,8 @@ import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.base.enumeration.mns.MQType;
 import com.the.harbor.base.vo.MNSBody;
 import com.the.harbor.commons.components.aliyuncs.im.IMFactory;
+import com.the.harbor.commons.components.aliyuncs.opensearch.OpenSearchFactory;
+import com.the.harbor.commons.components.aliyuncs.opensearch.OpenSearchSettings;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.service.interfaces.IBeBusiSV;
 import com.the.harbor.service.interfaces.IGoBusiSV;
@@ -201,6 +206,39 @@ public class UserInterfactionSVImpl implements IUserInterfactionSV {
 			} catch (ApiException e) {
 				LOG.error("新增IM账户错误", e);
 			}
+		}
+
+	}
+
+	@Override
+	public void userSync2OpenSearch(DoIMUserSync notify) {
+		String handleType = notify.getHandleType();
+		String userId = notify.getUserId();
+		if (DoIMUserSync.HandleType.ADD.name().equals(handleType)) {
+			syncUser2Opensearch(userId, "add");
+		} else if (DoIMUserSync.HandleType.UPDATE.name().equals(handleType)) {
+			//覆盖更新索引
+			syncUser2Opensearch(userId, "add");
+		} else if (DoIMUserSync.HandleType.DELETE.name().equals(handleType)) {
+
+		}
+	}
+
+	private void syncUser2Opensearch(String userId, String cmd) {
+		UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(userId);
+		JSONObject fileds = JSONObject.parseObject(JSON.toJSONString(userInfo));
+		JSONObject data = new JSONObject();
+		data.put("cmd", cmd);
+		data.put("fields", fileds);
+		JSONArray arr = new JSONArray();
+		arr.add(data);
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchDoc doc = new CloudsearchDoc(OpenSearchSettings.getAppName(), client);
+		try {
+			String result = doc.push(arr.toJSONString(), "hy_user");
+			LOG.debug(result);
+		} catch (Exception e) {
+			LOG.error("同步索引失败", e);
 		}
 
 	}

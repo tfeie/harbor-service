@@ -8,6 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.aliyun.opensearch.CloudsearchClient;
+import com.aliyun.opensearch.CloudsearchSearch;
 import com.the.harbor.api.user.IUserSV;
 import com.the.harbor.api.user.param.CreateUserBuyHBOrderReq;
 import com.the.harbor.api.user.param.CreateUserBuyHBOrderResp;
@@ -30,6 +34,8 @@ import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
 import com.the.harbor.api.user.param.UserTag;
 import com.the.harbor.api.user.param.UserTagQueryReq;
 import com.the.harbor.api.user.param.UserTagQueryResp;
+import com.the.harbor.api.user.param.UserTuijianQueryReq;
+import com.the.harbor.api.user.param.UserTuijianQueryResp;
 import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.api.user.param.UserViewResp;
 import com.the.harbor.api.user.param.UserWealthQueryReq;
@@ -40,6 +46,8 @@ import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.base.util.ResponseBuilder;
 import com.the.harbor.base.vo.Response;
 import com.the.harbor.base.vo.ResponseHeader;
+import com.the.harbor.commons.components.aliyuncs.opensearch.OpenSearchFactory;
+import com.the.harbor.commons.components.aliyuncs.opensearch.OpenSearchSettings;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.redisdata.util.HyUserUtil;
 import com.the.harbor.commons.util.CollectionUtil;
@@ -317,6 +325,49 @@ public class UserSVImpl implements IUserSV {
 		CreateUserBuyMemberOrderResp resp = new CreateUserBuyMemberOrderResp();
 		resp.setPayOrderId(payOrderId);
 		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("处理成功"));
+		return resp;
+	}
+
+	@Override
+	public UserTuijianQueryResp queryTuijianUsers(UserTuijianQueryReq userTuijianQueryReq)
+			throws BusinessException, SystemException {
+		String userId = userTuijianQueryReq.getUserId();
+		UserViewInfo userViewInfo = userManagerSV.getUserViewInfoByUserId(userId);
+		// 智能匹配当前用户信息
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchSearch search = new CloudsearchSearch(client);
+		// 添加指定搜索的应用：
+		search.addIndex(OpenSearchSettings.getAppName());
+		search.setQueryString("industryname:'" + userViewInfo.getIndustryName() + "' RANK atcity:'"
+				+ userViewInfo.getAtCity() + "' ");
+		search.setFormat("json");
+		// 返回搜索结果
+		String result;
+		try {
+			result = search.search();
+		} catch (Exception e) {
+			throw new SystemException(e);
+		}
+		List<UserViewInfo> users = new ArrayList<UserViewInfo>();
+		JSONObject d = JSONObject.parseObject(result);
+		String status = d.getString("status");
+		if ("OK".equals(status)) {
+			JSONObject rs = d.getJSONObject("result");
+			JSONArray arr = rs.getJSONArray("items");
+			for (int i = 0; i < arr.size(); i++) {
+				JSONObject json = arr.getJSONObject(i);
+				String uid = json.getString("userid");
+				// 判断是否已经是好友
+				boolean frd = HyUserUtil.getUserFriends(userId).contains(uid);
+				if (!frd) {
+					UserViewInfo ud = userManagerSV.getUserViewInfoByUserId(uid);
+					users.add(ud);
+				}
+			}
+		}
+		UserTuijianQueryResp resp = new UserTuijianQueryResp();
+		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("处理成功"));
+		resp.setUserInfos(users);
 		return resp;
 	}
 }

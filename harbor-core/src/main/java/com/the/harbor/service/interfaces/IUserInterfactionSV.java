@@ -8,4 +8,6 @@ public interface IUserInterfactionSV {
 
 	void userSync2OpenIM(DoIMUserSync notify);
 
+	void userSync2OpenSearch(DoIMUserSync notify);
+
 }

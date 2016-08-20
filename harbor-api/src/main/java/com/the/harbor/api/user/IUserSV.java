@@ -22,6 +22,8 @@ import com.the.harbor.api.user.param.UserSystemTagQueryResp;
 import com.the.harbor.api.user.param.UserSystemTagSubmitReq;
 import com.the.harbor.api.user.param.UserTagQueryReq;
 import com.the.harbor.api.user.param.UserTagQueryResp;
+import com.the.harbor.api.user.param.UserTuijianQueryReq;
+import com.the.harbor.api.user.param.UserTuijianQueryResp;
 import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.api.user.param.UserViewResp;
 import com.the.harbor.api.user.param.UserWealthQueryReq;
@@ -71,6 +73,10 @@ public interface IUserSV {
 	}
 
 	@interface CreateUserBuyMember {
+
+	}
+
+	@interface QueryTuijianUsers {
 
 	}
 
@@ -253,6 +259,16 @@ public interface IUserSV {
 	 */
 	CreateUserBuyMemberOrderResp createUserBuyMember(
 			@NotNull(message = "参数为空") CreateUserBuyMemberOrderReq createUserBuyMemberOrderReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 查询推荐用户
+	 * @param userTuijianQueryReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	UserTuijianQueryResp queryTuijianUsers(@NotNull(message = "参数为空") UserTuijianQueryReq userTuijianQueryReq)
 			throws BusinessException, SystemException;
 
 }
