@@ -354,14 +354,19 @@ public class UserSVImpl implements IUserSV {
 		if ("OK".equals(status)) {
 			JSONObject rs = d.getJSONObject("result");
 			JSONArray arr = rs.getJSONArray("items");
+			int count=0;
 			for (int i = 0; i < arr.size(); i++) {
+				if(count>3){
+					break;
+				}
 				JSONObject json = arr.getJSONObject(i);
 				String uid = json.getString("userid");
 				// 判断是否已经是好友
 				boolean frd = HyUserUtil.getUserFriends(userId).contains(uid);
-				if (!frd) {
+				if (!frd && !uid.equals(userId)) {
 					UserViewInfo ud = userManagerSV.getUserViewInfoByUserId(uid);
 					users.add(ud);
+					count++;
 				}
 			}
 		}
