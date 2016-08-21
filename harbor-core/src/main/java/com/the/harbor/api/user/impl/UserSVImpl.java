@@ -385,7 +385,7 @@ public class UserSVImpl implements IUserSV {
 		CloudsearchSearch search = new CloudsearchSearch(client);
 		// 添加指定搜索的应用：
 		search.addIndex(OpenSearchSettings.getAppName());
-		search.setQueryString("usersearch:'" + userTuijianQueryReq.getKeyword() + "'");
+		search.setQueryString("usersearch:'" + userTuijianQueryReq.getKeyword().trim() + "'");
 		search.setFormat("json");
 		// 返回搜索结果
 		String result;
