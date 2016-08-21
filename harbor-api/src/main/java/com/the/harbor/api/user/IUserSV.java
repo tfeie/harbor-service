@@ -263,12 +263,24 @@ public interface IUserSV {
 
 	/**
 	 * 查询推荐用户
+	 * 
 	 * @param userTuijianQueryReq
 	 * @return
 	 * @throws BusinessException
 	 * @throws SystemException
 	 */
 	UserTuijianQueryResp queryTuijianUsers(@NotNull(message = "参数为空") UserTuijianQueryReq userTuijianQueryReq)
+			throws BusinessException, SystemException;
+
+	/**
+	 * 搜索用户
+	 * 
+	 * @param userTuijianQueryReq
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	UserTuijianQueryResp searchUsers(@NotNull(message = "参数为空") UserTuijianQueryReq userTuijianQueryReq)
 			throws BusinessException, SystemException;
 
 }
