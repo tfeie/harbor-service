@@ -239,7 +239,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 				notify.setAccepterId(accepterId);
 				notify.setTitle("Be有新评论啦~");
 				notify.setContent(content);
-				notify.setLink("../be/detail.html?beId=" + be.getBeId());
+				notify.setLink("../be/detail.html?beId=" + be.getBeId()+"&notifyId="+notify.getNotifyId());
 				NotifyMQSend.sendNotifyMQ(notify);
 			}
 			// 写入REDIS关系

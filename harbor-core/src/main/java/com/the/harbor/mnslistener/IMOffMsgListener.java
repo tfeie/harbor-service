@@ -17,6 +17,7 @@ import com.the.harbor.base.enumeration.hynotify.SenderType;
 import com.the.harbor.commons.components.aliyuncs.im.IMSettings;
 import com.the.harbor.commons.redisdata.def.DoNotify;
 import com.the.harbor.commons.util.StringUtil;
+import com.the.harbor.commons.util.UUIDUtil;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.NotifyMQSend;
 
@@ -61,6 +62,7 @@ public class IMOffMsgListener implements InitializingBean {
 						UserViewInfo sendUser = userManagerSV.getUserViewInfoByUserId(fromId);
 
 						DoNotify body = new DoNotify();
+						body.setNotifyId(UUIDUtil.genId32());
 						body.setHandleType(DoNotify.HandleType.PUBLISH.name());
 						body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
 						body.setSenderType(SenderType.USER.getValue());
@@ -69,7 +71,7 @@ public class IMOffMsgListener implements InitializingBean {
 						body.setAccepterId(toId);
 						body.setTitle("您有新的离线消息");
 						body.setContent("[" + sendUser.getEnName() + "]给您发了新的离线消息，请查看~");
-						body.setLink("../user/im.html?touchId=" + fromId);
+						body.setLink("../user/im.html?touchId=" + fromId+"&notifyId="+body.getNotifyId());
 						NotifyMQSend.sendNotifyMQ(body);
 					}
 				} catch (Exception e) {

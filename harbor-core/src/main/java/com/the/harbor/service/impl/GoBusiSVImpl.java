@@ -355,6 +355,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				// 给海牛通知
 				UserViewInfo orderUser = userManagerSV.getUserViewInfoByUserId(goOrder.getUserId());
 				DoNotify body = new DoNotify();
+				body.setNotifyId(UUIDUtil.genId32());
 				body.setHandleType(DoNotify.HandleType.PUBLISH.name());
 				body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
 				body.setSenderType(SenderType.USER.getValue());
@@ -363,7 +364,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				body.setAccepterId(hyGo.getUserId());
 				body.setTitle("活动预约确认");
 				body.setContent("[" + orderUser.getEnName() + "]预约并支付了您发布的一对一活动[" + hyGo.getTopic() + "],请您确认~");
-				body.setLink("../go/toHainiuConfirm.html?goOrderId=" + goOrder.getOrderId());
+				body.setLink("../go/toHainiuConfirm.html?goOrderId=" + goOrder.getOrderId()+"&notifyId="+body.getNotifyId());
 				NotifyMQSend.sendNotifyMQ(body);
 			}
 		}
@@ -388,16 +389,17 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		String link = "";
 		HyGoOrder o = new HyGoOrder();
 		o.setOrderId(hyGoOrder.getOrderId());
+		String notifyId = UUIDUtil.genId32();
 		if ("confirm".equals(goOrderConfirmReq.getAckFlag())) {
 			title = "海牛同意了您的预约";
 			content = "[" + publishUser.getEnName() + "]同意了您的预约的活动[" + hyGo.getTopic() + "]";
-			link = "../go/toAppointment.html?goOrderId=" + hyGoOrder.getOrderId();
+			link = "../go/toAppointment.html?goOrderId=" + hyGoOrder.getOrderId()+"&notifyId="+notifyId;
 			o.setOrderStatus(OrderStatus.WAIT_MEET.getValue());
 		} else if ("reject".equals(goOrderConfirmReq.getAckFlag())) {
 			o.setOrderStatus(OrderStatus.REJECT.getValue());
 			title = "海牛拒绝了您的预约";
 			content = "[" + publishUser.getEnName() + "]拒绝了您的预约的活动[" + hyGo.getTopic() + "],您可以浏览其它活动~";
-			link = "../go/goindex.html";
+			link = "../go/goindex.html?notifyId="+notifyId+"&notifyId="+notifyId;
 		}
 		Timestamp sysdate = DateUtil.getSysDate();
 		o.setStsDate(sysdate);
@@ -406,6 +408,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 
 		/* 海牛确认或拒绝消息发送 */
 		DoNotify body = new DoNotify();
+		body.setNotifyId(notifyId);
 		body.setHandleType(DoNotify.HandleType.PUBLISH.name());
 		body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
 		body.setSenderType(SenderType.USER.getValue());
@@ -461,6 +464,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		// 将海牛设置的时间与地点信息告知小白
 		UserViewInfo publishUser = userManagerSV.getUserViewInfoByUserId(hyGo.getUserId());
 		DoNotify body = new DoNotify();
+		body.setNotifyId(UUIDUtil.genId32());
 		body.setHandleType(DoNotify.HandleType.PUBLISH.name());
 		body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
 		body.setSenderType(SenderType.USER.getValue());
@@ -469,7 +473,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		body.setAccepterId(hyGoOrder.getUserId());
 		body.setTitle("等待新秀确认");
 		body.setContent("[" + publishUser.getEnName() + "]提交了您预约的活动[" + hyGo.getTopic() + "]见面的时间与地点，您可以选择确认啦~");
-		body.setLink("../go/toAppointment.html?goOrderId=" + hyGoOrder.getOrderId());
+		body.setLink("../go/toAppointment.html?goOrderId=" + hyGoOrder.getOrderId()+"&notifyId="+body.getNotifyId());
 		NotifyMQSend.sendNotifyMQ(body);
 
 		// 将海牛设置的时间与地点短信告知小白
@@ -512,6 +516,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		// 将小白设置的时间与地点信息告知海牛
 		UserViewInfo orderUser = userManagerSV.getUserViewInfoByUserId(hyGoOrder.getUserId());
 		DoNotify body = new DoNotify();
+		body.setNotifyId(UUIDUtil.genId32());
 		body.setHandleType(DoNotify.HandleType.PUBLISH.name());
 		body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
 		body.setSenderType(SenderType.USER.getValue());
@@ -520,7 +525,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		body.setAccepterId(hyGo.getUserId());
 		body.setTitle("小白确认了与您见面的时间地点");
 		body.setContent("[" + orderUser.getEnName() + "]确认了活动[" + hyGo.getTopic() + "]见面的时间与地点，点击查看~");
-		body.setLink("../go/toHainiuAppointment.html?goOrderId=" + hyGoOrder.getOrderId());
+		body.setLink("../go/toHainiuAppointment.html?goOrderId=" + hyGoOrder.getOrderId()+"&notifyId="+body.getNotifyId());
 		NotifyMQSend.sendNotifyMQ(body);
 
 		// 小白将选择的时间与地点短信通知海牛
@@ -566,6 +571,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		// 将海牛确认服务结束后，告知小白
 		UserViewInfo publishUser = userManagerSV.getUserViewInfoByUserId(hyGo.getUserId());
 		DoNotify body = new DoNotify();
+		body.setNotifyId(UUIDUtil.genId32());
 		body.setHandleType(DoNotify.HandleType.PUBLISH.name());
 		body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
 		body.setSenderType(SenderType.USER.getValue());
@@ -574,12 +580,13 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		body.setAccepterId(hyGoOrder.getUserId());
 		body.setTitle("海牛确认了对您的服务结束");
 		body.setContent("[" + publishUser.getEnName() + "]确认了您预约的活动[" + hyGo.getTopic() + "]服务结束，您可以进入互评~");
-		body.setLink("../go/toFeedback.html?goOrderId=" + hyGoOrder.getOrderId());
+		body.setLink("../go/toFeedback.html?goOrderId=" + hyGoOrder.getOrderId()+"&notifyId="+body.getNotifyId());
 		NotifyMQSend.sendNotifyMQ(body);
 
 		// 海牛确认服务结束后，给自己发送一条消息
 		UserViewInfo orderUser = userManagerSV.getUserViewInfoByUserId(hyGoOrder.getUserId());
 		body = new DoNotify();
+		body.setNotifyId(UUIDUtil.genId32());
 		body.setHandleType(DoNotify.HandleType.PUBLISH.name());
 		body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
 		body.setSenderType(SenderType.USER.getValue());
@@ -588,7 +595,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		body.setAccepterId(hyGo.getUserId());
 		body.setTitle("您确认了服务结束");
 		body.setContent("您确认了[" + orderUser.getEnName() + "]预约您活动[" + hyGo.getTopic() + "]服务结束，您可以进入互评~");
-		body.setLink("../go/toHainiuFeedback.html?goOrderId=" + hyGoOrder.getOrderId());
+		body.setLink("../go/toHainiuFeedback.html?goOrderId=" + hyGoOrder.getOrderId()+"&notifyId="+body.getNotifyId());
 		NotifyMQSend.sendNotifyMQ(body);
 
 		// 给小白发送一条短信提醒活动已经结束
@@ -694,21 +701,21 @@ public class GoBusiSVImpl implements IGoBusiSV {
 					if (go.getUserId().equals(doGoComment.getPublishUserId())) {
 						// 有疑问？ 发送给小白端
 						notify.setLink("../go/comments.html?goOrderId=" + doGoComment.getOrderId()
-								+ "&backURL=../user/messagecenter.html");
+								+ "&backURL=../user/messagecenter.html?notifyId="+notify.getNotifyId());
 					} else {
 						// 有疑问，顺序颠倒？发送给海牛端
 						notify.setLink("../go/hainiugroupcomments.html?goOrderId=" + doGoComment.getOrderId()
-								+ "&backURL=../user/messagecenter.html");
+								+ "&notifyId="+notify.getNotifyId()+"&backURL=../user/messagecenter.html");
 					}
 				} else {
 					if (go.getUserId().equals(doGoComment.getPublishUserId())) {
 						// 有疑问？ 发送给小白端
 						notify.setLink("../go/toFeedback.html?goOrderId=" + doGoComment.getOrderId()
-								+ "&backURL=../user/messagecenter.html");
+								+ "&notifyId="+notify.getNotifyId()+"&backURL=../user/messagecenter.html");
 					} else {
 						// 有疑问，顺序颠倒？发送给海牛端
 						notify.setLink("../go/toHainiuFeedback.html?goOrderId=" + doGoComment.getOrderId()
-								+ "&backURL=../user/messagecenter.html");
+								+ "&notifyId="+notify.getNotifyId()+"&backURL=../user/messagecenter.html");
 					}
 
 				}
@@ -920,6 +927,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			// 给活动发起者通知审核
 			UserViewInfo orderUser = userManagerSV.getUserViewInfoByUserId(userId);
 			DoNotify body = new DoNotify();
+			body.setNotifyId(UUIDUtil.genId32());
 			body.setHandleType(DoNotify.HandleType.PUBLISH.name());
 			body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
 			body.setSenderType(SenderType.USER.getValue());
@@ -928,7 +936,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			body.setAccepterId(hyGo.getUserId());
 			body.setTitle("有新用户报名参加活动");
 			body.setContent("[" + orderUser.getEnName() + "]报名参加您发起的group活动[" + hyGo.getTopic() + "],请您确认~");
-			body.setLink("../go/confirmlist.html?goId=" + hyGo.getGoId());
+			body.setLink("../go/confirmlist.html?goId=" + hyGo.getGoId()+"&notifyId="+body.getNotifyId());
 			NotifyMQSend.sendNotifyMQ(body);
 		}
 		return resp;
@@ -980,6 +988,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				// 给活动发起者通知审核
 				UserViewInfo orderUser = userManagerSV.getUserViewInfoByUserId(goJoin.getUserId());
 				DoNotify body = new DoNotify();
+				body.setNotifyId(UUIDUtil.genId32());
 				body.setHandleType(DoNotify.HandleType.PUBLISH.name());
 				body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
 				body.setSenderType(SenderType.USER.getValue());
@@ -988,7 +997,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				body.setAccepterId(hyGo.getUserId());
 				body.setTitle("有新用户报名参加活动");
 				body.setContent("[" + orderUser.getEnName() + "]报名参加并支付了您发起的group活动[" + hyGo.getTopic() + "],请您确认~");
-				body.setLink("../go/confirmlist.html?goId=" + hyGo.getGoId());
+				body.setLink("../go/confirmlist.html?goId=" + hyGo.getGoId()+"&notifyId="+body.getNotifyId());
 				NotifyMQSend.sendNotifyMQ(body);
 			}
 		}
@@ -1028,6 +1037,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				HyGoUtil.agreeUserJoinGroupApply(goJoin.getGoId(), goJoin.getUserId());
 				// 发送通知消息
 				DoNotify body = new DoNotify();
+				body.setNotifyId(UUIDUtil.genId32());
 				body.setHandleType(DoNotify.HandleType.PUBLISH.name());
 				body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
 				body.setSenderType(SenderType.USER.getValue());
@@ -1037,7 +1047,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				body.setTitle("同意您的参加活动");
 				body.setContent(
 						doGoJoinConfirm.getPublishUserName() + "同意您参加group活动[" + doGoJoinConfirm.getTopic() + "]，查看详情");
-				body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId());
+				body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId()+"&notifyId="+body.getNotifyId());
 				NotifyMQSend.sendNotifyMQ(body);
 
 				// GROUP活动发起方确认同意，短信通知给参与方
@@ -1070,6 +1080,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				HyGoUtil.rejectUserJoinGroupApply(goJoin.getGoId(), goJoin.getUserId());
 				// 发送消息
 				DoNotify body = new DoNotify();
+				body.setNotifyId(UUIDUtil.genId32());
 				body.setHandleType(DoNotify.HandleType.PUBLISH.name());
 				body.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
 				body.setSenderType(SenderType.USER.getValue());
@@ -1079,7 +1090,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				body.setTitle("拒绝您的参加活动");
 				body.setContent(doGoJoinConfirm.getPublishUserName() + "拒绝您参加group活动[" + doGoJoinConfirm.getTopic()
 						+ "],您支付的费用将于3天内退回您的账户。查看详情");
-				body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId());
+				body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId()+"&notifyId="+body.getNotifyId());
 				NotifyMQSend.sendNotifyMQ(body);
 
 				HyGo go = this.getHyGo(goJoin.getGoId());
@@ -1250,6 +1261,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			UserAssetsTradeMQSend.sendMQ(t);
 			// 给活动发起者消息中心发送通知
 			DoNotify notify = new DoNotify();
+			notify.setNotifyId(UUIDUtil.genId32());
 			notify.setHandleType(DoNotify.HandleType.PUBLISH.name());
 			notify.setNotifyId(UUIDUtil.genId32());
 			notify.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
@@ -1259,7 +1271,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			notify.setAccepterId(go.getUserId());
 			notify.setTitle("收到海贝通知~");
 			notify.setContent("给您发起的group活动[" + go.getTopic() + "]捐献了[" + giveHBReq.getCount() + "]个海贝，速速查看~");
-			notify.setLink("../go/hainiugroupcomments.html?goOrderId=" + o.getOrderId());
+			notify.setLink("../go/hainiugroupcomments.html?goOrderId=" + o.getOrderId()+"&notifyId="+notify.getNotifyId());
 			NotifyMQSend.sendNotifyMQ(notify);
 
 		} else if (GoType.ONE_ON_ONE.getValue().equals(giveHBReq.getGoType())) {
@@ -1300,7 +1312,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			notify.setAccepterId(go.getUserId());
 			notify.setTitle("收到海贝通知~");
 			notify.setContent("给您发起的one on one活动[" + go.getTopic() + "]捐献了[" + giveHBReq.getCount() + "]个海贝，速速查看~");
-			notify.setLink("../go/toHainiuFeedback.html?goOrderId=" + o.getOrderId());
+			notify.setLink("../go/toHainiuFeedback.html?goOrderId=" + o.getOrderId()+"&notifyId="+notify.getNotifyId());
 			NotifyMQSend.sendNotifyMQ(notify);
 		}
 

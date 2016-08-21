@@ -64,42 +64,30 @@ public class NotifySVImpl implements INotifySV {
 			if (StringUtil.isBlank(notify.getContent())) {
 				throw new BusinessException("消息内容为空");
 			}
-			String notifyId = UUIDUtil.genId32();
+
 			HyNotify record = new HyNotify();
 			BeanUtils.copyProperties(notify, record);
-			record.setNotifyId(notifyId);
+			record.setNotifyId(StringUtil.isBlank(notify.getNotifyId()) ? UUIDUtil.genId32() : notify.getNotifyId());
 			record.setCreateDate(sysdate);
 			record.setStatus(Status.UNREAD.getValue());
 			hyNotifyMapper.insert(record);
-			// 记录消息内容
-			HyNotifyUtil.recordNotify(notifyId, this.convert(record));
 			// 根据消息接受者类型来通知各个用户
 			if (AccepterType.USER.getValue().equals(notify.getAccepterType())) {
 				// 通知用户接收消息
-				HyNotifyUtil.recordSingleUserNotify(notify.getAccepterId(), notifyId);
+				HyNotifyUtil.addUserNotify(this.convert(record));
 			}
-		} else if (DoNotify.HandleType.READ.name().equals(notify.getHandleType())
-				|| DoNotify.HandleType.CANCEL.name().equals(notify.getHandleType())) {
-			// 读消息或者删除消息是用户端发起的，接受者类型必须是用户，
+		} else if (DoNotify.HandleType.READ.name().equals(notify.getHandleType())) {
+			// 消息已读
 			if (StringUtil.isBlank(notify.getNotifyId())) {
 				throw new BusinessException("消息ID为空");
 			}
-			if (StringUtil.isBlank(notify.getAccepterType())) {
-				throw new BusinessException("接受者类型为空");
+			HyNotifyUtil.readNotify(notify.getNotifyId());
+		} else if (DoNotify.HandleType.CANCEL.name().equals(notify.getHandleType())) {
+			// 消息删除
+			if (StringUtil.isBlank(notify.getNotifyId())) {
+				throw new BusinessException("消息ID为空");
 			}
-			if (!AccepterType.USER.getValue().equals(notify.getAccepterType())) {
-				throw new BusinessException("接受者类型不是用户级");
-			}
-			if (StringUtil.isBlank(notify.getAccepterId())) {
-				throw new BusinessException("接受者用户为空");
-			}
-			// 获取消息
-			HyNotifyVo notifyVo = HyNotifyUtil.getNotify(notify.getNotifyId());
-			if (notifyVo != null && AccepterType.USER.getValue().equals(notifyVo.getAccepterType())) {
-				// 消息本身的接受者 如果是单个用户，则这条消息的状态要更新为已读
-
-			}
-			HyNotifyUtil.deleteSingleUserNotify(notify.getAccepterId(), notify.getNotifyId());
+			HyNotifyUtil.deleteNotify(notify.getNotifyId());
 		}
 
 	}

@@ -300,13 +300,14 @@ public class UserManagerSVImpl implements IUserManagerSV {
 
 		String content = "";
 		String link = null;
+		String notifyId = UUIDUtil.genId32();
 		if (AuthSts.AUTH_PASS.getValue().equals(userStatusReq.getStatus())) {
 			u.setUserStatus(UserStatus.AUTHORIZED_SUCCESS.getValue());
 			content = "您提交的认证材料审核通过";
 		} else if (AuthSts.AUTH_FAILURE.getValue().equals(userStatusReq.getStatus())) {
 			u.setUserStatus(UserStatus.AUTHORIZED_FAILURE.getValue());
 			content = "您提交的认证材料审核未通过:" + userStatusReq.getRemark();
-			link = "../user/toApplyCertficate.html";
+			link = "../user/toApplyCertficate.html?notifyId=" + notifyId;
 		}
 		u.setAuthSts(userStatusReq.getStatus());
 		hyUserMapper.updateByPrimaryKeySelective(u);
@@ -314,7 +315,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		// 审核通过与否得要发送消息
 		DoNotify notify = new DoNotify();
 		notify.setHandleType(DoNotify.HandleType.PUBLISH.name());
-		notify.setNotifyId(UUIDUtil.genId32());
+		notify.setNotifyId(notifyId);
 		notify.setNotifyType(NotifyType.SYSTEM_NOTIFY.getValue());
 		notify.setSenderType(SenderType.SYSTEM.getValue());
 		notify.setSenderId(userStatusReq.getUserId());
@@ -1026,9 +1027,9 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		}
 		// 获取用户所有BE被赞
 		resp.setTotalDianzan(beBusiSV.getBesCount(userId));
-		//查询益友总数
+		// 查询益友总数
 		resp.setYiyou(goBusiSV.getGoYiYouCount(userId));
-		//查询助人总数
+		// 查询助人总数
 		resp.setZhuren(goBusiSV.getZhuRenCount(userId));
 		resp.setUserId(userId);
 		return resp;
@@ -1226,6 +1227,5 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		}
 
 	}
-
 
 }
