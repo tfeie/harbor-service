@@ -354,9 +354,9 @@ public class UserSVImpl implements IUserSV {
 		if ("OK".equals(status)) {
 			JSONObject rs = d.getJSONObject("result");
 			JSONArray arr = rs.getJSONArray("items");
-			int count=0;
+			int count = 0;
 			for (int i = 0; i < arr.size(); i++) {
-				if(count>3){
+				if (count > 3) {
 					break;
 				}
 				JSONObject json = arr.getJSONObject(i);
@@ -367,6 +367,45 @@ public class UserSVImpl implements IUserSV {
 					UserViewInfo ud = userManagerSV.getUserViewInfoByUserId(uid);
 					users.add(ud);
 					count++;
+				}
+			}
+		}
+		UserTuijianQueryResp resp = new UserTuijianQueryResp();
+		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("处理成功"));
+		resp.setUserInfos(users);
+		return resp;
+	}
+
+	@Override
+	public UserTuijianQueryResp searchUsers(UserTuijianQueryReq userTuijianQueryReq)
+			throws BusinessException, SystemException {
+		String userId = userTuijianQueryReq.getUserId();
+		// 智能匹配当前用户信息
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchSearch search = new CloudsearchSearch(client);
+		// 添加指定搜索的应用：
+		search.addIndex(OpenSearchSettings.getAppName());
+		search.setQueryString("usersearch:'" + userTuijianQueryReq.getKeyword() + "'");
+		search.setFormat("json");
+		// 返回搜索结果
+		String result;
+		try {
+			result = search.search();
+		} catch (Exception e) {
+			throw new SystemException(e);
+		}
+		List<UserViewInfo> users = new ArrayList<UserViewInfo>();
+		JSONObject d = JSONObject.parseObject(result);
+		String status = d.getString("status");
+		if ("OK".equals(status)) {
+			JSONObject rs = d.getJSONObject("result");
+			JSONArray arr = rs.getJSONArray("items");
+			for (int i = 0; i < arr.size(); i++) {
+				JSONObject json = arr.getJSONObject(i);
+				String uid = json.getString("userid");
+				if (!uid.equals(userId)) {
+					UserViewInfo ud = userManagerSV.getUserViewInfoByUserId(uid);
+					users.add(ud);
 				}
 			}
 		}
