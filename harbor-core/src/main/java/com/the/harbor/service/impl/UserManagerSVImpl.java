@@ -1102,7 +1102,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 	}
 
 	private void createInviteCodes(String userId) {
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 10; i++) {
 			String inviteCode = RandomUtil.generateNumber(4);
 			HyUserInvite record = new HyUserInvite();
 			record.setInviteCode(inviteCode);
@@ -1226,6 +1226,19 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			this.storeUserInfo2Redis(u.getUserId());
 		}
 
+	}
+
+	@Override
+	public void batchCreateInviteCodeForAllUsers() {
+		HyUserCriteria sql = new HyUserCriteria();
+		List<HyUser> list = hyUserMapper.selectByExample(sql);
+		if (CollectionUtil.isEmpty(list)) {
+			return;
+		}
+		for (HyUser u : list) {
+			this.createInviteCodes(u.getUserId());
+		}
+		
 	}
 
 }

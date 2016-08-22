@@ -157,4 +157,6 @@ public interface IUserManagerSV {
 
 	void resetUsersInRedis();
 
+	void batchCreateInviteCodeForAllUsers();
+
 }

@@ -55,5 +55,10 @@ public class HyUserRedisTest {
 	public void geta1() {
 		userManagerSV.resetUsersInRedis();
 	}
+	
+	@Test
+	public void createInviteCode() {
+		userManagerSV.batchCreateInviteCodeForAllUsers();
+	}
 
 }
