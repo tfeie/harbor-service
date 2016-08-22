@@ -33,6 +33,8 @@ public class UserViewInfo extends UserInfo {
 
 	public String employmentInfo;
 
+	private String authIdentityName;
+
 	public String getEmploymentInfo() {
 		List<String> list = new ArrayList<String>();
 		if (this.getIndustryName() != null && !"".equals(this.getIndustryName().trim())) {
@@ -131,5 +133,15 @@ public class UserViewInfo extends UserInfo {
 	public void setAuthStsName(String authStsName) {
 		this.authStsName = authStsName;
 	}
+
+	public String getAuthIdentityName() {
+		return authIdentityName;
+	}
+
+	public void setAuthIdentityName(String authIdentityName) {
+		this.authIdentityName = authIdentityName;
+	}
+	
+	
 
 }

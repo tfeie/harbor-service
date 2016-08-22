@@ -703,12 +703,14 @@ public class UserManagerSVImpl implements IUserManagerSV {
 					ParamCode.MARITAL_STATUS.getValue(), hyUser.getAbroadCountry()));
 			userInfo.setConstellationName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
 					ParamCode.CONSTELLATION.getValue(), hyUser.getAbroadCountry()));
+			userInfo.setAuthIdentityName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
+					ParamCode.AUTH_IDENTITY.getValue(), hyUser.getAuthIdentity()));
 			if (UserStatus.AUTHORIZED_SUCCESS.getValue().equals(hyUser.getUserStatus())) {
-				String userStatus ="";
-				if(AuthIdentity.ENTREPRENEUR.getValue().equals(userInfo.getAuthIdentity())){
-					userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
-							ParamCode.USER_STATUS.getValue(), hyUser.getUserStatus());
-				}else{
+				String userStatus = "";
+				if (AuthIdentity.ENTREPRENEUR.getValue().equals(userInfo.getAuthIdentity())) {
+					userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(), ParamCode.USER_STATUS.getValue(),
+							hyUser.getUserStatus());
+				} else {
 					userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
 							ParamCode.AUTH_IDENTITY.getValue(), hyUser.getAuthIdentity());
 				}
