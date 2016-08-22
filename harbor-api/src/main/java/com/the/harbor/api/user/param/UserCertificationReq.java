@@ -28,6 +28,12 @@ public class UserCertificationReq implements Serializable {
 	@NotBlank(message = "请上传海外学历认证/签证/学生证", groups = { IUserSV.SubmitUserCertification.class })
 	private String overseasPhoto;
 
+	/**
+	 * 用户认证身份
+	 */
+	@NotBlank(message = "认证身份不能为空", groups = { IUserSV.SubmitUserCertification.class })
+	private String authIdentity;
+
 	public String getUserId() {
 		return userId;
 	}
@@ -50,6 +56,14 @@ public class UserCertificationReq implements Serializable {
 
 	public void setOverseasPhoto(String overseasPhoto) {
 		this.overseasPhoto = overseasPhoto;
+	}
+
+	public String getAuthIdentity() {
+		return authIdentity;
+	}
+
+	public void setAuthIdentity(String authIdentity) {
+		this.authIdentity = authIdentity;
 	}
 
 }

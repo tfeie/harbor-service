@@ -2584,6 +2584,76 @@ public class HyUserCriteria {
             addCriterion("AUTH_STS not between", value1, value2, "authSts");
             return (Criteria) this;
         }
+
+        public Criteria andAuthIdentityIsNull() {
+            addCriterion("AUTH_IDENTITY is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthIdentityIsNotNull() {
+            addCriterion("AUTH_IDENTITY is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthIdentityEqualTo(String value) {
+            addCriterion("AUTH_IDENTITY =", value, "authIdentity");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthIdentityNotEqualTo(String value) {
+            addCriterion("AUTH_IDENTITY <>", value, "authIdentity");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthIdentityGreaterThan(String value) {
+            addCriterion("AUTH_IDENTITY >", value, "authIdentity");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthIdentityGreaterThanOrEqualTo(String value) {
+            addCriterion("AUTH_IDENTITY >=", value, "authIdentity");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthIdentityLessThan(String value) {
+            addCriterion("AUTH_IDENTITY <", value, "authIdentity");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthIdentityLessThanOrEqualTo(String value) {
+            addCriterion("AUTH_IDENTITY <=", value, "authIdentity");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthIdentityLike(String value) {
+            addCriterion("AUTH_IDENTITY like", value, "authIdentity");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthIdentityNotLike(String value) {
+            addCriterion("AUTH_IDENTITY not like", value, "authIdentity");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthIdentityIn(List<String> values) {
+            addCriterion("AUTH_IDENTITY in", values, "authIdentity");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthIdentityNotIn(List<String> values) {
+            addCriterion("AUTH_IDENTITY not in", values, "authIdentity");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthIdentityBetween(String value1, String value2) {
+            addCriterion("AUTH_IDENTITY between", value1, value2, "authIdentity");
+            return (Criteria) this;
+        }
+
+        public Criteria andAuthIdentityNotBetween(String value1, String value2) {
+            addCriterion("AUTH_IDENTITY not between", value1, value2, "authIdentity");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

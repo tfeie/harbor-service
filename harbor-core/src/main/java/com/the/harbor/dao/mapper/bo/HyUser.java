@@ -75,6 +75,8 @@ public class HyUser {
 
     private String authSts;
 
+    private String authIdentity;
+
     public String getUserId() {
         return userId;
     }
@@ -361,5 +363,13 @@ public class HyUser {
 
     public void setAuthSts(String authSts) {
         this.authSts = authSts == null ? null : authSts.trim();
+    }
+
+    public String getAuthIdentity() {
+        return authIdentity;
+    }
+
+    public void setAuthIdentity(String authIdentity) {
+        this.authIdentity = authIdentity == null ? null : authIdentity.trim();
     }
 }

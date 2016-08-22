@@ -44,6 +44,7 @@ import com.the.harbor.base.enumeration.hypaymentorder.BusiType;
 import com.the.harbor.base.enumeration.hytags.TagCat;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.enumeration.hyuser.AccessPermission;
+import com.the.harbor.base.enumeration.hyuser.AuthIdentity;
 import com.the.harbor.base.enumeration.hyuser.AuthSts;
 import com.the.harbor.base.enumeration.hyuser.MemberLevel;
 import com.the.harbor.base.enumeration.hyuser.SystemUser;
@@ -278,6 +279,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		u.setSubmitCertDate(DateUtil.getSysDate());
 		u.setUserStatus(UserStatus.UNAUTHORIZED.getValue());
 		u.setAuthSts(AuthSts.SUBMITTED_APPLY.getValue());
+		u.setAuthIdentity(userCertificationReq.getAuthIdentity());
 		int n = hyUserMapper.updateByPrimaryKeySelective(u);
 		if (n == 0) {
 			throw new SystemException("认证材料提交失败,请稍候重试");
@@ -702,8 +704,14 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			userInfo.setConstellationName(HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
 					ParamCode.CONSTELLATION.getValue(), hyUser.getAbroadCountry()));
 			if (UserStatus.AUTHORIZED_SUCCESS.getValue().equals(hyUser.getUserStatus())) {
-				String userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
-						ParamCode.USER_STATUS.getValue(), hyUser.getUserStatus());
+				String userStatus ="";
+				if(AuthIdentity.ENTREPRENEUR.getValue().equals(userInfo.getAuthIdentity())){
+					userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
+							ParamCode.USER_STATUS.getValue(), hyUser.getUserStatus());
+				}else{
+					userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
+							ParamCode.AUTH_IDENTITY.getValue(), hyUser.getAuthIdentity());
+				}
 				userInfo.setUserStatusName(userStatus);
 			} else {
 				String userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
@@ -1238,7 +1246,7 @@ public class UserManagerSVImpl implements IUserManagerSV {
 		for (HyUser u : list) {
 			this.createInviteCodes(u.getUserId());
 		}
-		
+
 	}
 
 }

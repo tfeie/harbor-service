@@ -80,6 +80,8 @@ public class UserInfo implements Serializable {
 	private String homePageBg;
 
 	private String authSts;
+	
+	 private String authIdentity;
 
 	public String getUserId() {
 		return userId;
@@ -376,5 +378,15 @@ public class UserInfo implements Serializable {
 	public void setAbroadCountryRGB(String abroadCountryRGB) {
 		this.abroadCountryRGB = abroadCountryRGB;
 	}
+
+	public String getAuthIdentity() {
+		return authIdentity;
+	}
+
+	public void setAuthIdentity(String authIdentity) {
+		this.authIdentity = authIdentity;
+	}
+	
+	
 
 }
