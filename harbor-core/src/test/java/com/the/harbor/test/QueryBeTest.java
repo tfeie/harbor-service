@@ -50,6 +50,9 @@ public class QueryBeTest {
 		SearchHits hits = response.getHits();
 		for (SearchHit hit : hits) {
 			Go go = JSON.parseObject(hit.getSourceAsString(), Go.class);
+			if("673A35F6591E4179AA4CA0D17E7F4553".equals(go.getGoId())){
+				continue;
+			}
 			ElasticSearchFactory.getClient()
 					.prepareDelete(HarborIndex.HY_GO_DB.getValue(), HarborIndexType.HY_GO.getValue(), go.getGoId())
 					.execute().actionGet();

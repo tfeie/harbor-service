@@ -30,4 +30,6 @@ public interface IBeBusiSV {
 	void topBe(String beId, String topFlag, Timestamp topDate);
 
 	void hideBe(String beId, String hideFlag);
+
+	void rebuildAllBesOpenSearchIndex();
 }

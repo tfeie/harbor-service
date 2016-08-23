@@ -17,9 +17,9 @@ public class BeQueryTest {
 	public static void main(String[] args) {
 		BoolQueryBuilder builder = QueryBuilders.boolQuery();
 		int start = 0;
-		int end = 1000;
-		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_GO_DB.getValue())
-				.setTypes(HarborIndexType.HY_GO.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
+		int end = 1;
+		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
+				.setTypes(HarborIndexType.HY_BE.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
 				.execute().actionGet();
 		SearchHits hits = response.getHits();
 		JSONArray a = new JSONArray();

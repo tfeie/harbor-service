@@ -1,6 +1,7 @@
 package com.the.harbor.service.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.elasticsearch.action.search.SearchResponse;
@@ -15,6 +16,7 @@ import com.the.harbor.api.be.param.Be;
 import com.the.harbor.api.be.param.BeComment;
 import com.the.harbor.api.be.param.BeCreateReq;
 import com.the.harbor.api.be.param.BeDetail;
+import com.the.harbor.api.be.param.BeIndexModel;
 import com.the.harbor.api.be.param.BeTag;
 import com.the.harbor.api.be.param.DoBeComment;
 import com.the.harbor.api.be.param.DoBeFavorite;
@@ -23,6 +25,7 @@ import com.the.harbor.api.be.param.DoBeLikes;
 import com.the.harbor.api.be.param.DoBeView;
 import com.the.harbor.api.be.param.GiveHBReq;
 import com.the.harbor.api.user.param.DoUserAssetsTrade;
+import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.base.enumeration.common.BusiErrorCode;
 import com.the.harbor.base.enumeration.common.Status;
 import com.the.harbor.base.enumeration.hybe.HideFlag;
@@ -45,13 +48,16 @@ import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.commons.util.UUIDUtil;
 import com.the.harbor.dao.mapper.bo.HyBe;
 import com.the.harbor.dao.mapper.bo.HyBeComments;
+import com.the.harbor.dao.mapper.bo.HyBeCriteria;
 import com.the.harbor.dao.mapper.bo.HyBeDetail;
+import com.the.harbor.dao.mapper.bo.HyBeDetailCriteria;
 import com.the.harbor.dao.mapper.bo.HyBeFavorite;
 import com.the.harbor.dao.mapper.bo.HyBeFavoriteCriteria;
 import com.the.harbor.dao.mapper.bo.HyBeGiveHb;
 import com.the.harbor.dao.mapper.bo.HyBeLikes;
 import com.the.harbor.dao.mapper.bo.HyBeLikesCriteria;
 import com.the.harbor.dao.mapper.bo.HyBeTags;
+import com.the.harbor.dao.mapper.bo.HyBeTagsCriteria;
 import com.the.harbor.dao.mapper.bo.HyBeView;
 import com.the.harbor.dao.mapper.bo.HyUserAssets;
 import com.the.harbor.dao.mapper.interfaces.HyBeCommentsMapper;
@@ -70,6 +76,7 @@ import com.the.harbor.util.IndexRealtimeCountMQSend;
 import com.the.harbor.util.NotifyMQSend;
 import com.the.harbor.util.UserAssetsTradeMQSend;
 import com.the.harbor.util.UserFavorMQSend;
+import com.the.harbor.vo.BeIndexOperate;
 
 @Component
 @Transactional
@@ -239,7 +246,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 				notify.setAccepterId(accepterId);
 				notify.setTitle("Be有新评论啦~");
 				notify.setContent(content);
-				notify.setLink("../be/detail.html?beId=" + be.getBeId()+"&notifyId="+notify.getNotifyId());
+				notify.setLink("../be/detail.html?beId=" + be.getBeId() + "&notifyId=" + notify.getNotifyId());
 				NotifyMQSend.sendNotifyMQ(notify);
 			}
 			// 写入REDIS关系
@@ -417,6 +424,69 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		record.setBeId(beId);
 		record.setHideFlag(hideFlag);
 		hyBeMapper.updateByPrimaryKeySelective(record);
+	}
+
+	@Override
+	public void rebuildAllBesOpenSearchIndex() {
+		/* 1.获取所有BE数据 */
+		HyBeCriteria sql = new HyBeCriteria();
+		List<HyBe> bes = hyBeMapper.selectByExample(sql);
+		if (CollectionUtil.isEmpty(bes)) {
+			return;
+		}
+		List<BeIndexOperate> indexs = new ArrayList<BeIndexOperate>();
+		/* 2.循环所有BE */
+		for (HyBe hyBe : bes) {
+			/* 2.1 获取所有BE的标签 */
+			String[] beTags = this.getBeTags(hyBe.getBeId());
+			/* 2.2 获取BE的明细 */
+			List<HyBeDetail> beDetails = this.getBeDetails(hyBe.getBeId());
+			/* 2.3 获取BE发布用户信息 */
+			UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(hyBe.getBeId());
+			/* 2.3 组织数据 */
+			if (CollectionUtil.isEmpty(beDetails)) {
+				continue;
+			}
+			for (HyBeDetail hyBeDetail : beDetails) {
+				BeIndexModel m = new BeIndexModel();
+				BeanUtils.copyProperties(hyBeDetail, m);
+				BeanUtils.copyProperties(hyBe, m);
+				m.setEnName(userInfo == null ? null : userInfo.getEnName());
+				m.setBeTags(beTags);
+
+				BeIndexOperate op = new BeIndexOperate();
+				op.setCmd("add");
+				op.setFields(m);
+				indexs.add(op);
+				System.out.println(JSON.toJSONString(m));
+
+			}
+			break;
+		}
+		System.out.println(JSON.toJSONString(indexs));
+	}
+
+	public List<HyBeDetail> getBeDetails(String beId) {
+		HyBeDetailCriteria sql = new HyBeDetailCriteria();
+		List<HyBeDetail> list = hyBeDetailMapper.selectByExample(sql);
+		return list;
+	}
+
+	/**
+	 * 获取所有标签数组
+	 * 
+	 * @param beId
+	 * @return
+	 */
+	private String[] getBeTags(String beId) {
+		HyBeTagsCriteria sql = new HyBeTagsCriteria();
+		sql.or().andStatusEqualTo(Status.VALID.getValue());
+		List<HyBeTags> beTags = hyBeTagsMapper.selectByExample(sql);
+		List<String> tags = new ArrayList<String>();
+		for (HyBeTags beTag : beTags) {
+			tags.add(beTag.getTagId() + "_" + beTag.getPolyTagId() + "_" + beTag.getTagName());
+		}
+		return tags.toArray(new String[tags.size()]);
 	}
 
 }
