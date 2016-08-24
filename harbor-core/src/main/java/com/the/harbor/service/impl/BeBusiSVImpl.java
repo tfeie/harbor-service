@@ -2,16 +2,21 @@ package com.the.harbor.service.impl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.mortbay.log.Log;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.aliyun.opensearch.CloudsearchClient;
+import com.aliyun.opensearch.CloudsearchDoc;
 import com.the.harbor.api.be.param.Be;
 import com.the.harbor.api.be.param.BeComment;
 import com.the.harbor.api.be.param.BeCreateReq;
@@ -28,6 +33,7 @@ import com.the.harbor.api.user.param.DoUserAssetsTrade;
 import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.base.enumeration.common.BusiErrorCode;
 import com.the.harbor.base.enumeration.common.Status;
+import com.the.harbor.base.enumeration.hybe.BeDetailType;
 import com.the.harbor.base.enumeration.hybe.HideFlag;
 import com.the.harbor.base.enumeration.hybe.TopFlag;
 import com.the.harbor.base.enumeration.hynotify.AccepterType;
@@ -37,6 +43,7 @@ import com.the.harbor.base.enumeration.hypaymentorder.BusiType;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.exception.BusinessException;
+import com.the.harbor.commons.components.aliyuncs.opensearch.OpenSearchFactory;
 import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
@@ -438,7 +445,16 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		/* 2.循环所有BE */
 		for (HyBe hyBe : bes) {
 			/* 2.1 获取所有BE的标签 */
-			String[] beTags = this.getBeTags(hyBe.getBeId());
+			List<HyBeTags> beTags = this.getBeTags(hyBe.getBeId());
+			List<String> beTagIds = new ArrayList<String>();
+			List<String> beTagNames = new ArrayList<String>();
+			List<String> polyTagIds = new ArrayList<String>();
+			for (HyBeTags beTag : beTags) {
+				beTagIds.add(beTag.getTagId());
+				beTagNames.add(beTag.getTagName());
+				polyTagIds.add(beTag.getPolyTagId());
+			}
+
 			/* 2.2 获取BE的明细 */
 			List<HyBeDetail> beDetails = this.getBeDetails(hyBe.getBeId());
 			/* 2.3 获取BE发布用户信息 */
@@ -448,26 +464,185 @@ public class BeBusiSVImpl implements IBeBusiSV {
 				continue;
 			}
 			for (HyBeDetail hyBeDetail : beDetails) {
+				if (BeDetailType.IMAGE.getValue().equals(hyBeDetail.getType())) {
+					continue;
+				}
 				BeIndexModel m = new BeIndexModel();
 				BeanUtils.copyProperties(hyBeDetail, m);
 				BeanUtils.copyProperties(hyBe, m);
 				m.setEnName(userInfo == null ? null : userInfo.getEnName());
-				m.setBeTags(beTags);
-
+				m.setBeTagIds(beTagIds.toArray(new String[beTagIds.size()]));
+				m.setBeTagNames(beTagNames.toArray(new String[beTagNames.size()]));
+				m.setPolyTagIds(polyTagIds.toArray(new String[polyTagIds.size()]));
 				BeIndexOperate op = new BeIndexOperate();
 				op.setCmd("add");
 				op.setFields(m);
 				indexs.add(op);
-				System.out.println(JSON.toJSONString(m));
-
 			}
-			break;
 		}
-		System.out.println(JSON.toJSONString(indexs));
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchDoc doc = new CloudsearchDoc("harbor_be", client);
+		try {
+			String result = doc.push(JSON.toJSONString(indexs), "hy_be");
+			Log.debug(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 发布BE到搜索引擎
+	 * 
+	 * @param beId
+	 */
+	public void pushBeToOpenSearch(String beId) {
+		/* 1.获取所有BE数据 */
+		HyBe hyBe = hyBeMapper.selectByPrimaryKey(beId);
+		if (hyBe == null) {
+			return;
+		}
+		List<BeIndexOperate> indexs = new ArrayList<BeIndexOperate>();
+		/* 2 获取所有BE的标签 */
+		List<HyBeTags> beTags = this.getBeTags(hyBe.getBeId());
+		List<String> beTagIds = new ArrayList<String>();
+		List<String> beTagNames = new ArrayList<String>();
+		List<String> polyTagIds = new ArrayList<String>();
+		for (HyBeTags beTag : beTags) {
+			beTagIds.add(beTag.getTagId());
+			beTagNames.add(beTag.getTagName());
+			polyTagIds.add(beTag.getPolyTagId());
+		}
+
+		/* 2.2 获取BE的明细 */
+		List<HyBeDetail> beDetails = this.getBeDetails(hyBe.getBeId());
+		/* 2.3 获取BE发布用户信息 */
+		UserViewInfo userInfo = userManagerSV.getUserViewInfoByUserId(hyBe.getBeId());
+		/* 2.3 组织数据 */
+		if (CollectionUtil.isEmpty(beDetails)) {
+			return;
+		}
+		for (HyBeDetail hyBeDetail : beDetails) {
+			if (BeDetailType.IMAGE.getValue().equals(hyBeDetail.getType())) {
+				continue;
+			}
+			BeIndexModel m = new BeIndexModel();
+			BeanUtils.copyProperties(hyBeDetail, m);
+			BeanUtils.copyProperties(hyBe, m);
+			m.setEnName(userInfo == null ? null : userInfo.getEnName());
+			m.setBeTagIds(beTagIds.toArray(new String[beTagIds.size()]));
+			m.setBeTagNames(beTagNames.toArray(new String[beTagNames.size()]));
+			m.setPolyTagIds(polyTagIds.toArray(new String[polyTagIds.size()]));
+			BeIndexOperate op = new BeIndexOperate();
+			op.setCmd("add");
+			op.setFields(m);
+			indexs.add(op);
+		}
+
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchDoc doc = new CloudsearchDoc("harbor_be", client);
+		try {
+			String result = doc.push(JSON.toJSONString(indexs), "hy_be");
+			Log.debug(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void hideBeToOpenSearch(String beId, String hideFlag) {
+		List<HyBeDetail> beDetails = this.getBeDetails(beId);
+		if (CollectionUtil.isEmpty(beDetails)) {
+			return;
+		}
+		List<BeIndexOperate> indexs = new ArrayList<BeIndexOperate>();
+		Map<String, Object> fields = new HashMap<String, Object>();
+		for (HyBeDetail hyBeDetail : beDetails) {
+			if (BeDetailType.IMAGE.getValue().equals(hyBeDetail.getType())) {
+				continue;
+			}
+			BeIndexModel m = new BeIndexModel();
+			m.setId(hyBeDetail.getId());
+			m.setHideFlag(hideFlag);
+			m.setEnName("aaaaa");
+
+			BeIndexOperate op = new BeIndexOperate();
+			op.setCmd("update");
+			op.setFields(m);
+			indexs.add(op);
+		}
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchDoc doc = new CloudsearchDoc("harbor_be", client);
+		try {
+			doc.update(fields);
+			String result = doc.push(JSON.toJSONString(indexs), "hy_be");
+			Log.debug(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void topBeToOpenSearch(String beId, String topFlag) {
+		List<HyBeDetail> beDetails = this.getBeDetails(beId);
+		if (CollectionUtil.isEmpty(beDetails)) {
+			return;
+		}
+		List<BeIndexOperate> indexs = new ArrayList<BeIndexOperate>();
+		for (HyBeDetail hyBeDetail : beDetails) {
+			if (BeDetailType.IMAGE.getValue().equals(hyBeDetail.getType())) {
+				continue;
+			}
+			BeIndexModel m = new BeIndexModel();
+			m.setId(hyBeDetail.getId());
+			m.setTopFlag(topFlag);
+			m.setTopDate(DateUtil.getSysDate());
+
+			BeIndexOperate op = new BeIndexOperate();
+			op.setCmd("update");
+			op.setFields(m);
+			indexs.add(op);
+		}
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchDoc doc = new CloudsearchDoc("harbor_be", client);
+		try {
+			String result = doc.push(JSON.toJSONString(indexs), "hy_be");
+			Log.debug(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void deleteBeToOpenSearch(String beId) {
+		List<HyBeDetail> beDetails = this.getBeDetails(beId);
+		if (CollectionUtil.isEmpty(beDetails)) {
+			return;
+		}
+		List<BeIndexOperate> indexs = new ArrayList<BeIndexOperate>();
+		for (HyBeDetail hyBeDetail : beDetails) {
+			if (BeDetailType.IMAGE.getValue().equals(hyBeDetail.getType())) {
+				continue;
+			}
+			BeIndexModel m = new BeIndexModel();
+			m.setId(hyBeDetail.getId());
+			m.setStatus(Status.INVALID.getValue());
+			m.setInvalidDate(DateUtil.getSysDate());
+
+			BeIndexOperate op = new BeIndexOperate();
+			op.setCmd("update");
+			op.setFields(m);
+			indexs.add(op);
+		}
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchDoc doc = new CloudsearchDoc("harbor_be", client);
+		try {
+			String result = doc.push(JSON.toJSONString(indexs), "hy_be");
+			Log.debug(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public List<HyBeDetail> getBeDetails(String beId) {
 		HyBeDetailCriteria sql = new HyBeDetailCriteria();
+		sql.or().andBeIdEqualTo(beId);
 		List<HyBeDetail> list = hyBeDetailMapper.selectByExample(sql);
 		return list;
 	}
@@ -478,15 +653,11 @@ public class BeBusiSVImpl implements IBeBusiSV {
 	 * @param beId
 	 * @return
 	 */
-	private String[] getBeTags(String beId) {
+	private List<HyBeTags> getBeTags(String beId) {
 		HyBeTagsCriteria sql = new HyBeTagsCriteria();
-		sql.or().andStatusEqualTo(Status.VALID.getValue());
+		sql.or().andStatusEqualTo(Status.VALID.getValue()).andBeIdEqualTo(beId);
 		List<HyBeTags> beTags = hyBeTagsMapper.selectByExample(sql);
-		List<String> tags = new ArrayList<String>();
-		for (HyBeTags beTag : beTags) {
-			tags.add(beTag.getTagId() + "_" + beTag.getPolyTagId() + "_" + beTag.getTagName());
-		}
-		return tags.toArray(new String[tags.size()]);
+		return beTags;
 	}
 
 }

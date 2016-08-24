@@ -32,4 +32,12 @@ public interface IBeBusiSV {
 	void hideBe(String beId, String hideFlag);
 
 	void rebuildAllBesOpenSearchIndex();
+
+	void pushBeToOpenSearch(String beId);
+	
+	void hideBeToOpenSearch(String beId, String hideFlag);
+	
+	void topBeToOpenSearch(String beId, String topFlag);
+	
+	void deleteBeToOpenSearch(String beId);
 }
