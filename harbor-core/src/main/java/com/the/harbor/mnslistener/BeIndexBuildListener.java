@@ -3,7 +3,9 @@ package com.the.harbor.mnslistener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.mns.client.CloudAccount;
 import com.aliyun.mns.client.MNSClient;
@@ -15,7 +17,9 @@ import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.indices.def.HarborIndex;
 import com.the.harbor.commons.indices.def.HarborIndexType;
+import com.the.harbor.commons.redisdata.util.HyBeUtil;
 import com.the.harbor.commons.util.StringUtil;
+import com.the.harbor.service.interfaces.IBeBusiSV;
 
 public class BeIndexBuildListener implements InitializingBean {
 
@@ -23,35 +27,38 @@ public class BeIndexBuildListener implements InitializingBean {
 
 	protected static MNSClient sMNSClient;
 
+	@Autowired
+	private transient IBeBusiSV beBusiSV;
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		// 为了防止阻塞dubbo服务启动，这里采用一个异步线程唤醒消息接收工作线程
 		Thread thread = new Thread(new Runnable() {
 			public void run() {
-				runThread();
+				runThread(beBusiSV);
 			}
 		});
 		thread.start();
 	}
 
-	public static void runThread() {
+	public static void runThread(final IBeBusiSV beBusiSV) {
 		CloudAccount account = new CloudAccount(MNSSettings.getMNSAccessKeyId(), MNSSettings.getMNSAccessKeySecret(),
 				MNSSettings.getMNSAccountEndpoint());
 		sMNSClient = account.getMNSClient();
 
 		Thread thread1 = new Thread(new Runnable() {
 			public void run() {
-				WorkerFunc(1);
+				WorkerFunc(1, beBusiSV);
 			}
 		});
 		Thread thread2 = new Thread(new Runnable() {
 			public void run() {
-				WorkerFunc(2);
+				WorkerFunc(2, beBusiSV);
 			}
 		});
 		Thread thread3 = new Thread(new Runnable() {
 			public void run() {
-				WorkerFunc(3);
+				WorkerFunc(3, beBusiSV);
 			}
 		});
 
@@ -75,7 +82,7 @@ public class BeIndexBuildListener implements InitializingBean {
 		}
 	}
 
-	public static void WorkerFunc(int workerId) {
+	public static void WorkerFunc(int workerId, IBeBusiSV beBusiSV) {
 		String queueName = GlobalSettings.getBeIndexBuildQueueName();
 		MessageReceiver receiver = new MessageReceiver(workerId, sMNSClient, queueName);
 		while (true) {
@@ -84,8 +91,13 @@ public class BeIndexBuildListener implements InitializingBean {
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					Be be = JSONObject.parseObject(message.getMessageBody(), Be.class);
+					// 写入ES索引，后续考虑切换作废
 					ElasticSearchFactory.addIndex(HarborIndex.HY_BE_DB.getValue(), HarborIndexType.HY_BE.getValue(),
 							be.getBeId(), message.getMessageBody());
+					// 写入REDIS缓存
+					HyBeUtil.recordBe(be.getBeId(), JSON.toJSONString(be));
+					// 写入OPENSEARCH索引
+					beBusiSV.pushBeToOpenSearch(be.getBeId());
 				}
 			} catch (Exception ex) {
 				LOG.error("BE索引构建MNS消息失败", ex);

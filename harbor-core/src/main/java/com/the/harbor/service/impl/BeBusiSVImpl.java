@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.opensearch.CloudsearchClient;
 import com.aliyun.opensearch.CloudsearchDoc;
 import com.the.harbor.api.be.param.Be;
@@ -211,7 +213,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 
 	@Override
 	public void processDoBeComment(DoBeComment doBeComment) {
-		Be be = this.queryBe(doBeComment.getBeId());
+		Be be = this.queryOneBeFromRDS(doBeComment.getBeId());
 		if (be == null) {
 			throw new BusinessException("BE[" + doBeComment.getBeId() + "]索引不存在");
 		}
@@ -340,17 +342,6 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		}
 	}
 
-	private Be queryBe(String beId) {
-		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
-				.setTypes(HarborIndexType.HY_BE.getValue()).setQuery(QueryBuilders.termQuery("_id", beId)).execute()
-				.actionGet();
-		if (response.getHits().totalHits() == 0) {
-			return null;
-		}
-		Be be = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Be.class);
-		return be;
-	}
-
 	@Override
 	public void processDoBeFavoriteMQ(DoBeFavorite doBeFavorite) {
 		if (DoBeFavorite.HandleType.DO.name().equals(doBeFavorite.getHandleType())) {
@@ -423,6 +414,9 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		record.setTopDate(topDate);
 		record.setTopFlag(topFlag);
 		hyBeMapper.updateByPrimaryKeySelective(record);
+
+		// 标记OPENSEARCH状态
+		this.topBeToOpenSearch(beId, topFlag);
 	}
 
 	@Override
@@ -431,6 +425,9 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		record.setBeId(beId);
 		record.setHideFlag(hideFlag);
 		hyBeMapper.updateByPrimaryKeySelective(record);
+
+		// 标记索引状态
+		this.hideBeToOpenSearch(beId, hideFlag);
 	}
 
 	@Override
@@ -660,4 +657,125 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		return beTags;
 	}
 
+	public void resetAllBe2Redis() {
+		HyBeCriteria sql = new HyBeCriteria();
+		List<HyBe> bes = hyBeMapper.selectByExample(sql);
+		if (CollectionUtil.isEmpty(bes)) {
+			return;
+		}
+		for (HyBe hyBe : bes) {
+			Be be = new Be();
+			BeanUtils.copyProperties(hyBe, be);
+
+			List<BeDetail> beDetails = new ArrayList<BeDetail>();
+			// 获取BE详情
+			List<HyBeDetail> hyBeDetails = this.getBeDetails(hyBe.getBeId());
+			if (!CollectionUtil.isEmpty(hyBeDetails)) {
+				for (HyBeDetail hyBeDetail : hyBeDetails) {
+					BeDetail bd = new BeDetail();
+					BeanUtils.copyProperties(hyBeDetail, bd);
+					beDetails.add(bd);
+				}
+			}
+			be.setBeDetails(beDetails);
+			List<BeTag> beTags = new ArrayList<BeTag>();
+			// 获取BE标签
+			List<HyBeTags> hyBeTags = this.getBeTags(hyBe.getBeId());
+			if (!CollectionUtil.isEmpty(hyBeTags)) {
+				for (HyBeTags beTag : hyBeTags) {
+					BeTag bd = new BeTag();
+					BeanUtils.copyProperties(beTag, bd);
+					beTags.add(bd);
+				}
+			}
+			be.setBeTags(beTags);
+			// 有效的评论数据
+			Set<String> set = HyBeUtil.getBeCommentIds(be.getBeId(), 0, -1);
+			long count = 0;
+			for (String commentId : set) {
+				String commentData = HyBeUtil.getBeComment(commentId);
+				if (!StringUtil.isBlank(commentData)) {
+					BeComment b = JSONObject.parseObject(commentData, BeComment.class);
+					if (com.the.harbor.base.enumeration.hybecomments.Status.NORMAL.getValue().equals(b.getStatus())) {
+						count++;
+					}
+				}
+			}
+			be.setCommentCount(count);
+
+			// 点赞数据
+			long dianzan = HyBeUtil.getBeDianzanCount(be.getBeId());
+			be.setDianzanCount(dianzan);
+			// 海贝打赏数据
+			long gibeHb = HyBeUtil.getBeRewardHBCount(be.getBeId());
+			be.setGiveHaibeiCount(gibeHb);
+
+			// 写入REDIS
+			HyBeUtil.recordBe(hyBe.getBeId(), JSON.toJSONString(be));
+		}
+
+	}
+
+	public Be queryOneBeFromRDS(String beId) {
+		String data = HyBeUtil.getBe(beId);
+		Be newBe = JSONObject.parseObject(data, Be.class);
+		if (newBe != null) {
+			this.fillBeInfo(newBe);
+		}
+		return newBe;
+	}
+
+	public Be queryOneBeFromES(String beId) {
+		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
+				.setTypes(HarborIndexType.HY_BE.getValue()).setQuery(QueryBuilders.termQuery("_id", beId)).execute()
+				.actionGet();
+		Be be = null;
+		if (response.getHits().totalHits() != 0) {
+			be = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Be.class);
+			this.fillBeInfo(be);
+		}
+		return be;
+	}
+
+	public void fillBeInfo(Be be) {
+		boolean hastext = false;
+		boolean hasimg = false;
+		String contentSummary = null;
+		String imageURL = null;
+		if (!CollectionUtil.isEmpty(be.getBeDetails())) {
+			for (BeDetail detail : be.getBeDetails()) {
+				if (BeDetailType.TEXT.getValue().equals(detail.getType())) {
+					if (!hastext) {
+						contentSummary = detail.getDetail();
+						hastext = true;
+					}
+				} else if (BeDetailType.IMAGE.getValue().equals(detail.getType())) {
+					if (!hasimg) {
+						imageURL = detail.getImageUrl() + "@!be_thumbnail";
+						hasimg = true;
+					}
+				}
+			}
+		}
+
+		be.setContentSummary(contentSummary);
+		be.setImageURL(imageURL);
+		be.setHasimg(hasimg);
+		be.setHastext(hastext);
+		be.setCreateTimeInterval(DateUtil.getInterval(be.getCreateDate()));
+		// 发布用户信息
+		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(be.getUserId());
+		if (createUserInfo != null) {
+			be.setAtCityName(createUserInfo.getAtCityName());
+			be.setEnName(createUserInfo.getEnName());
+			be.setIndustryName(createUserInfo.getIndustryName());
+			be.setTitle(createUserInfo.getTitle());
+			be.setWxHeadimg(createUserInfo.getWxHeadimg());
+			be.setUserStatus(createUserInfo.getUserStatus());
+			be.setUserStatusName(createUserInfo.getUserStatusName());
+			be.setAbroadCountryName(createUserInfo.getAbroadCountryName());
+			be.setAbroadCountryRGB(createUserInfo.getAbroadCountryRGB());
+		}
+
+	}
 }

@@ -2,6 +2,7 @@ package com.the.harbor.service.interfaces;
 
 import java.sql.Timestamp;
 
+import com.the.harbor.api.be.param.Be;
 import com.the.harbor.api.be.param.BeCreateReq;
 import com.the.harbor.api.be.param.DoBeComment;
 import com.the.harbor.api.be.param.DoBeFavorite;
@@ -34,10 +35,18 @@ public interface IBeBusiSV {
 	void rebuildAllBesOpenSearchIndex();
 
 	void pushBeToOpenSearch(String beId);
-	
+
 	void hideBeToOpenSearch(String beId, String hideFlag);
-	
+
 	void topBeToOpenSearch(String beId, String topFlag);
-	
+
 	void deleteBeToOpenSearch(String beId);
+
+	void resetAllBe2Redis();
+
+	Be queryOneBeFromRDS(String beId);
+
+	Be queryOneBeFromES(String beId);
+
+	void fillBeInfo(Be be);
 }

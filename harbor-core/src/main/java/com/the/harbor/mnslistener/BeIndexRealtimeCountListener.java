@@ -109,7 +109,11 @@ public class BeIndexRealtimeCountListener implements InitializingBean {
 						if (response.getHits().totalHits() == 0) {
 							return;
 						}
+						// 从ES获取BE数据，后续作废
 						Be be = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Be.class);
+						// 从阿里云REDIS获取数据
+						String data = HyBeUtil.getBe(stat.getBeId());
+						Be newBe = JSONObject.parseObject(data, Be.class);
 						if (DoBeIndexRealtimeStat.StatType.COMMENT.name().equals(stat.getStatType())) {
 							Set<String> set = HyBeUtil.getBeCommentIds(be.getBeId(), 0, -1);
 							long count = 0;
@@ -125,16 +129,33 @@ public class BeIndexRealtimeCountListener implements InitializingBean {
 								}
 							}
 							be.setCommentCount(count);
+
+							if (newBe != null) {
+								newBe.setCommentCount(count);
+							}
 						} else if (DoBeIndexRealtimeStat.StatType.DIANZAN.name().equals(stat.getStatType())) {
 							long count = HyBeUtil.getBeDianzanCount(be.getBeId());
 							be.setDianzanCount(count);
+
+							if (newBe != null) {
+								newBe.setDianzanCount(count);
+							}
 						} else if (DoBeIndexRealtimeStat.StatType.REWARD.name().equals(stat.getStatType())) {
 							long count = HyBeUtil.getBeRewardHBCount(be.getBeId());
 							be.setGiveHaibeiCount(count);
+
+							if (newBe != null) {
+								newBe.setGiveHaibeiCount(count);
+							}
 						}
 						client.prepareIndex(HarborIndex.HY_BE_DB.getValue().toLowerCase(),
 								HarborIndexType.HY_BE.getValue().toLowerCase(), be.getBeId()).setRefresh(true)
 								.setSource(JSON.toJSONString(be)).execute().actionGet();
+
+						// 写入REDIS缓存
+						if (newBe != null) {
+							HyBeUtil.recordBe(newBe.getBeId(), JSON.toJSONString(newBe));
+						}
 					}
 
 				}

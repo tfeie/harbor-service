@@ -22,17 +22,6 @@ public class BeIndexModel implements Serializable {
 	 * BE明细文本内容
 	 */
 	private String detail;
-	
-	/**
-	 * BE明细类型
-	 */
-	private String type;
-
-
-	/**
-	 * BE明细图片地址
-	 */
-    private String imageUrl;
 
 	/**
 	 * BE标识
@@ -40,9 +29,19 @@ public class BeIndexModel implements Serializable {
 	private String beId;
 
 	/**
-	 * BE标签数组。以“tagId_tagName”，多组以";"分隔
+	 * BE标签ID数组
 	 */
-	private String[] beTags;
+	private String[] beTagIds;
+
+	/**
+	 * BE标签ID数组
+	 */
+	private String[] beTagNames;
+
+	/**
+	 * BE聚类标签ID数组
+	 */
+	private String[] polyTagIds;
 
 	/**
 	 * 发布用户
@@ -172,30 +171,28 @@ public class BeIndexModel implements Serializable {
 		this.hideFlag = hideFlag;
 	}
 
-	public String[] getBeTags() {
-		return beTags;
+	public String[] getBeTagIds() {
+		return beTagIds;
 	}
 
-	public void setBeTags(String[] beTags) {
-		this.beTags = beTags;
+	public void setBeTagIds(String[] beTagIds) {
+		this.beTagIds = beTagIds;
 	}
 
-	public String getType() {
-		return type;
+	public String[] getBeTagNames() {
+		return beTagNames;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setBeTagNames(String[] beTagNames) {
+		this.beTagNames = beTagNames;
 	}
 
-	public String getImageUrl() {
-		return imageUrl;
+	public String[] getPolyTagIds() {
+		return polyTagIds;
 	}
 
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
+	public void setPolyTagIds(String[] polyTagIds) {
+		this.polyTagIds = polyTagIds;
 	}
-	
-	
 
 }
