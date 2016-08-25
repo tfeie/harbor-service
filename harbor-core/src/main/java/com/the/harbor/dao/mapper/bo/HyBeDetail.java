@@ -19,6 +19,8 @@ public class HyBeDetail {
 
     private Timestamp updateDate;
 
+    private int sort;
+
     public String getId() {
         return id;
     }
@@ -81,5 +83,13 @@ public class HyBeDetail {
 
     public void setUpdateDate(Timestamp updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
     }
 }

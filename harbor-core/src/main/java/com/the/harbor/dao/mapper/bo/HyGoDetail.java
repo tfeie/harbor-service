@@ -19,6 +19,8 @@ public class HyGoDetail {
 
     private String imageUrl;
 
+    private int sort;
+
     public String getId() {
         return id;
     }
@@ -81,5 +83,13 @@ public class HyGoDetail {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl == null ? null : imageUrl.trim();
+    }
+
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
     }
 }

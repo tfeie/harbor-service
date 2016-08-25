@@ -10,6 +10,7 @@
     <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
     <result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
     <result column="image_url" property="imageUrl" jdbcType="VARCHAR" />
+    <result column="SORT" property="sort" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -70,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    ID, GO_ID, TYPE, DETAIL, STATUS, CREATE_DATE, UPDATE_DATE, image_url
+    ID, GO_ID, TYPE, DETAIL, STATUS, CREATE_DATE, UPDATE_DATE, image_url, SORT
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyGoDetailCriteria" >
     select
@@ -109,10 +110,12 @@
   <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyGoDetail" >
     insert into hy_go_detail (ID, GO_ID, TYPE, 
       DETAIL, STATUS, CREATE_DATE, 
-      UPDATE_DATE, image_url)
+      UPDATE_DATE, image_url, SORT
+      )
     values (#{id,jdbcType=VARCHAR}, #{goId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
       #{detail,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, 
-      #{updateDate,jdbcType=TIMESTAMP}, #{imageUrl,jdbcType=VARCHAR})
+      #{updateDate,jdbcType=TIMESTAMP}, #{imageUrl,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyGoDetail" >
     insert into hy_go_detail
@@ -141,6 +144,7 @@
       <if test="imageUrl != null" >
         image_url,
       </if>
+      SORT,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -167,6 +171,7 @@
       <if test="imageUrl != null" >
         #{imageUrl,jdbcType=VARCHAR},
       </if>
+      #{sort,jdbcType=INTEGER},
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyGoDetailCriteria" resultType="java.lang.Integer" >
@@ -202,6 +207,9 @@
       <if test="record.imageUrl != null" >
         image_url = #{record.imageUrl,jdbcType=VARCHAR},
       </if>
+      <if test="record.sort != null" >
+        SORT = #{record.sort,jdbcType=INTEGER},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -216,7 +224,8 @@
       STATUS = #{record.status,jdbcType=VARCHAR},
       CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
       UPDATE_DATE = #{record.updateDate,jdbcType=TIMESTAMP},
-      image_url = #{record.imageUrl,jdbcType=VARCHAR}
+      image_url = #{record.imageUrl,jdbcType=VARCHAR},
+      SORT = #{record.sort,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -245,6 +254,9 @@
       <if test="imageUrl != null" >
         image_url = #{imageUrl,jdbcType=VARCHAR},
       </if>
+      <if test="sort != null" >
+        SORT = #{sort,jdbcType=INTEGER},
+      </if>
     </set>
     where ID = #{id,jdbcType=VARCHAR}
   </update>
@@ -256,7 +268,8 @@
       STATUS = #{status,jdbcType=VARCHAR},
       CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
       UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
-      image_url = #{imageUrl,jdbcType=VARCHAR}
+      image_url = #{imageUrl,jdbcType=VARCHAR},
+      SORT = #{sort,jdbcType=INTEGER}
     where ID = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

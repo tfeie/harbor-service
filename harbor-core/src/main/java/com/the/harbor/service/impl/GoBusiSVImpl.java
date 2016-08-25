@@ -184,6 +184,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		if (!CollectionUtil.isEmpty(goCreateReq.getGoDetails())) {
 			// 复制内容
 			bgo.setGoDetails(goCreateReq.getGoDetails());
+			int sort=0;
 			for (GoDetail d : goCreateReq.getGoDetails()) {
 				HyGoDetail gd = new HyGoDetail();
 				BeanUtils.copyProperties(d, gd);
@@ -191,7 +192,9 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				gd.setGoId(goId);
 				gd.setId(HarborSeqUtil.createGoDetailId());
 				gd.setStatus(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
+				gd.setSort(sort);
 				hyGoDetailMapper.insert(gd);
+				sort++;
 			}
 		}
 		/* 3.活动标签 */
@@ -216,6 +219,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		if (!CollectionUtil.isEmpty(goCreateReq.getGoStories())) {
 			// 复制内容
 			bgo.setGoStories(goCreateReq.getGoStories());
+			int sort=0;
 			for (GoStory d : goCreateReq.getGoStories()) {
 				HyGoStory gd = new HyGoStory();
 				BeanUtils.copyProperties(d, gd);
@@ -223,7 +227,9 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				gd.setGoId(goId);
 				gd.setId(HarborSeqUtil.createGoDetailId());
 				gd.setStatus(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
+				gd.setSort(sort);
 				hyGoStoryMapper.insert(gd);
+				sort++;
 			}
 		}
 		// 将GO的数据发送给MNS处理

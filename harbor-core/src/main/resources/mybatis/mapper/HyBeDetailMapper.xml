@@ -10,6 +10,7 @@
     <result column="STATUS" property="status" jdbcType="VARCHAR" />
     <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
     <result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="SORT" property="sort" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -70,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    ID, BE_ID, TYPE, DETAIL, IMAGE_URL, STATUS, CREATE_DATE, UPDATE_DATE
+    ID, BE_ID, TYPE, DETAIL, IMAGE_URL, STATUS, CREATE_DATE, UPDATE_DATE, SORT
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyBeDetailCriteria" >
     select
@@ -109,10 +110,12 @@
   <insert id="insert" parameterType="com.the.harbor.dao.mapper.bo.HyBeDetail" >
     insert into hy_be_detail (ID, BE_ID, TYPE, 
       DETAIL, IMAGE_URL, STATUS, 
-      CREATE_DATE, UPDATE_DATE)
+      CREATE_DATE, UPDATE_DATE, SORT
+      )
     values (#{id,jdbcType=VARCHAR}, #{beId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
       #{detail,jdbcType=VARCHAR}, #{imageUrl,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
-      #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP})
+      #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, #{sort,jdbcType=INTEGER}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyBeDetail" >
     insert into hy_be_detail
@@ -141,6 +144,7 @@
       <if test="updateDate != null" >
         UPDATE_DATE,
       </if>
+      SORT,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -167,6 +171,7 @@
       <if test="updateDate != null" >
         #{updateDate,jdbcType=TIMESTAMP},
       </if>
+      #{sort,jdbcType=INTEGER},
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.the.harbor.dao.mapper.bo.HyBeDetailCriteria" resultType="java.lang.Integer" >
@@ -202,6 +207,9 @@
       <if test="record.updateDate != null" >
         UPDATE_DATE = #{record.updateDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.sort != null" >
+        SORT = #{record.sort,jdbcType=INTEGER},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -216,7 +224,8 @@
       IMAGE_URL = #{record.imageUrl,jdbcType=VARCHAR},
       STATUS = #{record.status,jdbcType=VARCHAR},
       CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
-      UPDATE_DATE = #{record.updateDate,jdbcType=TIMESTAMP}
+      UPDATE_DATE = #{record.updateDate,jdbcType=TIMESTAMP},
+      SORT = #{record.sort,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -245,6 +254,9 @@
       <if test="updateDate != null" >
         UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="sort != null" >
+        SORT = #{sort,jdbcType=INTEGER},
+      </if>
     </set>
     where ID = #{id,jdbcType=VARCHAR}
   </update>
@@ -256,7 +268,8 @@
       IMAGE_URL = #{imageUrl,jdbcType=VARCHAR},
       STATUS = #{status,jdbcType=VARCHAR},
       CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
-      UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP}
+      UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
+      SORT = #{sort,jdbcType=INTEGER}
     where ID = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

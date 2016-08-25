@@ -664,6 +664,66 @@ public class HyBeDetailCriteria {
             addCriterion("UPDATE_DATE not between", value1, value2, "updateDate");
             return (Criteria) this;
         }
+
+        public Criteria andSortIsNull() {
+            addCriterion("SORT is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIsNotNull() {
+            addCriterion("SORT is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortEqualTo(int value) {
+            addCriterion("SORT =", value, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortNotEqualTo(int value) {
+            addCriterion("SORT <>", value, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortGreaterThan(int value) {
+            addCriterion("SORT >", value, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortGreaterThanOrEqualTo(int value) {
+            addCriterion("SORT >=", value, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortLessThan(int value) {
+            addCriterion("SORT <", value, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortLessThanOrEqualTo(int value) {
+            addCriterion("SORT <=", value, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortIn(List<Integer> values) {
+            addCriterion("SORT in", values, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortNotIn(List<Integer> values) {
+            addCriterion("SORT not in", values, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortBetween(int value1, int value2) {
+            addCriterion("SORT between", value1, value2, "sort");
+            return (Criteria) this;
+        }
+
+        public Criteria andSortNotBetween(int value1, int value2) {
+            addCriterion("SORT not between", value1, value2, "sort");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

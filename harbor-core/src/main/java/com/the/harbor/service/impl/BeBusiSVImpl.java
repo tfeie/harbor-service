@@ -140,6 +140,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			// 复制内容
 			be.setBeDetails(beCreateReq.getBeDetails());
 			// 写表
+			int i=0;
 			for (BeDetail d : beCreateReq.getBeDetails()) {
 				HyBeDetail bd = new HyBeDetail();
 				BeanUtils.copyProperties(d, bd);
@@ -148,7 +149,9 @@ public class BeBusiSVImpl implements IBeBusiSV {
 				bd.setBeId(beId);
 				bd.setCreateDate(sysdate);
 				bd.setStatus(Status.VALID.getValue());
+				bd.setSort(i);
 				hyBeDetailMapper.insert(bd);
+				i++;
 			}
 		}
 		// 写入标签表
