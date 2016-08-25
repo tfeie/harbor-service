@@ -13,10 +13,7 @@ import com.aliyun.mns.model.Message;
 import com.the.harbor.api.be.param.Be;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSSettings;
 import com.the.harbor.commons.components.aliyuncs.mns.MessageReceiver;
-import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
-import com.the.harbor.commons.indices.def.HarborIndex;
-import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.util.HyBeUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.service.interfaces.IBeBusiSV;
@@ -91,9 +88,6 @@ public class BeIndexBuildListener implements InitializingBean {
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					Be be = JSONObject.parseObject(message.getMessageBody(), Be.class);
-					// 写入ES索引，后续考虑切换作废
-					ElasticSearchFactory.addIndex(HarborIndex.HY_BE_DB.getValue(), HarborIndexType.HY_BE.getValue(),
-							be.getBeId(), message.getMessageBody());
 					// 写入REDIS缓存
 					HyBeUtil.recordBe(be.getBeId(), JSON.toJSONString(be));
 					// 写入OPENSEARCH索引

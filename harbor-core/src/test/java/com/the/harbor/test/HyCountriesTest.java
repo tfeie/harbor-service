@@ -7,6 +7,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.the.harbor.cacheimpl.HyAreaCacheImpl;
+import com.the.harbor.cacheimpl.HyBeCacheImpl;
 import com.the.harbor.cacheimpl.HyCountryCacheImpl;
 import com.the.harbor.cacheimpl.HyDictsCacheImpl;
 import com.the.harbor.cacheimpl.HyIndustryCacheImpl;
@@ -32,9 +33,12 @@ public class HyCountriesTest {
 	@Autowired
 	HyAreaCacheImpl cache5;
 
+	@Autowired
+	HyBeCacheImpl cache6;
+
 	@Test
 	public void build() throws Exception {
-		cache.write();
+		cache6.write();
 	}
 
 	@Test

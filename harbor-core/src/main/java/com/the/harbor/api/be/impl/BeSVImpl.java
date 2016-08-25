@@ -4,14 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.sort.SortBuilder;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.dubbo.config.annotation.Service;
@@ -55,15 +47,11 @@ import com.the.harbor.base.vo.PageInfo;
 import com.the.harbor.base.vo.Response;
 import com.the.harbor.base.vo.ResponseHeader;
 import com.the.harbor.commons.components.aliyuncs.opensearch.OpenSearchFactory;
-import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
-import com.the.harbor.commons.indices.def.HarborIndex;
-import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.util.HyBeUtil;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.service.interfaces.IBeBusiSV;
-import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.BeGoDeleteMQSend;
 
 @Service(validation = "true")
@@ -71,9 +59,6 @@ public class BeSVImpl implements IBeSV {
 
 	@Autowired
 	private transient IBeBusiSV beBusiSV;
-
-	@Autowired
-	private transient IUserManagerSV userManagerSV;
 
 	@Override
 	public BeCreateResp createBe(BeCreateReq beCreateReq) throws BusinessException, SystemException {
@@ -206,34 +191,6 @@ public class BeSVImpl implements IBeSV {
 		return pageInfo;
 	}
 
-	private PageInfo<Be> queryMyBeFromES(QueryMyBeReq queryMyBeReq) {
-		int start = (queryMyBeReq.getPageNo() - 1) * queryMyBeReq.getPageSize();
-		int end = queryMyBeReq.getPageNo() * queryMyBeReq.getPageSize();
-		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
-		BoolQueryBuilder builder = QueryBuilders.boolQuery();
-		builder.must(QueryBuilders.termQuery("userId", queryMyBeReq.getUserId()));
-		builder.must(QueryBuilders.termQuery("status",
-				com.the.harbor.base.enumeration.common.Status.VALID.getValue().toLowerCase()));
-		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
-				.setTypes(HarborIndexType.HY_BE.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
-				.addSort(sortBuilder).execute().actionGet();
-		SearchHits hits = response.getHits();
-		long total = hits.getTotalHits();
-		List<Be> result = new ArrayList<Be>();
-		for (SearchHit hit : hits) {
-			Be be = JSON.parseObject(hit.getSourceAsString(), Be.class);
-			// 考虑加载性能
-			beBusiSV.fillBeInfo(be);
-			result.add(be);
-		}
-		PageInfo<Be> pageInfo = new PageInfo<Be>();
-		pageInfo.setCount(Integer.parseInt(total + ""));
-		pageInfo.setPageNo(queryMyBeReq.getPageNo());
-		pageInfo.setPageSize(queryMyBeReq.getPageSize());
-		pageInfo.setResult(result);
-		return pageInfo;
-	}
-
 	@Override
 	public QueryOneBeResp queryOneBe(QueryOneBeReq queryOneBeReq) throws BusinessException, SystemException {
 		Be be = beBusiSV.queryOneBeFromRDS(queryOneBeReq.getBeId());
@@ -252,48 +209,6 @@ public class BeSVImpl implements IBeSV {
 		resp.setPagInfo(pageInfo);
 		resp.setResponseHeader(responseHeader);
 		return resp;
-	}
-
-	private PageInfo<Be> queryHyBesFromES(BeQueryReq beQueryReq) {
-		int start = (beQueryReq.getPageNo() - 1) * beQueryReq.getPageSize();
-		int end = beQueryReq.getPageNo() * beQueryReq.getPageSize();
-		SortBuilder topSortBuilder = SortBuilders.fieldSort("topDate").order(SortOrder.DESC);
-
-		SortBuilder createSortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
-		BoolQueryBuilder builder = QueryBuilders.boolQuery();
-		builder.must(QueryBuilders.termQuery("status",
-				com.the.harbor.base.enumeration.common.Status.VALID.getValue().toLowerCase()));
-		if (!StringUtil.isBlank(beQueryReq.getTagId())) {
-			builder.must(QueryBuilders.termQuery("beTags.tagId", beQueryReq.getTagId()));
-		}
-		if (!StringUtil.isBlank(beQueryReq.getPolyTagId())) {
-			builder.must(QueryBuilders.termQuery("beTags.polyTagId", beQueryReq.getPolyTagId()));
-		}
-		if (!StringUtil.isBlank(beQueryReq.getSearchKey())) {
-			builder.must(QueryBuilders.queryStringQuery(beQueryReq.getSearchKey()));
-		}
-		if (!beQueryReq.isQueryhide()) {
-			// 不查询隐藏记录
-			builder.must(QueryBuilders.termQuery("hideFlag", HideFlag.NO.getValue()));
-		}
-
-		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
-				.setTypes(HarborIndexType.HY_BE.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
-				.addSort(topSortBuilder).addSort(createSortBuilder).execute().actionGet();
-		SearchHits hits = response.getHits();
-		long total = hits.getTotalHits();
-		List<Be> result = new ArrayList<Be>();
-		for (SearchHit hit : hits) {
-			Be be = JSON.parseObject(hit.getSourceAsString(), Be.class);
-			beBusiSV.fillBeInfo(be);
-			result.add(be);
-		}
-		PageInfo<Be> pageInfo = new PageInfo<Be>();
-		pageInfo.setCount(Integer.parseInt(total + ""));
-		pageInfo.setPageNo(beQueryReq.getPageNo());
-		pageInfo.setPageSize(beQueryReq.getPageSize());
-		pageInfo.setResult(result);
-		return pageInfo;
 	}
 
 	private PageInfo<Be> queryHyBesFromOpenSearch(BeQueryReq beQueryReq) {

@@ -2,9 +2,6 @@ package com.the.harbor.mnslistener;
 
 import java.util.Set;
 
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -19,10 +16,7 @@ import com.the.harbor.api.be.param.BeComment;
 import com.the.harbor.api.be.param.DoBeIndexRealtimeStat;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSSettings;
 import com.the.harbor.commons.components.aliyuncs.mns.MessageReceiver;
-import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
-import com.the.harbor.commons.indices.def.HarborIndex;
-import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.indices.mq.MNSRecordHandle;
 import com.the.harbor.commons.redisdata.util.HyBeUtil;
 import com.the.harbor.commons.util.StringUtil;
@@ -102,60 +96,36 @@ public class BeIndexRealtimeCountListener implements InitializingBean {
 					mqId = stat.getMqId();
 					mqType = stat.getMqType();
 					if (!StringUtil.isBlank(stat.getBeId())) {
-						Client client = ElasticSearchFactory.getClient();
-						SearchResponse response = client.prepareSearch(HarborIndex.HY_BE_DB.getValue())
-								.setTypes(HarborIndexType.HY_BE.getValue())
-								.setQuery(QueryBuilders.termQuery("_id", stat.getBeId())).execute().actionGet();
-						if (response.getHits().totalHits() == 0) {
-							return;
-						}
-						// 从ES获取BE数据，后续作废
-						Be be = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Be.class);
 						// 从阿里云REDIS获取数据
 						String data = HyBeUtil.getBe(stat.getBeId());
-						Be newBe = JSONObject.parseObject(data, Be.class);
-						if (DoBeIndexRealtimeStat.StatType.COMMENT.name().equals(stat.getStatType())) {
-							Set<String> set = HyBeUtil.getBeCommentIds(be.getBeId(), 0, -1);
-							long count = 0;
-							// 只计算有效的评论记录
-							for (String commentId : set) {
-								String commentData = HyBeUtil.getBeComment(commentId);
-								if (!StringUtil.isBlank(commentData)) {
-									BeComment b = JSONObject.parseObject(commentData, BeComment.class);
-									if (com.the.harbor.base.enumeration.hybecomments.Status.NORMAL.getValue()
-											.equals(b.getStatus())) {
-										count++;
+						Be be = JSONObject.parseObject(data, Be.class);
+						if (be != null) {
+							if (DoBeIndexRealtimeStat.StatType.COMMENT.name().equals(stat.getStatType())) {
+								Set<String> set = HyBeUtil.getBeCommentIds(be.getBeId(), 0, -1);
+								long count = 0;
+								// 只计算有效的评论记录
+								for (String commentId : set) {
+									String commentData = HyBeUtil.getBeComment(commentId);
+									if (!StringUtil.isBlank(commentData)) {
+										BeComment b = JSONObject.parseObject(commentData, BeComment.class);
+										if (com.the.harbor.base.enumeration.hybecomments.Status.NORMAL.getValue()
+												.equals(b.getStatus())) {
+											count++;
+										}
 									}
 								}
+								be.setCommentCount(count);
+							} else if (DoBeIndexRealtimeStat.StatType.DIANZAN.name().equals(stat.getStatType())) {
+								long count = HyBeUtil.getBeDianzanCount(be.getBeId());
+								be.setDianzanCount(count);
+							} else if (DoBeIndexRealtimeStat.StatType.REWARD.name().equals(stat.getStatType())) {
+								long count = HyBeUtil.getBeRewardHBCount(be.getBeId());
+								be.setGiveHaibeiCount(count);
 							}
-							be.setCommentCount(count);
+							HyBeUtil.recordBe(be.getBeId(), JSON.toJSONString(be));
 
-							if (newBe != null) {
-								newBe.setCommentCount(count);
-							}
-						} else if (DoBeIndexRealtimeStat.StatType.DIANZAN.name().equals(stat.getStatType())) {
-							long count = HyBeUtil.getBeDianzanCount(be.getBeId());
-							be.setDianzanCount(count);
-
-							if (newBe != null) {
-								newBe.setDianzanCount(count);
-							}
-						} else if (DoBeIndexRealtimeStat.StatType.REWARD.name().equals(stat.getStatType())) {
-							long count = HyBeUtil.getBeRewardHBCount(be.getBeId());
-							be.setGiveHaibeiCount(count);
-
-							if (newBe != null) {
-								newBe.setGiveHaibeiCount(count);
-							}
 						}
-						client.prepareIndex(HarborIndex.HY_BE_DB.getValue().toLowerCase(),
-								HarborIndexType.HY_BE.getValue().toLowerCase(), be.getBeId()).setRefresh(true)
-								.setSource(JSON.toJSONString(be)).execute().actionGet();
 
-						// 写入REDIS缓存
-						if (newBe != null) {
-							HyBeUtil.recordBe(newBe.getBeId(), JSON.toJSONString(newBe));
-						}
 					}
 
 				}

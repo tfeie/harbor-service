@@ -46,7 +46,5 @@ public interface IBeBusiSV {
 
 	Be queryOneBeFromRDS(String beId);
 
-	Be queryOneBeFromES(String beId);
-
 	void fillBeInfo(Be be);
 }

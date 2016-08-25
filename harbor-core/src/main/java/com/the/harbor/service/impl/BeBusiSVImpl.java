@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.mortbay.log.Log;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +44,6 @@ import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.exception.BusinessException;
 import com.the.harbor.commons.components.aliyuncs.opensearch.OpenSearchFactory;
-import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
-import com.the.harbor.commons.indices.def.HarborIndex;
-import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.def.DoNotify;
 import com.the.harbor.commons.redisdata.util.HyBeUtil;
 import com.the.harbor.commons.util.CollectionUtil;
@@ -140,7 +135,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			// 复制内容
 			be.setBeDetails(beCreateReq.getBeDetails());
 			// 写表
-			int i=0;
+			int i = 0;
 			for (BeDetail d : beCreateReq.getBeDetails()) {
 				HyBeDetail bd = new HyBeDetail();
 				BeanUtils.copyProperties(d, bd);
@@ -643,6 +638,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 	public List<HyBeDetail> getBeDetails(String beId) {
 		HyBeDetailCriteria sql = new HyBeDetailCriteria();
 		sql.or().andBeIdEqualTo(beId);
+		sql.setOrderByClause(" sort asc");
 		List<HyBeDetail> list = hyBeDetailMapper.selectByExample(sql);
 		return list;
 	}
@@ -726,18 +722,6 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			this.fillBeInfo(newBe);
 		}
 		return newBe;
-	}
-
-	public Be queryOneBeFromES(String beId) {
-		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_BE_DB.getValue())
-				.setTypes(HarborIndexType.HY_BE.getValue()).setQuery(QueryBuilders.termQuery("_id", beId)).execute()
-				.actionGet();
-		Be be = null;
-		if (response.getHits().totalHits() != 0) {
-			be = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Be.class);
-			this.fillBeInfo(be);
-		}
-		return be;
 	}
 
 	public void fillBeInfo(Be be) {
