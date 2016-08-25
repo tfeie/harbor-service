@@ -763,6 +763,27 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			be.setAbroadCountryName(createUserInfo.getAbroadCountryName());
 			be.setAbroadCountryRGB(createUserInfo.getAbroadCountryRGB());
 		}
+		
+		// 有效的评论数据
+		Set<String> set = HyBeUtil.getBeCommentIds(be.getBeId(), 0, -1);
+		long count = 0;
+		for (String commentId : set) {
+			String commentData = HyBeUtil.getBeComment(commentId);
+			if (!StringUtil.isBlank(commentData)) {
+				BeComment b = JSONObject.parseObject(commentData, BeComment.class);
+				if (com.the.harbor.base.enumeration.hybecomments.Status.NORMAL.getValue().equals(b.getStatus())) {
+					count++;
+				}
+			}
+		}
+		be.setCommentCount(count);
+
+		// 点赞数据
+		long dianzan = HyBeUtil.getBeDianzanCount(be.getBeId());
+		be.setDianzanCount(dianzan);
+		// 海贝打赏数据
+		long gibeHb = HyBeUtil.getBeRewardHBCount(be.getBeId());
+		be.setGiveHaibeiCount(gibeHb);
 
 	}
 }
