@@ -2,10 +2,13 @@ package com.the.harbor.service.impl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.mortbay.log.Log;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.opensearch.CloudsearchClient;
+import com.aliyun.opensearch.CloudsearchDoc;
 import com.the.harbor.api.go.param.CheckUserOrderGoReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.DoGoComment;
@@ -24,6 +29,7 @@ import com.the.harbor.api.go.param.Go;
 import com.the.harbor.api.go.param.GoComment;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoDetail;
+import com.the.harbor.api.go.param.GoIndexModel;
 import com.the.harbor.api.go.param.GoJoin;
 import com.the.harbor.api.go.param.GoOrder;
 import com.the.harbor.api.go.param.GoOrderConfirmReq;
@@ -45,6 +51,7 @@ import com.the.harbor.api.user.param.UserViewInfo;
 import com.the.harbor.base.enumeration.common.BusiErrorCode;
 import com.the.harbor.base.enumeration.dict.ParamCode;
 import com.the.harbor.base.enumeration.dict.TypeCode;
+import com.the.harbor.base.enumeration.hygo.GoDetailType;
 import com.the.harbor.base.enumeration.hygo.GoType;
 import com.the.harbor.base.enumeration.hygo.HideFlag;
 import com.the.harbor.base.enumeration.hygo.OrgMode;
@@ -62,6 +69,7 @@ import com.the.harbor.base.enumeration.hypaymentorder.PayType;
 import com.the.harbor.base.enumeration.hyuser.SystemUser;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.exception.BusinessException;
+import com.the.harbor.commons.components.aliyuncs.opensearch.OpenSearchFactory;
 import com.the.harbor.commons.components.aliyuncs.sms.SMSSender;
 import com.the.harbor.commons.components.aliyuncs.sms.param.SMSSendRequest;
 import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
@@ -80,7 +88,9 @@ import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.commons.util.UUIDUtil;
 import com.the.harbor.dao.mapper.bo.HyGo;
 import com.the.harbor.dao.mapper.bo.HyGoComments;
+import com.the.harbor.dao.mapper.bo.HyGoCriteria;
 import com.the.harbor.dao.mapper.bo.HyGoDetail;
+import com.the.harbor.dao.mapper.bo.HyGoDetailCriteria;
 import com.the.harbor.dao.mapper.bo.HyGoFavorite;
 import com.the.harbor.dao.mapper.bo.HyGoFavoriteCriteria;
 import com.the.harbor.dao.mapper.bo.HyGoJoin;
@@ -88,7 +98,9 @@ import com.the.harbor.dao.mapper.bo.HyGoJoinCriteria;
 import com.the.harbor.dao.mapper.bo.HyGoOrder;
 import com.the.harbor.dao.mapper.bo.HyGoOrderCriteria;
 import com.the.harbor.dao.mapper.bo.HyGoStory;
+import com.the.harbor.dao.mapper.bo.HyGoStoryCriteria;
 import com.the.harbor.dao.mapper.bo.HyGoTags;
+import com.the.harbor.dao.mapper.bo.HyGoTagsCriteria;
 import com.the.harbor.dao.mapper.bo.HyGoView;
 import com.the.harbor.dao.mapper.bo.HyPaymentOrder;
 import com.the.harbor.dao.mapper.bo.HyUserAssets;
@@ -109,6 +121,7 @@ import com.the.harbor.util.HarborSeqUtil;
 import com.the.harbor.util.NotifyMQSend;
 import com.the.harbor.util.UserAssetsTradeMQSend;
 import com.the.harbor.util.UserFavorMQSend;
+import com.the.harbor.vo.GoIndexOperate;
 
 @Component
 @Transactional
@@ -184,7 +197,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		if (!CollectionUtil.isEmpty(goCreateReq.getGoDetails())) {
 			// 复制内容
 			bgo.setGoDetails(goCreateReq.getGoDetails());
-			int sort=0;
+			int sort = 0;
 			for (GoDetail d : goCreateReq.getGoDetails()) {
 				HyGoDetail gd = new HyGoDetail();
 				BeanUtils.copyProperties(d, gd);
@@ -219,7 +232,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		if (!CollectionUtil.isEmpty(goCreateReq.getGoStories())) {
 			// 复制内容
 			bgo.setGoStories(goCreateReq.getGoStories());
-			int sort=0;
+			int sort = 0;
 			for (GoStory d : goCreateReq.getGoStories()) {
 				HyGoStory gd = new HyGoStory();
 				BeanUtils.copyProperties(d, gd);
@@ -370,7 +383,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				body.setAccepterId(hyGo.getUserId());
 				body.setTitle("活动预约确认");
 				body.setContent("[" + orderUser.getEnName() + "]预约并支付了您发布的一对一活动[" + hyGo.getTopic() + "],请您确认~");
-				body.setLink("../go/toHainiuConfirm.html?goOrderId=" + goOrder.getOrderId()+"&notifyId="+body.getNotifyId());
+				body.setLink("../go/toHainiuConfirm.html?goOrderId=" + goOrder.getOrderId() + "&notifyId="
+						+ body.getNotifyId());
 				NotifyMQSend.sendNotifyMQ(body);
 			}
 		}
@@ -399,13 +413,13 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		if ("confirm".equals(goOrderConfirmReq.getAckFlag())) {
 			title = "海牛同意了您的预约";
 			content = "[" + publishUser.getEnName() + "]同意了您的预约的活动[" + hyGo.getTopic() + "]";
-			link = "../go/toAppointment.html?goOrderId=" + hyGoOrder.getOrderId()+"&notifyId="+notifyId;
+			link = "../go/toAppointment.html?goOrderId=" + hyGoOrder.getOrderId() + "&notifyId=" + notifyId;
 			o.setOrderStatus(OrderStatus.WAIT_MEET.getValue());
 		} else if ("reject".equals(goOrderConfirmReq.getAckFlag())) {
 			o.setOrderStatus(OrderStatus.REJECT.getValue());
 			title = "海牛拒绝了您的预约";
 			content = "[" + publishUser.getEnName() + "]拒绝了您的预约的活动[" + hyGo.getTopic() + "],您可以浏览其它活动~";
-			link = "../go/goindex.html?notifyId="+notifyId+"&notifyId="+notifyId;
+			link = "../go/goindex.html?notifyId=" + notifyId + "&notifyId=" + notifyId;
 		}
 		Timestamp sysdate = DateUtil.getSysDate();
 		o.setStsDate(sysdate);
@@ -479,7 +493,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		body.setAccepterId(hyGoOrder.getUserId());
 		body.setTitle("等待新秀确认");
 		body.setContent("[" + publishUser.getEnName() + "]提交了您预约的活动[" + hyGo.getTopic() + "]见面的时间与地点，您可以选择确认啦~");
-		body.setLink("../go/toAppointment.html?goOrderId=" + hyGoOrder.getOrderId()+"&notifyId="+body.getNotifyId());
+		body.setLink(
+				"../go/toAppointment.html?goOrderId=" + hyGoOrder.getOrderId() + "&notifyId=" + body.getNotifyId());
 		NotifyMQSend.sendNotifyMQ(body);
 
 		// 将海牛设置的时间与地点短信告知小白
@@ -531,7 +546,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		body.setAccepterId(hyGo.getUserId());
 		body.setTitle("小白确认了与您见面的时间地点");
 		body.setContent("[" + orderUser.getEnName() + "]确认了活动[" + hyGo.getTopic() + "]见面的时间与地点，点击查看~");
-		body.setLink("../go/toHainiuAppointment.html?goOrderId=" + hyGoOrder.getOrderId()+"&notifyId="+body.getNotifyId());
+		body.setLink("../go/toHainiuAppointment.html?goOrderId=" + hyGoOrder.getOrderId() + "&notifyId="
+				+ body.getNotifyId());
 		NotifyMQSend.sendNotifyMQ(body);
 
 		// 小白将选择的时间与地点短信通知海牛
@@ -586,7 +602,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		body.setAccepterId(hyGoOrder.getUserId());
 		body.setTitle("海牛确认了对您的服务结束");
 		body.setContent("[" + publishUser.getEnName() + "]确认了您预约的活动[" + hyGo.getTopic() + "]服务结束，您可以进入互评~");
-		body.setLink("../go/toFeedback.html?goOrderId=" + hyGoOrder.getOrderId()+"&notifyId="+body.getNotifyId());
+		body.setLink("../go/toFeedback.html?goOrderId=" + hyGoOrder.getOrderId() + "&notifyId=" + body.getNotifyId());
 		NotifyMQSend.sendNotifyMQ(body);
 
 		// 海牛确认服务结束后，给自己发送一条消息
@@ -601,7 +617,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		body.setAccepterId(hyGo.getUserId());
 		body.setTitle("您确认了服务结束");
 		body.setContent("您确认了[" + orderUser.getEnName() + "]预约您活动[" + hyGo.getTopic() + "]服务结束，您可以进入互评~");
-		body.setLink("../go/toHainiuFeedback.html?goOrderId=" + hyGoOrder.getOrderId()+"&notifyId="+body.getNotifyId());
+		body.setLink(
+				"../go/toHainiuFeedback.html?goOrderId=" + hyGoOrder.getOrderId() + "&notifyId=" + body.getNotifyId());
 		NotifyMQSend.sendNotifyMQ(body);
 
 		// 给小白发送一条短信提醒活动已经结束
@@ -707,21 +724,21 @@ public class GoBusiSVImpl implements IGoBusiSV {
 					if (go.getUserId().equals(doGoComment.getPublishUserId())) {
 						// 有疑问？ 发送给小白端
 						notify.setLink("../go/comments.html?goOrderId=" + doGoComment.getOrderId()
-								+ "&backURL=../user/messagecenter.html?notifyId="+notify.getNotifyId());
+								+ "&backURL=../user/messagecenter.html?notifyId=" + notify.getNotifyId());
 					} else {
 						// 有疑问，顺序颠倒？发送给海牛端
 						notify.setLink("../go/hainiugroupcomments.html?goOrderId=" + doGoComment.getOrderId()
-								+ "&notifyId="+notify.getNotifyId()+"&backURL=../user/messagecenter.html");
+								+ "&notifyId=" + notify.getNotifyId() + "&backURL=../user/messagecenter.html");
 					}
 				} else {
 					if (go.getUserId().equals(doGoComment.getPublishUserId())) {
 						// 有疑问？ 发送给小白端
-						notify.setLink("../go/toFeedback.html?goOrderId=" + doGoComment.getOrderId()
-								+ "&notifyId="+notify.getNotifyId()+"&backURL=../user/messagecenter.html");
+						notify.setLink("../go/toFeedback.html?goOrderId=" + doGoComment.getOrderId() + "&notifyId="
+								+ notify.getNotifyId() + "&backURL=../user/messagecenter.html");
 					} else {
 						// 有疑问，顺序颠倒？发送给海牛端
 						notify.setLink("../go/toHainiuFeedback.html?goOrderId=" + doGoComment.getOrderId()
-								+ "&notifyId="+notify.getNotifyId()+"&backURL=../user/messagecenter.html");
+								+ "&notifyId=" + notify.getNotifyId() + "&backURL=../user/messagecenter.html");
 					}
 
 				}
@@ -942,7 +959,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			body.setAccepterId(hyGo.getUserId());
 			body.setTitle("有新用户报名参加活动");
 			body.setContent("[" + orderUser.getEnName() + "]报名参加您发起的group活动[" + hyGo.getTopic() + "],请您确认~");
-			body.setLink("../go/confirmlist.html?goId=" + hyGo.getGoId()+"&notifyId="+body.getNotifyId());
+			body.setLink("../go/confirmlist.html?goId=" + hyGo.getGoId() + "&notifyId=" + body.getNotifyId());
 			NotifyMQSend.sendNotifyMQ(body);
 		}
 		return resp;
@@ -1003,7 +1020,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				body.setAccepterId(hyGo.getUserId());
 				body.setTitle("有新用户报名参加活动");
 				body.setContent("[" + orderUser.getEnName() + "]报名参加并支付了您发起的group活动[" + hyGo.getTopic() + "],请您确认~");
-				body.setLink("../go/confirmlist.html?goId=" + hyGo.getGoId()+"&notifyId="+body.getNotifyId());
+				body.setLink("../go/confirmlist.html?goId=" + hyGo.getGoId() + "&notifyId=" + body.getNotifyId());
 				NotifyMQSend.sendNotifyMQ(body);
 			}
 		}
@@ -1053,7 +1070,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				body.setTitle("同意您的参加活动");
 				body.setContent(
 						doGoJoinConfirm.getPublishUserName() + "同意您参加group活动[" + doGoJoinConfirm.getTopic() + "]，查看详情");
-				body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId()+"&notifyId="+body.getNotifyId());
+				body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId() + "&notifyId=" + body.getNotifyId());
 				NotifyMQSend.sendNotifyMQ(body);
 
 				// GROUP活动发起方确认同意，短信通知给参与方
@@ -1096,7 +1113,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				body.setTitle("拒绝您的参加活动");
 				body.setContent(doGoJoinConfirm.getPublishUserName() + "拒绝您参加group活动[" + doGoJoinConfirm.getTopic()
 						+ "],您支付的费用将于3天内退回您的账户。查看详情");
-				body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId()+"&notifyId="+body.getNotifyId());
+				body.setLink("../go/invite.html?goId=" + doGoJoinConfirm.getGoId() + "&notifyId=" + body.getNotifyId());
 				NotifyMQSend.sendNotifyMQ(body);
 
 				HyGo go = this.getHyGo(goJoin.getGoId());
@@ -1277,7 +1294,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			notify.setAccepterId(go.getUserId());
 			notify.setTitle("收到海贝通知~");
 			notify.setContent("给您发起的group活动[" + go.getTopic() + "]捐献了[" + giveHBReq.getCount() + "]个海贝，速速查看~");
-			notify.setLink("../go/hainiugroupcomments.html?goOrderId=" + o.getOrderId()+"&notifyId="+notify.getNotifyId());
+			notify.setLink(
+					"../go/hainiugroupcomments.html?goOrderId=" + o.getOrderId() + "&notifyId=" + notify.getNotifyId());
 			NotifyMQSend.sendNotifyMQ(notify);
 
 		} else if (GoType.ONE_ON_ONE.getValue().equals(giveHBReq.getGoType())) {
@@ -1318,7 +1336,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			notify.setAccepterId(go.getUserId());
 			notify.setTitle("收到海贝通知~");
 			notify.setContent("给您发起的one on one活动[" + go.getTopic() + "]捐献了[" + giveHBReq.getCount() + "]个海贝，速速查看~");
-			notify.setLink("../go/toHainiuFeedback.html?goOrderId=" + o.getOrderId()+"&notifyId="+notify.getNotifyId());
+			notify.setLink(
+					"../go/toHainiuFeedback.html?goOrderId=" + o.getOrderId() + "&notifyId=" + notify.getNotifyId());
 			NotifyMQSend.sendNotifyMQ(notify);
 		}
 
@@ -1466,6 +1485,174 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			return hyGoOrderMapper.countByExample(sql);
 		}
 		return 0;
+	}
+
+	@Override
+	public void pushGoToOpenSearch(String goId) {
+		HyGo hyGo = hyGoMapper.selectByPrimaryKey(goId);
+		if (hyGo == null) {
+			return;
+		}
+		// 索引以GO的明细记录*GO的故事记录
+		List<GoIndexOperate> indexs = new ArrayList<GoIndexOperate>();
+		List<String> goTagIds = new ArrayList<String>();
+		List<String> goTagNames = new ArrayList<String>();
+		List<String> polyTagIds = new ArrayList<String>();
+		Map<String, String> contentMap = new HashMap<String, String>();
+		HyGoTagsCriteria sql = new HyGoTagsCriteria();
+		sql.or().andGoIdEqualTo(goId).andStatusEqualTo(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
+		List<HyGoTags> goTags = hyGoTagsMapper.selectByExample(sql);
+		if (!CollectionUtil.isEmpty(goTags)) {
+			for (HyGoTags hyGoTags : goTags) {
+				goTagIds.add(hyGoTags.getTagId());
+				goTagNames.add(hyGoTags.getTagName());
+				if (!StringUtil.isBlank(hyGoTags.getPolyTagId())) {
+					polyTagIds.add(hyGoTags.getPolyTagId());
+				}
+
+			}
+		}
+		// 获取GO明细
+		HyGoDetailCriteria sql1 = new HyGoDetailCriteria();
+		sql1.or().andGoIdEqualTo(goId).andTypeEqualTo(GoDetailType.TEXT.getValue())
+				.andStatusEqualTo(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
+		List<HyGoDetail> godetails = hyGoDetailMapper.selectByExample(sql1);
+		if (!CollectionUtil.isEmpty(godetails)) {
+			for (HyGoDetail goDetail : godetails) {
+				contentMap.put("godetail_" + goDetail.getId(), goDetail.getDetail());
+			}
+		}
+		// 获取STORY明细
+		HyGoStoryCriteria sql2 = new HyGoStoryCriteria();
+		sql2.or().andGoIdEqualTo(goId).andTypeEqualTo(GoDetailType.TEXT.getValue())
+				.andStatusEqualTo(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
+		List<HyGoStory> goStories = hyGoStoryMapper.selectByExample(sql2);
+		if (!CollectionUtil.isEmpty(goStories)) {
+			for (HyGoStory goStory : goStories) {
+				contentMap.put("gostory_" + goStory.getId(), goStory.getDetail());
+			}
+		}
+		// 组织索引数据，交叉循环计算
+		for (String key : contentMap.keySet()) {
+			String type = key.split("_")[0];
+			String story = null;
+			String content = null;
+			if ("godetail".equals(type)) {
+				content = contentMap.get(key);
+			} else {
+				story = contentMap.get(key);
+			}
+
+			GoIndexModel m = new GoIndexModel();
+			BeanUtils.copyProperties(hyGo, m);
+			m.setIndexId(UUIDUtil.genId32());
+			m.setContent(content);
+			m.setStory(story);
+			m.setGoTagIds(goTagIds.toArray(new String[goTagIds.size()]));
+			m.setGoTagNames(goTagNames.toArray(new String[goTagNames.size()]));
+			m.setPolyTagIds(polyTagIds.toArray(new String[polyTagIds.size()]));
+
+			GoIndexOperate op = new GoIndexOperate();
+			op.setCmd("add");
+			op.setFields(m);
+			indexs.add(op);
+		}
+
+		System.out.println(JSON.toJSONString(indexs));
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchDoc doc = new CloudsearchDoc("harbor_go", client);
+		try {
+			String result = doc.push(JSON.toJSONString(indexs), "hy_go");
+			Log.debug(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void pushAllGoToOpenSearch() {
+		List<GoIndexOperate> indexs = new ArrayList<GoIndexOperate>();
+		HyGoCriteria sql0 = new HyGoCriteria();
+		List<HyGo> goes = hyGoMapper.selectByExample(sql0);
+		if (!CollectionUtil.isEmpty(goes)) {
+			for (HyGo hyGo : goes) {
+				String goId = hyGo.getGoId();
+				List<String> goTagIds = new ArrayList<String>();
+				List<String> goTagNames = new ArrayList<String>();
+				List<String> polyTagIds = new ArrayList<String>();
+				Map<String, String> contentMap = new HashMap<String, String>();
+				HyGoTagsCriteria sql = new HyGoTagsCriteria();
+				sql.or().andGoIdEqualTo(goId)
+						.andStatusEqualTo(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
+				List<HyGoTags> goTags = hyGoTagsMapper.selectByExample(sql);
+				if (!CollectionUtil.isEmpty(goTags)) {
+					for (HyGoTags hyGoTags : goTags) {
+						goTagIds.add(hyGoTags.getTagId());
+						goTagNames.add(hyGoTags.getTagName());
+						if (!StringUtil.isBlank(hyGoTags.getPolyTagId())) {
+							polyTagIds.add(hyGoTags.getPolyTagId());
+						}
+
+					}
+				}
+				// 获取GO明细
+				HyGoDetailCriteria sql1 = new HyGoDetailCriteria();
+				sql1.or().andGoIdEqualTo(goId).andTypeEqualTo(GoDetailType.TEXT.getValue())
+						.andStatusEqualTo(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
+				List<HyGoDetail> godetails = hyGoDetailMapper.selectByExample(sql1);
+				if (!CollectionUtil.isEmpty(godetails)) {
+					for (HyGoDetail goDetail : godetails) {
+						contentMap.put("godetail_" + goDetail.getId(), goDetail.getDetail());
+					}
+				}
+				// 获取STORY明细
+				HyGoStoryCriteria sql2 = new HyGoStoryCriteria();
+				sql2.or().andGoIdEqualTo(goId).andTypeEqualTo(GoDetailType.TEXT.getValue())
+						.andStatusEqualTo(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
+				List<HyGoStory> goStories = hyGoStoryMapper.selectByExample(sql2);
+				if (!CollectionUtil.isEmpty(goStories)) {
+					for (HyGoStory goStory : goStories) {
+						contentMap.put("gostory_" + goStory.getId(), goStory.getDetail());
+					}
+				}
+				// 组织索引数据，交叉循环计算
+				for (String key : contentMap.keySet()) {
+					String type = key.split("_")[0];
+					String story = null;
+					String content = null;
+					if ("godetail".equals(type)) {
+						content = contentMap.get(key);
+					} else {
+						story = contentMap.get(key);
+					}
+
+					GoIndexModel m = new GoIndexModel();
+					BeanUtils.copyProperties(hyGo, m);
+					m.setIndexId(UUIDUtil.genId32());
+					m.setContent(content);
+					m.setStory(story);
+					m.setGoTagIds(goTagIds.toArray(new String[goTagIds.size()]));
+					m.setGoTagNames(goTagNames.toArray(new String[goTagNames.size()]));
+					m.setPolyTagIds(polyTagIds.toArray(new String[polyTagIds.size()]));
+
+					GoIndexOperate op = new GoIndexOperate();
+					op.setCmd("add");
+					op.setFields(m);
+					indexs.add(op);
+				}
+
+			}
+		}
+
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchDoc doc = new CloudsearchDoc("harbor_go", client);
+		try {
+			String result = doc.push(JSON.toJSONString(indexs), "hy_go");
+			Log.debug(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

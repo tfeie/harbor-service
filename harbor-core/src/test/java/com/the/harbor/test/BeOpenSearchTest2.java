@@ -12,7 +12,7 @@ import com.the.harbor.service.interfaces.IBeBusiSV;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({ "/context/core-context.xml" })
-public class BeOpenSearchTest {
+public class BeOpenSearchTest2 {
 
 	@Autowired
 	IBeBusiSV beSV;

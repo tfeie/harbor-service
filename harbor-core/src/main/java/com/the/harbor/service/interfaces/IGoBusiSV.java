@@ -85,10 +85,10 @@ public interface IGoBusiSV {
 	List<GoJoin> getGoJoins(String goId);
 
 	List<GoOrder> getGoOrders(String goId);
-	
+
 	void doGoFavorite(GroupApplyReq groupApplyReq);
 
-	void processGoDelete(String goId,String goType);
+	void processGoDelete(String goId, String goType);
 
 	void topGo(String goId, String topFlag, Timestamp topDate);
 
@@ -99,4 +99,8 @@ public interface IGoBusiSV {
 	int getZhuRenCount(String userId);
 
 	int getGoHelpCount(String goId, String goType);
+
+	void pushGoToOpenSearch(String goId);
+	
+	void pushAllGoToOpenSearch();
 }

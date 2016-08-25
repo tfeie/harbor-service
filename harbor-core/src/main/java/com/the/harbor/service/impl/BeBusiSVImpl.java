@@ -442,7 +442,10 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			for (HyBeTags beTag : beTags) {
 				beTagIds.add(beTag.getTagId());
 				beTagNames.add(beTag.getTagName());
-				polyTagIds.add(beTag.getPolyTagId());
+				if (!StringUtil.isBlank(beTag.getPolyTagId())) {
+					polyTagIds.add(beTag.getPolyTagId());
+				}
+
 			}
 
 			/* 2.2 获取BE的明细 */
@@ -500,7 +503,10 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		for (HyBeTags beTag : beTags) {
 			beTagIds.add(beTag.getTagId());
 			beTagNames.add(beTag.getTagName());
-			polyTagIds.add(beTag.getPolyTagId());
+			if (!StringUtil.isBlank(beTag.getPolyTagId())) {
+				polyTagIds.add(beTag.getPolyTagId());
+			}
+
 		}
 
 		/* 2.2 获取BE的明细 */
