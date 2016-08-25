@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.mortbay.log.Log;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +13,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.opensearch.CloudsearchClient;
 import com.aliyun.opensearch.CloudsearchDoc;
+import com.aliyun.opensearch.CloudsearchSearch;
 import com.the.harbor.api.go.param.CheckUserOrderGoReq;
 import com.the.harbor.api.go.param.CreateGoPaymentOrderReq;
 import com.the.harbor.api.go.param.DoGoComment;
@@ -69,13 +69,11 @@ import com.the.harbor.base.enumeration.hypaymentorder.PayType;
 import com.the.harbor.base.enumeration.hyuser.SystemUser;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.exception.BusinessException;
+import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.commons.components.aliyuncs.opensearch.OpenSearchFactory;
 import com.the.harbor.commons.components.aliyuncs.sms.SMSSender;
 import com.the.harbor.commons.components.aliyuncs.sms.param.SMSSendRequest;
-import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
-import com.the.harbor.commons.indices.def.HarborIndex;
-import com.the.harbor.commons.indices.def.HarborIndexType;
 import com.the.harbor.commons.redisdata.def.DoNotify;
 import com.the.harbor.commons.redisdata.util.HyBeUtil;
 import com.the.harbor.commons.redisdata.util.HyCfgUtil;
@@ -1164,17 +1162,6 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		return false;
 	}
 
-	private Go getGoInfo(String goId) {
-		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_GO_DB.getValue())
-				.setTypes(HarborIndexType.HY_GO.getValue()).setQuery(QueryBuilders.termQuery("_id", goId)).execute()
-				.actionGet();
-		if (response.getHits().totalHits() == 0) {
-			return null;
-		}
-		Go go = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Go.class);
-		return go;
-	}
-
 	@Override
 	public int getMyJointGoCount(String userId, String goType) {
 		int orderCount = 0;
@@ -1424,6 +1411,9 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		record.setStatus(com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue());
 		record.setGoId(goId);
 		hyGoMapper.updateByPrimaryKeySelective(record);
+
+		this.deleteGoToOpenSearch(goId);
+
 		this.processGoFavorDelete(goId, goType);
 	}
 
@@ -1447,6 +1437,9 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		record.setTopDate(topDate);
 		record.setGoId(goId);
 		hyGoMapper.updateByPrimaryKeySelective(record);
+
+		// 更新索引
+		this.topGoToOpenSearch(goId, topFlag, topDate);
 	}
 
 	@Override
@@ -1455,6 +1448,8 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		record.setHideFlag(hideFlag);
 		record.setGoId(goId);
 		hyGoMapper.updateByPrimaryKeySelective(record);
+
+		this.hideGoToOpenSearch(goId, hideFlag);
 	}
 
 	@Override
@@ -1651,6 +1646,236 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			Log.debug(result);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+
+	}
+
+	@Override
+	public Go getGoInfo(String goId) {
+		String data = HyGoUtil.getGo(goId);
+		Go go = JSON.parseObject(data, Go.class);
+		this.fillGoInfo(go);
+		return go;
+	}
+
+	@Override
+	public void fillGoInfo(Go go) {
+		String contentSummary = null;
+		if (!CollectionUtil.isEmpty(go.getGoDetails())) {
+			for (GoDetail detail : go.getGoDetails()) {
+				if (GoDetailType.TEXT.getValue().equals(detail.getType())) {
+					contentSummary = detail.getDetail();
+					break;
+				}
+			}
+		}
+		go.setContentSummary(contentSummary);
+		go.setFixPriceYuan(AmountUtils.changeF2Y(go.getFixedPrice()));
+		go.setGoTypeName(
+				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.GO_TYPE.getValue(), go.getGoType()));
+		go.setPayModeName(
+				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.PAY_MODE.getValue(), go.getPayMode()));
+		go.setOrgModeName(
+				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.ORG_MODE.getValue(), go.getOrgMode()));
+		// 发布用户信息
+		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(go.getUserId());
+		if (createUserInfo != null) {
+			go.setAtCityName(createUserInfo.getAtCityName());
+			go.setEnName(createUserInfo.getEnName());
+			go.setIndustryName(createUserInfo.getIndustryName());
+			go.setTitle(createUserInfo.getTitle());
+			go.setWxHeadimg(createUserInfo.getWxHeadimg());
+			go.setUserStatus(createUserInfo.getUserStatus());
+			go.setUserStatusName(createUserInfo.getUserStatusName());
+			go.setAbroadCountryName(createUserInfo.getAbroadCountryName());
+			go.setHomePageBg(createUserInfo.getHomePageBg());
+			go.setAbroadCountryRGB(createUserInfo.getAbroadCountryRGB());
+		}
+
+		go.setCreateTimeStr(DateUtil.getDateString(go.getCreateDate(), "MM月dd"));
+		go.setCreateTimeInterval(DateUtil.getInterval(go.getCreateDate()));
+
+		go.setHelpCount(this.getGoHelpCount(go.getGoId(), go.getGoType()));
+
+		long count = HyGoUtil.getGoFavoredUserCount(go.getGoId());
+		go.setFavorCount(count);
+
+		long joinCount = HyGoUtil.getGroupConfirmedJoinUsersCount(go.getGoId());
+		go.setJoinCount(joinCount);
+
+		long viewCount = HyGoUtil.getGoViewCount(go.getGoId());
+		go.setViewCount(viewCount);
+
+	}
+
+	private List<String> getGoIndexs(String goId) {
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchSearch search = new CloudsearchSearch(client);
+		search.addIndex("harbor_go");
+		search.setQueryString(" goid:'" + goId + "'");
+		search.setFormat("json");
+		String res;
+		try {
+			res = search.search();
+		} catch (Exception e) {
+			throw new SystemException("查询错误");
+		}
+		List<String> indexs = new ArrayList<String>();
+		JSONObject d = JSONObject.parseObject(res);
+		String status = d.getString("status");
+		if ("OK".equals(status)) {
+			JSONObject rs = d.getJSONObject("result");
+			JSONArray arr = rs.getJSONArray("items");
+			for (int i = 0; i < arr.size(); i++) {
+				JSONObject data = arr.getJSONObject(i);
+				String indexId = data.getString("indexid");
+				indexs.add(indexId);
+			}
+
+		}
+		return indexs;
+	}
+
+	public void deleteGoToOpenSearch(String goId) {
+		List<String> indexIds = this.getGoIndexs(goId);
+		if (CollectionUtil.isEmpty(indexIds)) {
+			return;
+		}
+		List<GoIndexOperate> indexs = new ArrayList<GoIndexOperate>();
+		for (String indexId : indexIds) {
+			GoIndexModel m = new GoIndexModel();
+			m.setIndexId(indexId);
+			m.setStatus(Status.CANCEL.getValue());
+
+			GoIndexOperate op = new GoIndexOperate();
+			op.setCmd("update");
+			op.setFields(m);
+			indexs.add(op);
+		}
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchDoc doc = new CloudsearchDoc("harbor_go", client);
+		try {
+			String result = doc.push(JSON.toJSONString(indexs), "hy_go");
+			Log.debug(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void hideGoToOpenSearch(String goId, String hideFlag) {
+		List<String> indexIds = this.getGoIndexs(goId);
+		if (CollectionUtil.isEmpty(indexIds)) {
+			return;
+		}
+		List<GoIndexOperate> indexs = new ArrayList<GoIndexOperate>();
+		for (String indexId : indexIds) {
+			GoIndexModel m = new GoIndexModel();
+			m.setIndexId(indexId);
+			m.setHideFlag(hideFlag);
+			GoIndexOperate op = new GoIndexOperate();
+			op.setCmd("update");
+			op.setFields(m);
+			indexs.add(op);
+		}
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchDoc doc = new CloudsearchDoc("harbor_go", client);
+		try {
+			String result = doc.push(JSON.toJSONString(indexs), "hy_go");
+			Log.debug(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void topGoToOpenSearch(String goId, String topFlag, Timestamp topDate) {
+		List<String> indexIds = this.getGoIndexs(goId);
+		if (CollectionUtil.isEmpty(indexIds)) {
+			return;
+		}
+		List<GoIndexOperate> indexs = new ArrayList<GoIndexOperate>();
+		for (String indexId : indexIds) {
+			GoIndexModel m = new GoIndexModel();
+			m.setIndexId(indexId);
+			m.setTopDate(topDate);
+			m.setTopFlag(topFlag);
+			GoIndexOperate op = new GoIndexOperate();
+			op.setCmd("update");
+			op.setFields(m);
+			indexs.add(op);
+		}
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchDoc doc = new CloudsearchDoc("harbor_go", client);
+		try {
+			String result = doc.push(JSON.toJSONString(indexs), "hy_go");
+			Log.debug(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void resetAllGo2Redis() {
+		HyGoCriteria sql = new HyGoCriteria();
+		List<HyGo> goes = hyGoMapper.selectByExample(sql);
+		if (CollectionUtil.isEmpty(goes)) {
+			return;
+		}
+		for (HyGo hyGo : goes) {
+			String goId = hyGo.getGoId();
+			Go bgo = new Go();
+			List<GoTag> goTags = new ArrayList<GoTag>();
+			List<GoDetail> goDetails = new ArrayList<GoDetail>();
+			List<GoStory> goStories = new ArrayList<GoStory>();
+			BeanUtils.copyProperties(hyGo, bgo);
+
+			// 获取标签
+			HyGoTagsCriteria tagSql = new HyGoTagsCriteria();
+			tagSql.or().andGoIdEqualTo(goId)
+					.andStatusEqualTo(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
+			List<HyGoTags> hyGoTags = hyGoTagsMapper.selectByExample(tagSql);
+			if (!CollectionUtil.isEmpty(hyGoTags)) {
+				for (HyGoTags hyGoTag : hyGoTags) {
+					GoTag t = new GoTag();
+					BeanUtils.copyProperties(hyGoTag, t);
+					goTags.add(t);
+				}
+			}
+			// 获取GO明细
+			HyGoDetailCriteria sql1 = new HyGoDetailCriteria();
+			sql1.or().andGoIdEqualTo(goId)
+					.andStatusEqualTo(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
+			sql1.setOrderByClause(" sort asc");
+			List<HyGoDetail> godetails = hyGoDetailMapper.selectByExample(sql1);
+			if (!CollectionUtil.isEmpty(godetails)) {
+				for (HyGoDetail hyGoDetail : godetails) {
+					GoDetail t = new GoDetail();
+					BeanUtils.copyProperties(hyGoDetail, t);
+					goDetails.add(t);
+				}
+			}
+			// 获取STORY明细
+			HyGoStoryCriteria sql2 = new HyGoStoryCriteria();
+			sql2.or().andGoIdEqualTo(goId)
+					.andStatusEqualTo(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
+			sql2.setOrderByClause(" sort asc");
+			List<HyGoStory> hyGoStories = hyGoStoryMapper.selectByExample(sql2);
+			if (!CollectionUtil.isEmpty(hyGoStories)) {
+				for (HyGoStory goStory : hyGoStories) {
+					GoStory t = new GoStory();
+					BeanUtils.copyProperties(goStory, t);
+					goStories.add(t);
+				}
+			}
+
+			bgo.setGoDetails(goDetails);
+			bgo.setGoTags(goTags);
+			bgo.setGoStories(goStories);
+			// 填充其它信息
+			this.fillGoInfo(bgo);
+
+			// 写入REDIS
+			HyGoUtil.recordGo(goId, JSON.toJSONString(bgo));
+
 		}
 
 	}

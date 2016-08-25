@@ -1,24 +1,18 @@
 package com.the.harbor.api.go.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.sort.SortBuilder;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.aliyun.opensearch.CloudsearchClient;
+import com.aliyun.opensearch.CloudsearchSearch;
 import com.the.harbor.api.go.IGoSV;
 import com.the.harbor.api.go.param.CheckUserOrderGoReq;
 import com.the.harbor.api.go.param.CheckUserOrderGoResp;
@@ -82,12 +76,9 @@ import com.the.harbor.base.util.ValidatorUtil;
 import com.the.harbor.base.vo.PageInfo;
 import com.the.harbor.base.vo.Response;
 import com.the.harbor.base.vo.ResponseHeader;
-import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
-import com.the.harbor.commons.indices.def.HarborIndex;
-import com.the.harbor.commons.indices.def.HarborIndexType;
+import com.the.harbor.commons.components.aliyuncs.opensearch.OpenSearchFactory;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
 import com.the.harbor.commons.redisdata.util.HyGoUtil;
-import com.the.harbor.commons.util.AmountUtils;
 import com.the.harbor.commons.util.CollectionUtil;
 import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.commons.util.StringUtil;
@@ -202,12 +193,12 @@ public class GoSVImpl implements IGoSV {
 				throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "标签类目取值不合规");
 			}
 		}
-		
-		if (GoType.ONE_ON_ONE.getValue().equals(goCreateReq.getGoType())){
-			if(CollectionUtil.isEmpty(goCreateReq.getGoStories())){
+
+		if (GoType.ONE_ON_ONE.getValue().equals(goCreateReq.getGoType())) {
+			if (CollectionUtil.isEmpty(goCreateReq.getGoStories())) {
 				throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "请填写您的故事");
 			}
-			
+
 			for (GoStory detail : goCreateReq.getGoStories()) {
 				if (StringUtil.isBlank(detail.getType())) {
 					throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "故事详情类型为空");
@@ -226,7 +217,7 @@ public class GoSVImpl implements IGoSV {
 					}
 				}
 			}
-			
+
 		}
 	}
 
@@ -265,7 +256,7 @@ public class GoSVImpl implements IGoSV {
 			throw new BusinessException("GO_0001", "预约记录不存在");
 		}
 		// 获取活动信息
-		Go go = this.getGoInfo(hyGoOrder.getGoId());
+		Go go = goBusiSV.getGoInfo(hyGoOrder.getGoId());
 		GoOrder goOrder = new GoOrder();
 		BeanUtils.copyProperties(hyGoOrder, goOrder);
 		goOrder.setPublishUserId(go.getUserId());
@@ -310,7 +301,7 @@ public class GoSVImpl implements IGoSV {
 
 	@Override
 	public GoQueryResp queryGo(GoQueryReq goQueryReq) throws BusinessException, SystemException {
-		Go go = this.getGoInfo(goQueryReq.getGoId());
+		Go go = goBusiSV.getGoInfo(goQueryReq.getGoId());
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		GoQueryResp resp = new GoQueryResp();
 		resp.setGo(go);
@@ -380,31 +371,7 @@ public class GoSVImpl implements IGoSV {
 
 	@Override
 	public QueryMyGoResp queryMyGoes(QueryMyGoReq queryMyGoReq) throws BusinessException, SystemException {
-		int start = (queryMyGoReq.getPageNo() - 1) * queryMyGoReq.getPageSize();
-		int end = queryMyGoReq.getPageNo() * queryMyGoReq.getPageSize();
-		SortBuilder sortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
-		BoolQueryBuilder builder = QueryBuilders.boolQuery();
-		builder.must(QueryBuilders.termQuery("userId", queryMyGoReq.getUserId()))
-				.must(QueryBuilders.termQuery("goType", queryMyGoReq.getGoType()));
-		builder.mustNot(QueryBuilders.termQuery("status",
-				com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue().toLowerCase()));
-		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_GO_DB.getValue())
-				.setTypes(HarborIndexType.HY_GO.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
-				.addSort(sortBuilder).execute().actionGet();
-		SearchHits hits = response.getHits();
-		long total = hits.getTotalHits();
-		List<Go> result = new ArrayList<Go>();
-		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(queryMyGoReq.getUserId());
-		for (SearchHit hit : hits) {
-			Go go = JSON.parseObject(hit.getSourceAsString(), Go.class);
-			this.fillGoInfo(go, createUserInfo);
-			result.add(go);
-		}
-		PageInfo<Go> pageInfo = new PageInfo<Go>();
-		pageInfo.setCount(Integer.parseInt(total + ""));
-		pageInfo.setPageNo(queryMyGoReq.getPageNo());
-		pageInfo.setPageSize(queryMyGoReq.getPageSize());
-		pageInfo.setResult(result);
+		PageInfo<Go> pageInfo = this.queryMyGoesFromOpenSearch(queryMyGoReq);
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		QueryMyGoResp resp = new QueryMyGoResp();
 		resp.setPagInfo(pageInfo);
@@ -412,51 +379,64 @@ public class GoSVImpl implements IGoSV {
 		return resp;
 	}
 
-	@Override
-	public QueryGoResp queryGoes(QueryGoReq queryGoReq) throws BusinessException, SystemException {
-		int start = (queryGoReq.getPageNo() - 1) * queryGoReq.getPageSize();
-		int end = queryGoReq.getPageNo() * queryGoReq.getPageSize();
-		SortBuilder topDateSortBuilder = SortBuilders.fieldSort("topDate").order(SortOrder.DESC);
-		SortBuilder createDateSortBuilder = SortBuilders.fieldSort("createDate").order(SortOrder.DESC);
-		BoolQueryBuilder builder = QueryBuilders.boolQuery();
-		builder.must(QueryBuilders.termQuery("goType", queryGoReq.getGoType()));
-		builder.mustNot(QueryBuilders.termQuery("status",
-				com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue().toLowerCase()));
-		if (!queryGoReq.isQueryhide()) {
-			// 不查询隐藏记录
-			builder.must(QueryBuilders.termQuery("hideFlag", HideFlag.NO.getValue()));
-		}
-		if (!StringUtil.isBlank(queryGoReq.getPolyTagId())) {
-			builder.must(QueryBuilders.termQuery("goTags.polyTagId", queryGoReq.getPolyTagId()));
-		}
-		if (!StringUtil.isBlank(queryGoReq.getTagId())) {
-			builder.must(QueryBuilders.termQuery("goTags.tagId", queryGoReq.getTagId()));
-		}
-		if (!StringUtil.isBlank(queryGoReq.getSearchKey())) {
-			builder.must(QueryBuilders.queryStringQuery(queryGoReq.getSearchKey()));
-		}
-		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_GO_DB.getValue())
-				.setTypes(HarborIndexType.HY_GO.getValue()).setFrom(start).setSize(end - start).setQuery(builder)
-				.addSort(topDateSortBuilder).addSort(createDateSortBuilder).execute().actionGet();
-		SearchHits hits = response.getHits();
-		long total = hits.getTotalHits();
+	private PageInfo<Go> queryMyGoesFromOpenSearch(QueryMyGoReq queryMyGoReq) {
+		int start = (queryMyGoReq.getPageNo() - 1) * queryMyGoReq.getPageSize();
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchSearch search = new CloudsearchSearch(client);
+		search.addIndex("harbor_go");
+		search.addCustomConfig("start", start);
+		search.addCustomConfig("hit", queryMyGoReq.getPageSize());
+		// 状态必须是有效的
+		StringBuffer query = new StringBuffer();
+		query.append("(status:'" + com.the.harbor.base.enumeration.hygo.Status.ING.getValue() + "' OR status:'"
+				+ com.the.harbor.base.enumeration.hygo.Status.END.getValue() + "')");
+		query.append(" AND userid:'" + queryMyGoReq.getUserId() + "'");
+		query.append(" AND gotype:'" + queryMyGoReq.getGoType() + "'");
+		search.setQueryString(query.toString());
+		// 按照BEID进行聚合搜索排重
+		search.addDistinct("goid", 1, 1, "false");
+		search.setPair("duniqfield:goid");
+		// 指定搜索返回的格式。
+		search.setFormat("json");
+		// 设定排序方式 + 表示正序 - 表示降序
+		search.addSort("createdate", "-");
+		// 返回搜索结果
 		List<Go> result = new ArrayList<Go>();
-		Map<String, UserViewInfo> tmpMap = new HashMap<String, UserViewInfo>();
-		for (SearchHit hit : hits) {
-			Go go = JSON.parseObject(hit.getSourceAsString(), Go.class);
-			if (!tmpMap.containsKey(go.getUserId())) {
-				UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(go.getUserId());
-				tmpMap.put(go.getUserId(), createUserInfo);
-			}
-			this.fillGoInfo(go, tmpMap.get(go.getUserId()));
-			result.add(go);
+		int total = 0;
+		String res;
+		try {
+			res = search.search();
+		} catch (Exception e) {
+			throw new SystemException("查询错误");
 		}
-		tmpMap.clear();
+		JSONObject d = JSONObject.parseObject(res);
+		String status = d.getString("status");
+		if ("OK".equals(status)) {
+			JSONObject rs = d.getJSONObject("result");
+			total = d.getIntValue("total");
+			JSONArray arr = rs.getJSONArray("items");
+			for (int i = 0; i < arr.size(); i++) {
+				JSONObject data = arr.getJSONObject(i);
+				String goId = data.getString("goid");
+				Go go = goBusiSV.getGoInfo(goId);
+				if (go != null) {
+					result.add(go);
+				}
+			}
+
+		}
+
 		PageInfo<Go> pageInfo = new PageInfo<Go>();
 		pageInfo.setCount(Integer.parseInt(total + ""));
-		pageInfo.setPageNo(queryGoReq.getPageNo());
-		pageInfo.setPageSize(queryGoReq.getPageSize());
+		pageInfo.setPageNo(queryMyGoReq.getPageNo());
+		pageInfo.setPageSize(queryMyGoReq.getPageSize());
 		pageInfo.setResult(result);
+		return pageInfo;
+	}
+
+	@Override
+	public QueryGoResp queryGoes(QueryGoReq queryGoReq) throws BusinessException, SystemException {
+		PageInfo<Go> pageInfo = this.queryHyGoesFromOpenSearch(queryGoReq);
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		QueryGoResp resp = new QueryGoResp();
 		resp.setPagInfo(pageInfo);
@@ -464,67 +444,72 @@ public class GoSVImpl implements IGoSV {
 		return resp;
 	}
 
-	/**
-	 * 完善GO信息
-	 * 
-	 * @param go
-	 */
-	private void fillGoInfo(Go go, UserViewInfo createUserInfo) {
-		String contentSummary = null;
-		if (!CollectionUtil.isEmpty(go.getGoDetails())) {
-			for (GoDetail detail : go.getGoDetails()) {
-				if (GoDetailType.TEXT.getValue().equals(detail.getType())) {
-					contentSummary = detail.getDetail();
-					break;
+	private PageInfo<Go> queryHyGoesFromOpenSearch(QueryGoReq queryGoReq) {
+		int start = (queryGoReq.getPageNo() - 1) * queryGoReq.getPageSize();
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchSearch search = new CloudsearchSearch(client);
+		search.addIndex("harbor_go");
+		search.addCustomConfig("start", start);
+		search.addCustomConfig("hit", queryGoReq.getPageSize());
+		// 状态必须是有效的
+		StringBuffer query = new StringBuffer();
+		query.append(" gotype:'" + queryGoReq.getGoType() + "'");
+		query.append(" AND (status:'" + com.the.harbor.base.enumeration.hygo.Status.ING.getValue() + "' OR status:'"
+				+ com.the.harbor.base.enumeration.hygo.Status.END.getValue() + "')");
+		if (!StringUtil.isBlank(queryGoReq.getTagId())) {
+			query.append(" AND betagids:'" + queryGoReq.getTagId() + "'");
+		}
+		if (!StringUtil.isBlank(queryGoReq.getPolyTagId())) {
+			query.append(" AND polytagids:'" + queryGoReq.getPolyTagId() + "'");
+		}
+		if (!StringUtil.isBlank(queryGoReq.getSearchKey())) {
+			query.append(" AND default:'" + queryGoReq.getSearchKey() + "'");
+		}
+		if (!queryGoReq.isQueryhide()) {
+			// 不查询隐藏记录
+			query.append(" AND hideflag:'" + HideFlag.NO.getValue() + "'");
+		}
+		search.setQueryString(query.toString());
+		// 按照BEID进行聚合搜索排重
+		search.addDistinct("goid", 1, 1, "false");
+		search.setPair("duniqfield:goid");
+		// 指定搜索返回的格式。
+		search.setFormat("json");
+		// 设定排序方式 + 表示正序 - 表示降序
+		search.addSort("topdate", "-");
+		search.addSort("createdate", "-");
+		// 返回搜索结果
+		List<Go> result = new ArrayList<Go>();
+		int total = 0;
+		String res;
+		try {
+			res = search.search();
+		} catch (Exception e) {
+			throw new SystemException("查询错误");
+		}
+		JSONObject d = JSONObject.parseObject(res);
+		String status = d.getString("status");
+		if ("OK".equals(status)) {
+			JSONObject rs = d.getJSONObject("result");
+			total = d.getIntValue("total");
+			JSONArray arr = rs.getJSONArray("items");
+			for (int i = 0; i < arr.size(); i++) {
+				JSONObject data = arr.getJSONObject(i);
+				String goId = data.getString("goid");
+				Go go = goBusiSV.getGoInfo(goId);
+				if (go != null) {
+					result.add(go);
 				}
 			}
-		}
-		go.setContentSummary(contentSummary);
-		go.setFixPriceYuan(AmountUtils.changeF2Y(go.getFixedPrice()));
-		go.setGoTypeName(
-				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.GO_TYPE.getValue(), go.getGoType()));
-		go.setPayModeName(
-				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.PAY_MODE.getValue(), go.getPayMode()));
-		go.setOrgModeName(
-				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.ORG_MODE.getValue(), go.getOrgMode()));
-		// 发布用户信息
-		if (createUserInfo != null) {
-			go.setAtCityName(createUserInfo.getAtCityName());
-			go.setEnName(createUserInfo.getEnName());
-			go.setIndustryName(createUserInfo.getIndustryName());
-			go.setTitle(createUserInfo.getTitle());
-			go.setWxHeadimg(createUserInfo.getWxHeadimg());
-			go.setUserStatus(createUserInfo.getUserStatus());
-			go.setUserStatusName(createUserInfo.getUserStatusName());
-			go.setAbroadCountryName(createUserInfo.getAbroadCountryName());
-			go.setHomePageBg(createUserInfo.getHomePageBg());
-			go.setAbroadCountryRGB(createUserInfo.getAbroadCountryRGB());
+
 		}
 
-		go.setCreateTimeStr(DateUtil.getDateString(go.getCreateDate(), "MM月dd"));
-		go.setCreateTimeInterval(DateUtil.getInterval(go.getCreateDate()));
-
-		go.setHelpCount(goBusiSV.getGoHelpCount(go.getGoId(), go.getGoType()));
-
-	}
-
-	/**
-	 * 获取GO信息
-	 * 
-	 * @param goId
-	 * @return
-	 */
-	private Go getGoInfo(String goId) {
-		SearchResponse response = ElasticSearchFactory.getClient().prepareSearch(HarborIndex.HY_GO_DB.getValue())
-				.setTypes(HarborIndexType.HY_GO.getValue()).setQuery(QueryBuilders.termQuery("_id", goId)).execute()
-				.actionGet();
-		if (response.getHits().totalHits() == 0) {
-			return null;
-		}
-		Go go = JSON.parseObject(response.getHits().getHits()[0].getSourceAsString(), Go.class);
-		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(go.getUserId());
-		this.fillGoInfo(go, createUserInfo);
-		return go;
+		PageInfo<Go> pageInfo = new PageInfo<Go>();
+		pageInfo.setCount(Integer.parseInt(total + ""));
+		pageInfo.setPageNo(queryGoReq.getPageNo());
+		pageInfo.setPageSize(queryGoReq.getPageSize());
+		pageInfo.setResult(result);
+		return pageInfo;
 	}
 
 	@Override
@@ -563,7 +548,7 @@ public class GoSVImpl implements IGoSV {
 				queryMyGoReq.getPageNo(), queryMyGoReq.getPageSize(), false);
 		List<Go> result = new ArrayList<Go>();
 		for (String goId : goIds) {
-			result.add(this.getGoInfo(goId));
+			result.add(goBusiSV.getGoInfo(goId));
 		}
 		PageInfo<Go> pageInfo = new PageInfo<Go>();
 		pageInfo.setCount(Integer.parseInt(total + ""));
@@ -588,14 +573,14 @@ public class GoSVImpl implements IGoSV {
 			List<HyGoOrder> list = goBusiSV.getMyJointGroupGoes(queryMyGoReq);
 			if (!CollectionUtil.isEmpty(list)) {
 				for (HyGoOrder go : list) {
-					result.add(this.getGoInfo(go.getGoId()));
+					result.add(goBusiSV.getGoInfo(go.getGoId()));
 				}
 			}
 		} else if (GoType.GROUP.getValue().equals(goType)) {
 			List<HyGoJoin> list = goBusiSV.getMyJointOnOGoes(queryMyGoReq);
 			if (!CollectionUtil.isEmpty(list)) {
 				for (HyGoJoin go : list) {
-					result.add(this.getGoInfo(go.getGoId()));
+					result.add(goBusiSV.getGoInfo(go.getGoId()));
 				}
 			}
 		}
@@ -648,7 +633,7 @@ public class GoSVImpl implements IGoSV {
 			throw new BusinessException("GO_0001", "预约记录不存在");
 		}
 		// 获取活动信息
-		Go go = this.getGoInfo(hyGoJoin.getGoId());
+		Go go = goBusiSV.getGoInfo(hyGoJoin.getGoId());
 		GoJoin goJoin = new GoJoin();
 		BeanUtils.copyProperties(hyGoJoin, goJoin);
 		goJoin.setPublishUserId(go.getUserId());
@@ -688,7 +673,7 @@ public class GoSVImpl implements IGoSV {
 		}
 		GoJoin goJoin = null;
 		if (hyGoJoin != null) {
-			Go go = this.getGoInfo(hyGoJoin.getGoId());
+			Go go = goBusiSV.getGoInfo(hyGoJoin.getGoId());
 			goJoin = new GoJoin();
 			BeanUtils.copyProperties(hyGoJoin, goJoin);
 			goJoin.setPublishUserId(go.getUserId());
@@ -730,7 +715,7 @@ public class GoSVImpl implements IGoSV {
 
 	@Override
 	public Response deleteGo(DeleteGoReq deleteGoReq) throws BusinessException, SystemException {
-		Go go = this.getGoInfo(deleteGoReq.getGoId());
+		Go go = goBusiSV.getGoInfo(deleteGoReq.getGoId());
 		if (go != null) {
 			// 判断是否是发布者
 			if (!go.getUserId().equals(deleteGoReq.getUserId())) {
@@ -743,10 +728,8 @@ public class GoSVImpl implements IGoSV {
 			}
 			// 将搜索引擎数据标记为撤销
 			go.setStatus(com.the.harbor.base.enumeration.hygo.Status.CANCEL.getValue());
-			ElasticSearchFactory.getClient()
-					.prepareIndex(HarborIndex.HY_GO_DB.getValue().toLowerCase(),
-							HarborIndexType.HY_GO.getValue().toLowerCase(), go.getGoId())
-					.setRefresh(true).setSource(JSON.toJSONString(go)).execute().actionGet();
+
+			HyGoUtil.recordGo(go.getGoId(), JSON.toJSONString(go));
 			// 发送删除消息处理
 			DoGoDelete body = new DoGoDelete();
 			body.setGoId(deleteGoReq.getGoId());
@@ -758,7 +741,7 @@ public class GoSVImpl implements IGoSV {
 
 	@Override
 	public Response topGo(TopGoReq topGoReq) throws BusinessException, SystemException {
-		Go go = this.getGoInfo(topGoReq.getGoId());
+		Go go = goBusiSV.getGoInfo(topGoReq.getGoId());
 		if (go != null) {
 			if (topGoReq.isTop()) {
 				go.setTopFlag(com.the.harbor.base.enumeration.hygo.TopFlag.YES.getValue());
@@ -767,13 +750,7 @@ public class GoSVImpl implements IGoSV {
 				go.setTopFlag(com.the.harbor.base.enumeration.hygo.TopFlag.NO.getValue());
 				go.setTopDate(null);
 			}
-			ElasticSearchFactory.getClient()
-					.prepareIndex(HarborIndex.HY_GO_DB.getValue().toLowerCase(),
-							HarborIndexType.HY_GO.getValue().toLowerCase(), go.getGoId())
-					.setRefresh(true).setSource(JSON.toJSONString(go)).execute().actionGet();
-
-			// 修改数据库置顶状态
-
+			HyGoUtil.recordGo(go.getGoId(), JSON.toJSONString(go));
 			goBusiSV.topGo(go.getGoId(), go.getTopFlag(), go.getTopDate());
 		}
 		return ResponseBuilder.buildSuccessResponse("操作成功");
@@ -781,13 +758,10 @@ public class GoSVImpl implements IGoSV {
 
 	@Override
 	public Response hideGo(HideGoReq hideGoReq) throws BusinessException, SystemException {
-		Go go = this.getGoInfo(hideGoReq.getGoId());
+		Go go = goBusiSV.getGoInfo(hideGoReq.getGoId());
 		if (go != null) {
 			go.setHideFlag(hideGoReq.isHide() ? HideFlag.YES.getValue() : HideFlag.NO.getValue());
-			ElasticSearchFactory.getClient()
-					.prepareIndex(HarborIndex.HY_GO_DB.getValue().toLowerCase(),
-							HarborIndexType.HY_GO.getValue().toLowerCase(), go.getGoId())
-					.setRefresh(true).setSource(JSON.toJSONString(go)).execute().actionGet();
+			HyGoUtil.recordGo(go.getGoId(), JSON.toJSONString(go));
 			goBusiSV.hideGo(go.getGoId(), go.getHideFlag());
 		}
 		return ResponseBuilder.buildSuccessResponse("操作成功");

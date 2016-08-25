@@ -38,7 +38,7 @@ public interface IBeBusiSV {
 
 	void hideBeToOpenSearch(String beId, String hideFlag);
 
-	void topBeToOpenSearch(String beId, String topFlag);
+	void topBeToOpenSearch(String beId, String topFlag, Timestamp date);
 
 	void deleteBeToOpenSearch(String beId);
 

@@ -20,7 +20,6 @@
 	<!-- MNS消息队列监听 -->
 	<bean id="BeIndexBuildListener" class="com.the.harbor.mnslistener.BeIndexBuildListener" />
 	<bean id="GoIndexBuildListener" class="com.the.harbor.mnslistener.GoIndexBuildListener" />
-	<bean id="GoIndexRealtimeCountListener" class="com.the.harbor.mnslistener.GoIndexRealtimeCountListener" />
 	<bean id="NotifyListener" class="com.the.harbor.mnslistener.NotifyListener" />
 	<bean id="SMSRecordListener" class="com.the.harbor.mnslistener.SMSRecordListener" />
 	<bean id="UserAssetsTradeListener" class="com.the.harbor.mnslistener.UserAssetsTradeListener" />

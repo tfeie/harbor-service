@@ -10,6 +10,7 @@ import com.the.harbor.api.go.param.DoGoFavorite;
 import com.the.harbor.api.go.param.DoGoJoinConfirm;
 import com.the.harbor.api.go.param.DoGoView;
 import com.the.harbor.api.go.param.GiveHBReq;
+import com.the.harbor.api.go.param.Go;
 import com.the.harbor.api.go.param.GoCreateReq;
 import com.the.harbor.api.go.param.GoJoin;
 import com.the.harbor.api.go.param.GoOrder;
@@ -101,6 +102,12 @@ public interface IGoBusiSV {
 	int getGoHelpCount(String goId, String goType);
 
 	void pushGoToOpenSearch(String goId);
-	
+
 	void pushAllGoToOpenSearch();
+
+	Go getGoInfo(String goId);
+
+	void resetAllGo2Redis();
+
+	void fillGoInfo(Go go);
 }

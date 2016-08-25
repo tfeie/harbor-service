@@ -3,7 +3,9 @@ package com.the.harbor.mnslistener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.mns.client.CloudAccount;
 import com.aliyun.mns.client.MNSClient;
@@ -11,11 +13,10 @@ import com.aliyun.mns.model.Message;
 import com.the.harbor.api.go.param.Go;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSSettings;
 import com.the.harbor.commons.components.aliyuncs.mns.MessageReceiver;
-import com.the.harbor.commons.components.elasticsearch.ElasticSearchFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
-import com.the.harbor.commons.indices.def.HarborIndex;
-import com.the.harbor.commons.indices.def.HarborIndexType;
+import com.the.harbor.commons.redisdata.util.HyGoUtil;
 import com.the.harbor.commons.util.StringUtil;
+import com.the.harbor.service.interfaces.IGoBusiSV;
 
 public class GoIndexBuildListener implements InitializingBean {
 
@@ -23,35 +24,38 @@ public class GoIndexBuildListener implements InitializingBean {
 
 	protected static MNSClient sMNSClient;
 
+	@Autowired
+	private transient IGoBusiSV goBusiSV;
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		// 为了防止阻塞dubbo服务启动，这里采用一个异步线程唤醒消息接收工作线程
 		Thread thread = new Thread(new Runnable() {
 			public void run() {
-				runThread();
+				runThread(goBusiSV);
 			}
 		});
 		thread.start();
 	}
 
-	public static void runThread() {
+	public static void runThread(final IGoBusiSV goBusiSV) {
 		CloudAccount account = new CloudAccount(MNSSettings.getMNSAccessKeyId(), MNSSettings.getMNSAccessKeySecret(),
 				MNSSettings.getMNSAccountEndpoint());
 		sMNSClient = account.getMNSClient();
 
 		Thread thread1 = new Thread(new Runnable() {
 			public void run() {
-				WorkerFunc(1);
+				WorkerFunc(1, goBusiSV);
 			}
 		});
 		Thread thread2 = new Thread(new Runnable() {
 			public void run() {
-				WorkerFunc(2);
+				WorkerFunc(2, goBusiSV);
 			}
 		});
 		Thread thread3 = new Thread(new Runnable() {
 			public void run() {
-				WorkerFunc(3);
+				WorkerFunc(3, goBusiSV);
 			}
 		});
 
@@ -75,7 +79,7 @@ public class GoIndexBuildListener implements InitializingBean {
 		}
 	}
 
-	public static void WorkerFunc(int workerId) {
+	public static void WorkerFunc(int workerId, IGoBusiSV goBusiSV) {
 		String queueName = GlobalSettings.getGoIndexBuildQueueName();
 		MessageReceiver receiver = new MessageReceiver(workerId, sMNSClient, queueName);
 		while (true) {
@@ -84,8 +88,10 @@ public class GoIndexBuildListener implements InitializingBean {
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					Go go = JSONObject.parseObject(message.getMessageBody(), Go.class);
-					ElasticSearchFactory.addIndex(HarborIndex.HY_GO_DB.getValue(), HarborIndexType.HY_GO.getValue(),
-							go.getGoId(), message.getMessageBody());
+					// 写入REDIS
+					HyGoUtil.recordGo(go.getGoId(), JSON.toJSONString(go));
+					// 写入OPENSEARCH索引
+					goBusiSV.pushGoToOpenSearch(go.getGoId());
 				}
 			} catch (Exception ex) {
 				LOG.error("GO索引构建MNS消息失败", ex);

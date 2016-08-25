@@ -28,7 +28,6 @@ import com.the.harbor.api.be.param.DoBeLikes;
 import com.the.harbor.api.be.param.DoBeView;
 import com.the.harbor.api.go.param.DoGoComment;
 import com.the.harbor.api.go.param.DoGoFavorite;
-import com.the.harbor.api.go.param.DoGoIndexRealtimeStat;
 import com.the.harbor.api.go.param.DoGoJoinConfirm;
 import com.the.harbor.api.go.param.DoGoView;
 import com.the.harbor.api.user.param.DoIMUserSync;
@@ -45,7 +44,6 @@ import com.the.harbor.service.interfaces.IBeBusiSV;
 import com.the.harbor.service.interfaces.IGoBusiSV;
 import com.the.harbor.service.interfaces.IUserInterfactionSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
-import com.the.harbor.util.IndexRealtimeCountMQSend;
 
 @Component
 @Transactional
@@ -75,18 +73,10 @@ public class UserInterfactionSVImpl implements IUserInterfactionSV {
 			// GO收藏行为
 			DoGoFavorite doGoFavorite = JSONObject.parseObject(mnsBody, DoGoFavorite.class);
 			goBusiSV.processDoGoFavoriteMQ(doGoFavorite);
-
-			// 发送索引更新消息
-			IndexRealtimeCountMQSend.sendGoRealtimeIndexUpdateMQ(
-					new DoGoIndexRealtimeStat(doGoFavorite.getGoId(), DoGoIndexRealtimeStat.StatType.FAVOR.name()));
 		} else if (MQType.MQ_HY_GO_VIEWS.getValue().equals(mqType)) {
 			// GO浏览行为
 			DoGoView doGoView = JSONObject.parseObject(mnsBody, DoGoView.class);
 			goBusiSV.processDoGoView(doGoView);
-
-			// 发送索引更新消息
-			IndexRealtimeCountMQSend.sendGoRealtimeIndexUpdateMQ(
-					new DoGoIndexRealtimeStat(doGoView.getGoId(), DoGoIndexRealtimeStat.StatType.VIEW.name()));
 
 		} else if (MQType.MQ_HY_BE_FAVORITE.getValue().equals(mqType)) {
 			// BE收藏行为
@@ -118,10 +108,6 @@ public class UserInterfactionSVImpl implements IUserInterfactionSV {
 			// GROUP活动报名审核信息
 			DoGoJoinConfirm doGoJoinConfirm = JSONObject.parseObject(mnsBody, DoGoJoinConfirm.class);
 			goBusiSV.processDoGoJoinConfirm(doGoJoinConfirm);
-
-			// 发送索引更新消息
-			IndexRealtimeCountMQSend.sendGoRealtimeIndexUpdateMQ(new DoGoIndexRealtimeStat(doGoJoinConfirm.getGoId(),
-					DoGoIndexRealtimeStat.StatType.GROUPJOIN.name()));
 		}
 
 	}
@@ -209,7 +195,7 @@ public class UserInterfactionSVImpl implements IUserInterfactionSV {
 		if (DoIMUserSync.HandleType.ADD.name().equals(handleType)) {
 			syncUser2Opensearch(userId, "add");
 		} else if (DoIMUserSync.HandleType.UPDATE.name().equals(handleType)) {
-			//覆盖更新索引
+			// 覆盖更新索引
 			syncUser2Opensearch(userId, "add");
 		} else if (DoIMUserSync.HandleType.DELETE.name().equals(handleType)) {
 

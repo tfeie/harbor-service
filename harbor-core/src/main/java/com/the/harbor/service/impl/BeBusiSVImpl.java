@@ -14,9 +14,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.opensearch.CloudsearchClient;
 import com.aliyun.opensearch.CloudsearchDoc;
+import com.aliyun.opensearch.CloudsearchSearch;
 import com.the.harbor.api.be.param.Be;
 import com.the.harbor.api.be.param.BeComment;
 import com.the.harbor.api.be.param.BeCreateReq;
@@ -42,6 +44,7 @@ import com.the.harbor.base.enumeration.hypaymentorder.BusiType;
 import com.the.harbor.base.enumeration.hytags.TagType;
 import com.the.harbor.base.enumeration.hyuserassets.AssetsType;
 import com.the.harbor.base.exception.BusinessException;
+import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.commons.components.aliyuncs.opensearch.OpenSearchFactory;
 import com.the.harbor.commons.redisdata.def.DoNotify;
 import com.the.harbor.commons.redisdata.util.HyBeUtil;
@@ -409,7 +412,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		hyBeMapper.updateByPrimaryKeySelective(record);
 
 		// 标记OPENSEARCH状态
-		this.topBeToOpenSearch(beId, topFlag);
+		this.topBeToOpenSearch(beId, topFlag, topDate);
 	}
 
 	@Override
@@ -545,20 +548,16 @@ public class BeBusiSVImpl implements IBeBusiSV {
 	}
 
 	public void hideBeToOpenSearch(String beId, String hideFlag) {
-		List<HyBeDetail> beDetails = this.getBeDetails(beId);
-		if (CollectionUtil.isEmpty(beDetails)) {
+		List<String> indexIds = this.getBeIndexs(beId);
+		if (CollectionUtil.isEmpty(indexIds)) {
 			return;
 		}
 		List<BeIndexOperate> indexs = new ArrayList<BeIndexOperate>();
 		Map<String, Object> fields = new HashMap<String, Object>();
-		for (HyBeDetail hyBeDetail : beDetails) {
-			if (BeDetailType.IMAGE.getValue().equals(hyBeDetail.getType())) {
-				continue;
-			}
+		for (String id : indexIds) {
 			BeIndexModel m = new BeIndexModel();
-			m.setId(hyBeDetail.getId());
+			m.setId(id);
 			m.setHideFlag(hideFlag);
-			m.setEnName("aaaaa");
 
 			BeIndexOperate op = new BeIndexOperate();
 			op.setCmd("update");
@@ -576,20 +575,17 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		}
 	}
 
-	public void topBeToOpenSearch(String beId, String topFlag) {
-		List<HyBeDetail> beDetails = this.getBeDetails(beId);
-		if (CollectionUtil.isEmpty(beDetails)) {
+	public void topBeToOpenSearch(String beId, String topFlag, Timestamp topDate) {
+		List<String> indexIds = this.getBeIndexs(beId);
+		if (CollectionUtil.isEmpty(indexIds)) {
 			return;
 		}
 		List<BeIndexOperate> indexs = new ArrayList<BeIndexOperate>();
-		for (HyBeDetail hyBeDetail : beDetails) {
-			if (BeDetailType.IMAGE.getValue().equals(hyBeDetail.getType())) {
-				continue;
-			}
+		for (String id : indexIds) {
 			BeIndexModel m = new BeIndexModel();
-			m.setId(hyBeDetail.getId());
+			m.setId(id);
 			m.setTopFlag(topFlag);
-			m.setTopDate(DateUtil.getSysDate());
+			m.setTopDate(topDate);
 
 			BeIndexOperate op = new BeIndexOperate();
 			op.setCmd("update");
@@ -607,17 +603,14 @@ public class BeBusiSVImpl implements IBeBusiSV {
 	}
 
 	public void deleteBeToOpenSearch(String beId) {
-		List<HyBeDetail> beDetails = this.getBeDetails(beId);
-		if (CollectionUtil.isEmpty(beDetails)) {
+		List<String> indexIds = this.getBeIndexs(beId);
+		if (CollectionUtil.isEmpty(indexIds)) {
 			return;
 		}
 		List<BeIndexOperate> indexs = new ArrayList<BeIndexOperate>();
-		for (HyBeDetail hyBeDetail : beDetails) {
-			if (BeDetailType.IMAGE.getValue().equals(hyBeDetail.getType())) {
-				continue;
-			}
+		for (String id : indexIds) {
 			BeIndexModel m = new BeIndexModel();
-			m.setId(hyBeDetail.getId());
+			m.setId(id);
 			m.setStatus(Status.INVALID.getValue());
 			m.setInvalidDate(DateUtil.getSysDate());
 
@@ -655,6 +648,34 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		sql.or().andStatusEqualTo(Status.VALID.getValue()).andBeIdEqualTo(beId);
 		List<HyBeTags> beTags = hyBeTagsMapper.selectByExample(sql);
 		return beTags;
+	}
+
+	private List<String> getBeIndexs(String beId) {
+		CloudsearchClient client = OpenSearchFactory.getClient();
+		CloudsearchSearch search = new CloudsearchSearch(client);
+		search.addIndex("harbor_be");
+		search.setQueryString(" beid:'" + beId + "'");
+		search.setFormat("json");
+		String res;
+		try {
+			res = search.search();
+		} catch (Exception e) {
+			throw new SystemException("查询错误");
+		}
+		List<String> indexs = new ArrayList<String>();
+		JSONObject d = JSONObject.parseObject(res);
+		String status = d.getString("status");
+		if ("OK".equals(status)) {
+			JSONObject rs = d.getJSONObject("result");
+			JSONArray arr = rs.getJSONArray("items");
+			for (int i = 0; i < arr.size(); i++) {
+				JSONObject data = arr.getJSONObject(i);
+				String indexId = data.getString("id");
+				indexs.add(indexId);
+			}
+
+		}
+		return indexs;
 	}
 
 	public void resetAllBe2Redis() {

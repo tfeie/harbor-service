@@ -10,6 +10,7 @@ import com.the.harbor.cacheimpl.HyAreaCacheImpl;
 import com.the.harbor.cacheimpl.HyBeCacheImpl;
 import com.the.harbor.cacheimpl.HyCountryCacheImpl;
 import com.the.harbor.cacheimpl.HyDictsCacheImpl;
+import com.the.harbor.cacheimpl.HyGoCacheImpl;
 import com.the.harbor.cacheimpl.HyIndustryCacheImpl;
 import com.the.harbor.cacheimpl.HyTagsCacheImpl;
 import com.the.harbor.commons.appserver.CacheServiceStart;
@@ -36,9 +37,12 @@ public class HyCountriesTest {
 	@Autowired
 	HyBeCacheImpl cache6;
 
+	@Autowired
+	HyGoCacheImpl cache7;
+
 	@Test
 	public void build() throws Exception {
-		cache6.write();
+		cache7.write();
 	}
 
 	@Test
