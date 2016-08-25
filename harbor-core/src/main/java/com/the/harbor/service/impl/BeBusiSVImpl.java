@@ -25,7 +25,6 @@ import com.the.harbor.api.be.param.BeIndexModel;
 import com.the.harbor.api.be.param.BeTag;
 import com.the.harbor.api.be.param.DoBeComment;
 import com.the.harbor.api.be.param.DoBeFavorite;
-import com.the.harbor.api.be.param.DoBeIndexRealtimeStat;
 import com.the.harbor.api.be.param.DoBeLikes;
 import com.the.harbor.api.be.param.DoBeView;
 import com.the.harbor.api.be.param.GiveHBReq;
@@ -76,7 +75,6 @@ import com.the.harbor.service.interfaces.IBeBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
 import com.the.harbor.util.ESIndexBuildMQSend;
 import com.the.harbor.util.HarborSeqUtil;
-import com.the.harbor.util.IndexRealtimeCountMQSend;
 import com.the.harbor.util.NotifyMQSend;
 import com.the.harbor.util.UserAssetsTradeMQSend;
 import com.the.harbor.util.UserFavorMQSend;
@@ -327,9 +325,6 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		// 记录BE的打赏用户信息
 		HyBeUtil.userRewardBe(giveHBReq.getBeId(), giveHBReq.getFromUserId());
 		HyBeUtil.recordBeRewardHB(giveHBReq.getBeId(), giveHBReq.getCount());
-		// 发送索引更新消息
-		IndexRealtimeCountMQSend.sendBeRealtimeIndexUpdateMQ(
-				new DoBeIndexRealtimeStat(giveHBReq.getBeId(), DoBeIndexRealtimeStat.StatType.REWARD.name()));
 		// 发送用户自动收藏的消息
 		if (!HyBeUtil.checkUserBeFavorite(be.getBeId(), giveHBReq.getFromUserId())) {
 			DoBeFavorite body = new DoBeFavorite();
@@ -763,7 +758,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			be.setAbroadCountryName(createUserInfo.getAbroadCountryName());
 			be.setAbroadCountryRGB(createUserInfo.getAbroadCountryRGB());
 		}
-		
+
 		// 有效的评论数据
 		Set<String> set = HyBeUtil.getBeCommentIds(be.getBeId(), 0, -1);
 		long count = 0;

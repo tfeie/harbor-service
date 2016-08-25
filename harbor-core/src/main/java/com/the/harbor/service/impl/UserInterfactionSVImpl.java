@@ -24,7 +24,6 @@ import com.taobao.api.response.OpenimUsersGetResponse;
 import com.taobao.api.response.OpenimUsersUpdateResponse;
 import com.the.harbor.api.be.param.DoBeComment;
 import com.the.harbor.api.be.param.DoBeFavorite;
-import com.the.harbor.api.be.param.DoBeIndexRealtimeStat;
 import com.the.harbor.api.be.param.DoBeLikes;
 import com.the.harbor.api.be.param.DoBeView;
 import com.the.harbor.api.go.param.DoGoComment;
@@ -72,9 +71,6 @@ public class UserInterfactionSVImpl implements IUserInterfactionSV {
 			// BE点赞行为
 			DoBeLikes doBELikes = JSONObject.parseObject(mnsBody, DoBeLikes.class);
 			beBusiSV.processDoBeLikesMQ(doBELikes);
-			// 发送索引更新消息
-			IndexRealtimeCountMQSend.sendBeRealtimeIndexUpdateMQ(
-					new DoBeIndexRealtimeStat(doBELikes.getBeId(), DoBeIndexRealtimeStat.StatType.DIANZAN.name()));
 		} else if (MQType.MQ_HY_GO_FAVORITE.getValue().equals(mqType)) {
 			// GO收藏行为
 			DoGoFavorite doGoFavorite = JSONObject.parseObject(mnsBody, DoGoFavorite.class);
@@ -106,10 +102,6 @@ public class UserInterfactionSVImpl implements IUserInterfactionSV {
 			// BE评论
 			DoBeComment doBeComment = JSONObject.parseObject(mnsBody, DoBeComment.class);
 			beBusiSV.processDoBeComment(doBeComment);
-
-			// 发送索引更新消息
-			IndexRealtimeCountMQSend.sendBeRealtimeIndexUpdateMQ(
-					new DoBeIndexRealtimeStat(doBeComment.getBeId(), DoBeIndexRealtimeStat.StatType.COMMENT.name()));
 		} else if (MQType.MQ_HY_GO_COMMENT.getValue().equals(mqType)) {
 			// GO评论
 			DoGoComment doGoComment = JSONObject.parseObject(mnsBody, DoGoComment.class);

@@ -33,5 +33,10 @@ public class BeOpenSearchTest {
 		String d = HyBeUtil.getBe("7F78AC5A3BBF47FEB43D277FDC6E68F8");
 		System.out.println(d);
 	}
+	
+	@Test
+	public void pushBeOpenSearch(){
+		beSV.pushBeToOpenSearch("2F0F240BF3384F4DA8FA00AF4151EBE6");
+	}
 
 }
