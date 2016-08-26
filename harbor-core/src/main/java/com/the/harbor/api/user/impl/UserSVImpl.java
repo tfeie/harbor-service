@@ -414,4 +414,16 @@ public class UserSVImpl implements IUserSV {
 		resp.setUserInfos(users);
 		return resp;
 	}
+
+	@Override
+	public UserViewResp queryUserViewByMobilePhone(String mobilePhone) throws BusinessException, SystemException {
+		if (StringUtil.isBlank(mobilePhone)) {
+			throw new BusinessException(ExceptCodeConstants.PARAM_IS_NULL, "手机号码为空");
+		}
+		UserViewInfo userInfo = userManagerSV.queryUserViewByMobilePhone(mobilePhone);
+		UserViewResp resp = new UserViewResp();
+		resp.setUserInfo(userInfo);
+		resp.setResponseHeader(ResponseBuilder.buildSuccessResponseHeader("查询成功"));
+		return resp;
+	}
 }

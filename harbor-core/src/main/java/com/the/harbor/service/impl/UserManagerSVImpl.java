@@ -707,19 +707,19 @@ public class UserManagerSVImpl implements IUserManagerSV {
 					ParamCode.AUTH_IDENTITY.getValue(), hyUser.getAuthIdentity()));
 			if (UserStatus.AUTHORIZED_SUCCESS.getValue().equals(hyUser.getUserStatus())) {
 				String userStatus = "";
-				if(StringUtil.isBlank(userInfo.getAuthIdentity())){
+				if (StringUtil.isBlank(userInfo.getAuthIdentity())) {
 					userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(), ParamCode.USER_STATUS.getValue(),
 							hyUser.getUserStatus());
-				}else{
+				} else {
 					if (AuthIdentity.ENTREPRENEUR.getValue().equals(userInfo.getAuthIdentity())) {
-						userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(), ParamCode.USER_STATUS.getValue(),
-								hyUser.getUserStatus());
+						userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
+								ParamCode.USER_STATUS.getValue(), hyUser.getUserStatus());
 					} else {
 						userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
 								ParamCode.AUTH_IDENTITY.getValue(), hyUser.getAuthIdentity());
 					}
 				}
-				
+
 				userInfo.setUserStatusName(userStatus);
 			} else {
 				String userStatus = HyDictUtil.getHyDictDesc(TypeCode.HY_USER.getValue(),
@@ -1255,6 +1255,19 @@ public class UserManagerSVImpl implements IUserManagerSV {
 			this.createInviteCodes(u.getUserId());
 		}
 
+	}
+
+	@Override
+	public UserViewInfo queryUserViewByMobilePhone(String mobilePhone) {
+		HyUserCriteria sql = new HyUserCriteria();
+		sql.or().andMobilePhoneEqualTo(mobilePhone);
+		List<HyUser> list = hyUserMapper.selectByExample(sql);
+		if (CollectionUtil.isEmpty(list)) {
+			return null;
+		}
+		HyUser hyUser = list.get(0);
+		UserViewInfo userInfo = this.convert(hyUser);
+		return userInfo;
 	}
 
 }

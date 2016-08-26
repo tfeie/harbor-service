@@ -159,4 +159,6 @@ public interface IUserManagerSV {
 
 	void batchCreateInviteCodeForAllUsers();
 
+	UserViewInfo queryUserViewByMobilePhone(String mobilePhone);
+
 }

@@ -282,5 +282,14 @@ public interface IUserSV {
 	 */
 	UserTuijianQueryResp searchUsers(@NotNull(message = "参数为空") UserTuijianQueryReq userTuijianQueryReq)
 			throws BusinessException, SystemException;
+	
+	/**
+	 * 根据手机号码查询用户信息
+	 * @param mobilePhone
+	 * @return
+	 * @throws BusinessException
+	 * @throws SystemException
+	 */
+	UserViewResp queryUserViewByMobilePhone(String mobilePhone) throws BusinessException, SystemException;
 
 }
