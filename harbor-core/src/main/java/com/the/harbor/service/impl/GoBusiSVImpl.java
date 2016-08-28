@@ -75,6 +75,7 @@ import com.the.harbor.commons.components.aliyuncs.sms.SMSSender;
 import com.the.harbor.commons.components.aliyuncs.sms.param.SMSSendRequest;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.redisdata.def.DoNotify;
+import com.the.harbor.commons.redisdata.util.HyAreaUtil;
 import com.the.harbor.commons.redisdata.util.HyBeUtil;
 import com.the.harbor.commons.redisdata.util.HyCfgUtil;
 import com.the.harbor.commons.redisdata.util.HyDictUtil;
@@ -186,6 +187,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		go.setStatus(Status.ING.getValue());
 		go.setTopFlag(TopFlag.NO.getValue());
 		go.setHideFlag(HideFlag.NO.getValue());
+		go.setOnlineNet(goCreateReq.getOnlineNet());
+		go.setOnlinePic(goCreateReq.getOnlinePic());
+		go.setOfflineCity(goCreateReq.getOfflineCity());
+		go.setOfflineProvince(goCreateReq.getOfflineProvince());
 
 		// 复制内容
 		BeanUtils.copyProperties(go, bgo);
@@ -1677,6 +1682,14 @@ public class GoBusiSVImpl implements IGoBusiSV {
 				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.PAY_MODE.getValue(), go.getPayMode()));
 		go.setOrgModeName(
 				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.ORG_MODE.getValue(), go.getOrgMode()));
+		if (!StringUtil.isBlank(go.getOfflineCity())) {
+			go.setOfflineCityName(HyAreaUtil.getAreaName(go.getOfflineCity()));
+		}
+
+		if (!StringUtil.isBlank(go.getOfflineProvince())) {
+			go.setOfflineProvinceName(HyAreaUtil.getAreaName(go.getOfflineProvince()));
+		}
+
 		// 发布用户信息
 		UserViewInfo createUserInfo = userManagerSV.getUserViewInfoByUserId(go.getUserId());
 		if (createUserInfo != null) {

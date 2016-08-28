@@ -44,6 +44,14 @@ public class GoCreateReq implements Serializable {
 
 	private String myStory;
 	
+    private String offlineProvince;
+
+    private String offlineCity;
+
+    private String onlineNet;
+
+    private String onlinePic;
+	
 	// ONO活动海牛的故事
 	private List<GoStory> goStories;
 
@@ -165,6 +173,38 @@ public class GoCreateReq implements Serializable {
 
 	public void setGoStories(List<GoStory> goStories) {
 		this.goStories = goStories;
+	}
+
+	public String getOfflineProvince() {
+		return offlineProvince;
+	}
+
+	public void setOfflineProvince(String offlineProvince) {
+		this.offlineProvince = offlineProvince;
+	}
+
+	public String getOfflineCity() {
+		return offlineCity;
+	}
+
+	public void setOfflineCity(String offlineCity) {
+		this.offlineCity = offlineCity;
+	}
+
+	public String getOnlineNet() {
+		return onlineNet;
+	}
+
+	public void setOnlineNet(String onlineNet) {
+		this.onlineNet = onlineNet;
+	}
+
+	public String getOnlinePic() {
+		return onlinePic;
+	}
+
+	public void setOnlinePic(String onlinePic) {
+		this.onlinePic = onlinePic;
 	}
 	
 	

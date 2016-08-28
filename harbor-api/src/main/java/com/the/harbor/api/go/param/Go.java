@@ -44,6 +44,18 @@ public class Go implements Serializable {
 	private Timestamp topDate;
 
 	private String hideFlag;
+	
+    private String offlineProvince;
+
+    private String offlineCity;
+
+    private String onlineNet;
+
+    private String onlinePic;
+    
+    private String offlineProvinceName;
+
+    private String offlineCityName;
 
 	// 活动类型
 	private String goTypeName;
@@ -472,5 +484,55 @@ public class Go implements Serializable {
 	public void setGoStories(List<GoStory> goStories) {
 		this.goStories = goStories;
 	}
+
+	public String getOfflineProvince() {
+		return offlineProvince;
+	}
+
+	public void setOfflineProvince(String offlineProvince) {
+		this.offlineProvince = offlineProvince;
+	}
+
+	public String getOfflineCity() {
+		return offlineCity;
+	}
+
+	public void setOfflineCity(String offlineCity) {
+		this.offlineCity = offlineCity;
+	}
+
+	public String getOnlineNet() {
+		return onlineNet;
+	}
+
+	public void setOnlineNet(String onlineNet) {
+		this.onlineNet = onlineNet;
+	}
+
+	public String getOnlinePic() {
+		return onlinePic;
+	}
+
+	public void setOnlinePic(String onlinePic) {
+		this.onlinePic = onlinePic;
+	}
+
+	public String getOfflineProvinceName() {
+		return offlineProvinceName;
+	}
+
+	public void setOfflineProvinceName(String offlineProvinceName) {
+		this.offlineProvinceName = offlineProvinceName;
+	}
+
+	public String getOfflineCityName() {
+		return offlineCityName;
+	}
+
+	public void setOfflineCityName(String offlineCityName) {
+		this.offlineCityName = offlineCityName;
+	}
+	
+	
 
 }

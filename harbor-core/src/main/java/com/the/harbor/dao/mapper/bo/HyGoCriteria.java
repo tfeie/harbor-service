@@ -1344,6 +1344,286 @@ public class HyGoCriteria {
             addCriterion("HIDE_FLAG not between", value1, value2, "hideFlag");
             return (Criteria) this;
         }
+
+        public Criteria andOfflineProvinceIsNull() {
+            addCriterion("OFFLINE_PROVINCE is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineProvinceIsNotNull() {
+            addCriterion("OFFLINE_PROVINCE is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineProvinceEqualTo(String value) {
+            addCriterion("OFFLINE_PROVINCE =", value, "offlineProvince");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineProvinceNotEqualTo(String value) {
+            addCriterion("OFFLINE_PROVINCE <>", value, "offlineProvince");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineProvinceGreaterThan(String value) {
+            addCriterion("OFFLINE_PROVINCE >", value, "offlineProvince");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineProvinceGreaterThanOrEqualTo(String value) {
+            addCriterion("OFFLINE_PROVINCE >=", value, "offlineProvince");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineProvinceLessThan(String value) {
+            addCriterion("OFFLINE_PROVINCE <", value, "offlineProvince");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineProvinceLessThanOrEqualTo(String value) {
+            addCriterion("OFFLINE_PROVINCE <=", value, "offlineProvince");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineProvinceLike(String value) {
+            addCriterion("OFFLINE_PROVINCE like", value, "offlineProvince");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineProvinceNotLike(String value) {
+            addCriterion("OFFLINE_PROVINCE not like", value, "offlineProvince");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineProvinceIn(List<String> values) {
+            addCriterion("OFFLINE_PROVINCE in", values, "offlineProvince");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineProvinceNotIn(List<String> values) {
+            addCriterion("OFFLINE_PROVINCE not in", values, "offlineProvince");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineProvinceBetween(String value1, String value2) {
+            addCriterion("OFFLINE_PROVINCE between", value1, value2, "offlineProvince");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineProvinceNotBetween(String value1, String value2) {
+            addCriterion("OFFLINE_PROVINCE not between", value1, value2, "offlineProvince");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineCityIsNull() {
+            addCriterion("OFFLINE_CITY is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineCityIsNotNull() {
+            addCriterion("OFFLINE_CITY is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineCityEqualTo(String value) {
+            addCriterion("OFFLINE_CITY =", value, "offlineCity");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineCityNotEqualTo(String value) {
+            addCriterion("OFFLINE_CITY <>", value, "offlineCity");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineCityGreaterThan(String value) {
+            addCriterion("OFFLINE_CITY >", value, "offlineCity");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineCityGreaterThanOrEqualTo(String value) {
+            addCriterion("OFFLINE_CITY >=", value, "offlineCity");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineCityLessThan(String value) {
+            addCriterion("OFFLINE_CITY <", value, "offlineCity");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineCityLessThanOrEqualTo(String value) {
+            addCriterion("OFFLINE_CITY <=", value, "offlineCity");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineCityLike(String value) {
+            addCriterion("OFFLINE_CITY like", value, "offlineCity");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineCityNotLike(String value) {
+            addCriterion("OFFLINE_CITY not like", value, "offlineCity");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineCityIn(List<String> values) {
+            addCriterion("OFFLINE_CITY in", values, "offlineCity");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineCityNotIn(List<String> values) {
+            addCriterion("OFFLINE_CITY not in", values, "offlineCity");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineCityBetween(String value1, String value2) {
+            addCriterion("OFFLINE_CITY between", value1, value2, "offlineCity");
+            return (Criteria) this;
+        }
+
+        public Criteria andOfflineCityNotBetween(String value1, String value2) {
+            addCriterion("OFFLINE_CITY not between", value1, value2, "offlineCity");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlineNetIsNull() {
+            addCriterion("ONLINE_NET is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlineNetIsNotNull() {
+            addCriterion("ONLINE_NET is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlineNetEqualTo(String value) {
+            addCriterion("ONLINE_NET =", value, "onlineNet");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlineNetNotEqualTo(String value) {
+            addCriterion("ONLINE_NET <>", value, "onlineNet");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlineNetGreaterThan(String value) {
+            addCriterion("ONLINE_NET >", value, "onlineNet");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlineNetGreaterThanOrEqualTo(String value) {
+            addCriterion("ONLINE_NET >=", value, "onlineNet");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlineNetLessThan(String value) {
+            addCriterion("ONLINE_NET <", value, "onlineNet");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlineNetLessThanOrEqualTo(String value) {
+            addCriterion("ONLINE_NET <=", value, "onlineNet");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlineNetLike(String value) {
+            addCriterion("ONLINE_NET like", value, "onlineNet");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlineNetNotLike(String value) {
+            addCriterion("ONLINE_NET not like", value, "onlineNet");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlineNetIn(List<String> values) {
+            addCriterion("ONLINE_NET in", values, "onlineNet");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlineNetNotIn(List<String> values) {
+            addCriterion("ONLINE_NET not in", values, "onlineNet");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlineNetBetween(String value1, String value2) {
+            addCriterion("ONLINE_NET between", value1, value2, "onlineNet");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlineNetNotBetween(String value1, String value2) {
+            addCriterion("ONLINE_NET not between", value1, value2, "onlineNet");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlinePicIsNull() {
+            addCriterion("ONLINE_PIC is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlinePicIsNotNull() {
+            addCriterion("ONLINE_PIC is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlinePicEqualTo(String value) {
+            addCriterion("ONLINE_PIC =", value, "onlinePic");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlinePicNotEqualTo(String value) {
+            addCriterion("ONLINE_PIC <>", value, "onlinePic");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlinePicGreaterThan(String value) {
+            addCriterion("ONLINE_PIC >", value, "onlinePic");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlinePicGreaterThanOrEqualTo(String value) {
+            addCriterion("ONLINE_PIC >=", value, "onlinePic");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlinePicLessThan(String value) {
+            addCriterion("ONLINE_PIC <", value, "onlinePic");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlinePicLessThanOrEqualTo(String value) {
+            addCriterion("ONLINE_PIC <=", value, "onlinePic");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlinePicLike(String value) {
+            addCriterion("ONLINE_PIC like", value, "onlinePic");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlinePicNotLike(String value) {
+            addCriterion("ONLINE_PIC not like", value, "onlinePic");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlinePicIn(List<String> values) {
+            addCriterion("ONLINE_PIC in", values, "onlinePic");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlinePicNotIn(List<String> values) {
+            addCriterion("ONLINE_PIC not in", values, "onlinePic");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlinePicBetween(String value1, String value2) {
+            addCriterion("ONLINE_PIC between", value1, value2, "onlinePic");
+            return (Criteria) this;
+        }
+
+        public Criteria andOnlinePicNotBetween(String value1, String value2) {
+            addCriterion("ONLINE_PIC not between", value1, value2, "onlinePic");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

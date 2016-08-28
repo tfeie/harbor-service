@@ -39,6 +39,14 @@ public class HyGo {
 
     private String hideFlag;
 
+    private String offlineProvince;
+
+    private String offlineCity;
+
+    private String onlineNet;
+
+    private String onlinePic;
+
     public String getGoId() {
         return goId;
     }
@@ -181,5 +189,37 @@ public class HyGo {
 
     public void setHideFlag(String hideFlag) {
         this.hideFlag = hideFlag == null ? null : hideFlag.trim();
+    }
+
+    public String getOfflineProvince() {
+        return offlineProvince;
+    }
+
+    public void setOfflineProvince(String offlineProvince) {
+        this.offlineProvince = offlineProvince == null ? null : offlineProvince.trim();
+    }
+
+    public String getOfflineCity() {
+        return offlineCity;
+    }
+
+    public void setOfflineCity(String offlineCity) {
+        this.offlineCity = offlineCity == null ? null : offlineCity.trim();
+    }
+
+    public String getOnlineNet() {
+        return onlineNet;
+    }
+
+    public void setOnlineNet(String onlineNet) {
+        this.onlineNet = onlineNet == null ? null : onlineNet.trim();
+    }
+
+    public String getOnlinePic() {
+        return onlinePic;
+    }
+
+    public void setOnlinePic(String onlinePic) {
+        this.onlinePic = onlinePic == null ? null : onlinePic.trim();
     }
 }

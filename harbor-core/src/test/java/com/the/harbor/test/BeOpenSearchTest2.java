@@ -36,7 +36,7 @@ public class BeOpenSearchTest2 {
 	
 	@Test
 	public void pushBeOpenSearch(){
-		beSV.pushBeToOpenSearch("2F0F240BF3384F4DA8FA00AF4151EBE6");
+		beSV.pushBeToOpenSearch("50EDFC75495E4AEC94170846E133D125");
 	}
 
 }

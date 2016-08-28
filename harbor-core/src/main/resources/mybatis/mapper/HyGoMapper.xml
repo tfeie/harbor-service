@@ -20,6 +20,10 @@
     <result column="TOP_FLAG" property="topFlag" jdbcType="VARCHAR" />
     <result column="TOP_DATE" property="topDate" jdbcType="TIMESTAMP" />
     <result column="HIDE_FLAG" property="hideFlag" jdbcType="VARCHAR" />
+    <result column="OFFLINE_PROVINCE" property="offlineProvince" jdbcType="VARCHAR" />
+    <result column="OFFLINE_CITY" property="offlineCity" jdbcType="VARCHAR" />
+    <result column="ONLINE_NET" property="onlineNet" jdbcType="VARCHAR" />
+    <result column="ONLINE_PIC" property="onlinePic" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -82,7 +86,7 @@
   <sql id="Base_Column_List" >
     GO_ID, USER_ID, GO_TYPE, TOPIC, INVITE_MEMBERS, EXPECTED_START_TIME, EXPECTED_DURATION, 
     PAY_MODE, FIXED_PRICE, ORG_MODE, LOCATION, MY_STORY, STATUS, CREATE_DATE, END_DATE, 
-    TOP_FLAG, TOP_DATE, HIDE_FLAG
+    TOP_FLAG, TOP_DATE, HIDE_FLAG, OFFLINE_PROVINCE, OFFLINE_CITY, ONLINE_NET, ONLINE_PIC
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.the.harbor.dao.mapper.bo.HyGoCriteria" >
     select
@@ -124,15 +128,17 @@
       EXPECTED_DURATION, PAY_MODE, FIXED_PRICE, 
       ORG_MODE, LOCATION, MY_STORY, 
       STATUS, CREATE_DATE, END_DATE, 
-      TOP_FLAG, TOP_DATE, HIDE_FLAG
-      )
+      TOP_FLAG, TOP_DATE, HIDE_FLAG, 
+      OFFLINE_PROVINCE, OFFLINE_CITY, ONLINE_NET, 
+      ONLINE_PIC)
     values (#{goId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{goType,jdbcType=VARCHAR}, 
       #{topic,jdbcType=VARCHAR}, #{inviteMembers,jdbcType=VARCHAR}, #{expectedStartTime,jdbcType=VARCHAR}, 
       #{expectedDuration,jdbcType=VARCHAR}, #{payMode,jdbcType=VARCHAR}, #{fixedPrice,jdbcType=BIGINT}, 
       #{orgMode,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR}, #{myStory,jdbcType=VARCHAR}, 
       #{status,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, 
-      #{topFlag,jdbcType=VARCHAR}, #{topDate,jdbcType=TIMESTAMP}, #{hideFlag,jdbcType=VARCHAR}
-      )
+      #{topFlag,jdbcType=VARCHAR}, #{topDate,jdbcType=TIMESTAMP}, #{hideFlag,jdbcType=VARCHAR}, 
+      #{offlineProvince,jdbcType=VARCHAR}, #{offlineCity,jdbcType=VARCHAR}, #{onlineNet,jdbcType=VARCHAR}, 
+      #{onlinePic,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.the.harbor.dao.mapper.bo.HyGo" >
     insert into hy_go
@@ -189,6 +195,18 @@
       <if test="hideFlag != null" >
         HIDE_FLAG,
       </if>
+      <if test="offlineProvince != null" >
+        OFFLINE_PROVINCE,
+      </if>
+      <if test="offlineCity != null" >
+        OFFLINE_CITY,
+      </if>
+      <if test="onlineNet != null" >
+        ONLINE_NET,
+      </if>
+      <if test="onlinePic != null" >
+        ONLINE_PIC,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="goId != null" >
@@ -242,6 +260,18 @@
       </if>
       <if test="hideFlag != null" >
         #{hideFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="offlineProvince != null" >
+        #{offlineProvince,jdbcType=VARCHAR},
+      </if>
+      <if test="offlineCity != null" >
+        #{offlineCity,jdbcType=VARCHAR},
+      </if>
+      <if test="onlineNet != null" >
+        #{onlineNet,jdbcType=VARCHAR},
+      </if>
+      <if test="onlinePic != null" >
+        #{onlinePic,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -308,6 +338,18 @@
       <if test="record.hideFlag != null" >
         HIDE_FLAG = #{record.hideFlag,jdbcType=VARCHAR},
       </if>
+      <if test="record.offlineProvince != null" >
+        OFFLINE_PROVINCE = #{record.offlineProvince,jdbcType=VARCHAR},
+      </if>
+      <if test="record.offlineCity != null" >
+        OFFLINE_CITY = #{record.offlineCity,jdbcType=VARCHAR},
+      </if>
+      <if test="record.onlineNet != null" >
+        ONLINE_NET = #{record.onlineNet,jdbcType=VARCHAR},
+      </if>
+      <if test="record.onlinePic != null" >
+        ONLINE_PIC = #{record.onlinePic,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -332,7 +374,11 @@
       END_DATE = #{record.endDate,jdbcType=TIMESTAMP},
       TOP_FLAG = #{record.topFlag,jdbcType=VARCHAR},
       TOP_DATE = #{record.topDate,jdbcType=TIMESTAMP},
-      HIDE_FLAG = #{record.hideFlag,jdbcType=VARCHAR}
+      HIDE_FLAG = #{record.hideFlag,jdbcType=VARCHAR},
+      OFFLINE_PROVINCE = #{record.offlineProvince,jdbcType=VARCHAR},
+      OFFLINE_CITY = #{record.offlineCity,jdbcType=VARCHAR},
+      ONLINE_NET = #{record.onlineNet,jdbcType=VARCHAR},
+      ONLINE_PIC = #{record.onlinePic,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -391,6 +437,18 @@
       <if test="hideFlag != null" >
         HIDE_FLAG = #{hideFlag,jdbcType=VARCHAR},
       </if>
+      <if test="offlineProvince != null" >
+        OFFLINE_PROVINCE = #{offlineProvince,jdbcType=VARCHAR},
+      </if>
+      <if test="offlineCity != null" >
+        OFFLINE_CITY = #{offlineCity,jdbcType=VARCHAR},
+      </if>
+      <if test="onlineNet != null" >
+        ONLINE_NET = #{onlineNet,jdbcType=VARCHAR},
+      </if>
+      <if test="onlinePic != null" >
+        ONLINE_PIC = #{onlinePic,jdbcType=VARCHAR},
+      </if>
     </set>
     where GO_ID = #{goId,jdbcType=VARCHAR}
   </update>
@@ -412,7 +470,11 @@
       END_DATE = #{endDate,jdbcType=TIMESTAMP},
       TOP_FLAG = #{topFlag,jdbcType=VARCHAR},
       TOP_DATE = #{topDate,jdbcType=TIMESTAMP},
-      HIDE_FLAG = #{hideFlag,jdbcType=VARCHAR}
+      HIDE_FLAG = #{hideFlag,jdbcType=VARCHAR},
+      OFFLINE_PROVINCE = #{offlineProvince,jdbcType=VARCHAR},
+      OFFLINE_CITY = #{offlineCity,jdbcType=VARCHAR},
+      ONLINE_NET = #{onlineNet,jdbcType=VARCHAR},
+      ONLINE_PIC = #{onlinePic,jdbcType=VARCHAR}
     where GO_ID = #{goId,jdbcType=VARCHAR}
   </update>
 </mapper>
