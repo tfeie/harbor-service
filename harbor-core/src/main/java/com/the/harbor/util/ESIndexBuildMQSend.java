@@ -10,8 +10,11 @@ import com.aliyun.mns.common.ServiceException;
 import com.aliyun.mns.model.Message;
 import com.the.harbor.api.be.param.Be;
 import com.the.harbor.api.go.param.Go;
+import com.the.harbor.base.enumeration.mns.MQType;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
+import com.the.harbor.commons.indices.mq.MNSRecord;
+import com.the.harbor.commons.indices.mq.MNSRecordThread;
 
 public class ESIndexBuildMQSend {
 
@@ -19,12 +22,16 @@ public class ESIndexBuildMQSend {
 
 	public static void sendMQ(Be be) {
 		MNSClient client = MNSFactory.getMNSClient();
+		String sendStatus = MNSRecord.Status.SEND_SUCCESS.name();
+		String sendError = null;
 		try {
 			CloudQueue queue = client.getQueueRef(GlobalSettings.getBeIndexBuildQueueName());
 			Message message = new Message();
 			message.setMessageBody(JSON.toJSONString(be));
 			queue.putMessage(message);
 		} catch (ClientException ce) {
+			sendStatus = MNSRecord.Status.SEND_FAIL.name();
+			sendError = "ClientException:" + ce.getMessage();
 			LOG.error("Something wrong with the network connection between client and MNS service."
 					+ "Please check your network and DNS availablity.", ce);
 		} catch (ServiceException se) {
@@ -34,14 +41,27 @@ public class ESIndexBuildMQSend {
 				LOG.error("The request is time expired. Please check your local machine timeclock", se);
 			}
 			LOG.error("BE index build  message put in Queue error", se);
+			sendStatus = MNSRecord.Status.SEND_FAIL.name();
+			sendError = "ServiceException:" + se.getMessage();
 		} catch (Exception e) {
 			LOG.error("Unknown exception happened!", e);
+			sendStatus = MNSRecord.Status.SEND_FAIL.name();
+			sendError = e.getMessage();
 		}
+		MNSRecord mns = new MNSRecord();
+		mns.setMqId(be.getBeId());
+		mns.setMqType(MQType.MQ_HY_BE_NEW.getValue());
+		mns.setSendStatus(sendStatus);
+		mns.setSendError(sendError);
+		mns.setMqBody(be);
+		new Thread(new MNSRecordThread(mns)).start();
 		client.close();
 
 	}
 
 	public static void sendMQ(Go go) {
+		String sendStatus = MNSRecord.Status.SEND_SUCCESS.name();
+		String sendError = null;
 		MNSClient client = MNSFactory.getMNSClient();
 		try {
 			CloudQueue queue = client.getQueueRef(GlobalSettings.getGoIndexBuildQueueName());
@@ -49,6 +69,8 @@ public class ESIndexBuildMQSend {
 			message.setMessageBody(JSON.toJSONString(go));
 			queue.putMessage(message);
 		} catch (ClientException ce) {
+			sendStatus = MNSRecord.Status.SEND_FAIL.name();
+			sendError = "ClientException:" + ce.getMessage();
 			LOG.error("Something wrong with the network connection between client and MNS service."
 					+ "Please check your network and DNS availablity.", ce);
 		} catch (ServiceException se) {
@@ -58,9 +80,20 @@ public class ESIndexBuildMQSend {
 				LOG.error("The request is time expired. Please check your local machine timeclock", se);
 			}
 			LOG.error("Go index build message put in Queue error", se);
+			sendStatus = MNSRecord.Status.SEND_FAIL.name();
+			sendError = "ServiceException:" + se.getMessage();
 		} catch (Exception e) {
 			LOG.error("Unknown exception happened!", e);
+			sendStatus = MNSRecord.Status.SEND_FAIL.name();
+			sendError = e.getMessage();
 		}
+		MNSRecord mns = new MNSRecord();
+		mns.setMqId(go.getGoId());
+		mns.setMqType(MQType.MQ_HY_GO_NEW.getValue());
+		mns.setSendStatus(sendStatus);
+		mns.setSendError(sendError);
+		mns.setMqBody(go);
+		new Thread(new MNSRecordThread(mns)).start();
 		client.close();
 
 	}

@@ -93,6 +93,8 @@ public class GoDeleteListener implements InitializingBean {
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					DoGoDelete go = JSONObject.parseObject(message.getMessageBody(), DoGoDelete.class);
+					mqId = go.getMqId();
+					mqType = go.getMqType();
 					goBusiSV.processGoDelete(go.getGoId(), go.getGoType());
 				}
 			} catch (Exception ex) {

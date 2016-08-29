@@ -93,6 +93,8 @@ public class BeDeleteListener implements InitializingBean {
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					DoBeDelete be = JSONObject.parseObject(message.getMessageBody(), DoBeDelete.class);
+					mqId = be.getMqId();
+					mqType = be.getMqType();
 					beBusiSV.processBeDelete(be.getBeId());
 				}
 			} catch (Exception ex) {

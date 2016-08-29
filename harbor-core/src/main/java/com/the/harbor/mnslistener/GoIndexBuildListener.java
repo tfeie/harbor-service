@@ -11,9 +11,11 @@ import com.aliyun.mns.client.CloudAccount;
 import com.aliyun.mns.client.MNSClient;
 import com.aliyun.mns.model.Message;
 import com.the.harbor.api.go.param.Go;
+import com.the.harbor.base.enumeration.mns.MQType;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSSettings;
 import com.the.harbor.commons.components.aliyuncs.mns.MessageReceiver;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
+import com.the.harbor.commons.indices.mq.MNSRecordHandle;
 import com.the.harbor.commons.redisdata.util.HyGoUtil;
 import com.the.harbor.commons.util.StringUtil;
 import com.the.harbor.service.interfaces.IGoBusiSV;
@@ -83,11 +85,17 @@ public class GoIndexBuildListener implements InitializingBean {
 		String queueName = GlobalSettings.getGoIndexBuildQueueName();
 		MessageReceiver receiver = new MessageReceiver(workerId, sMNSClient, queueName);
 		while (true) {
+			boolean success = true;
+			String error = null;
+			String mqId = null;
+			String mqType = null;
 			Message message = receiver.receiveMessage();
 			LOG.info("Thread" + workerId + " GOT ONE MESSAGE! " + message.getMessageId());
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					Go go = JSONObject.parseObject(message.getMessageBody(), Go.class);
+					mqId = go.getGoId();
+					mqType = MQType.MQ_HY_GO_NEW.getValue();
 					// 写入REDIS
 					HyGoUtil.recordGo(go.getGoId(), JSON.toJSONString(go));
 					// 写入OPENSEARCH索引
@@ -95,9 +103,19 @@ public class GoIndexBuildListener implements InitializingBean {
 				}
 			} catch (Exception ex) {
 				LOG.error("GO索引构建MNS消息失败", ex);
+				success = false;
+				error = ex.getMessage();
 			}
 			try {
-				sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
+				if (success) {
+					if (!StringUtil.isBlank(message.getReceiptHandle())) {
+						sMNSClient.getQueueRef(queueName).deleteMessage(message.getReceiptHandle());
+					}
+				}
+				if (!StringUtil.isBlank(mqId) && !StringUtil.isBlank(mqType)) {
+					MNSRecordHandle.processMNSRecord(mqId, mqType, success, error);
+				}
+
 			} catch (Exception ex) {
 				LOG.error("消息删除失败", ex);
 			}

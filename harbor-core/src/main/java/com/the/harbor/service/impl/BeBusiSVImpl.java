@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mortbay.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -86,6 +88,8 @@ import com.the.harbor.vo.BeIndexOperate;
 @Component
 @Transactional
 public class BeBusiSVImpl implements IBeBusiSV {
+
+	private static final Logger LOG = LoggerFactory.getLogger(BeBusiSVImpl.class);
 
 	@Autowired
 	private transient HyBeMapper hyBeMapper;
@@ -541,9 +545,10 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		CloudsearchDoc doc = new CloudsearchDoc("harbor_be", client);
 		try {
 			String result = doc.push(JSON.toJSONString(indexs), "hy_be");
-			Log.debug(result);
+			LOG.debug("be索引同步到openSearch:" + result);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("be索引同步到openSearch失败", e);
+			throw new SystemException(e);
 		}
 	}
 
@@ -569,9 +574,10 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		try {
 			doc.update(fields);
 			String result = doc.push(JSON.toJSONString(indexs), "hy_be");
-			Log.debug(result);
+			LOG.debug("隐藏BE的结果到openSearch:" + result);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("隐藏BE操作同步到openSearch失败", e);
+			throw new SystemException(e);
 		}
 	}
 
@@ -596,9 +602,10 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		CloudsearchDoc doc = new CloudsearchDoc("harbor_be", client);
 		try {
 			String result = doc.push(JSON.toJSONString(indexs), "hy_be");
-			Log.debug(result);
+			LOG.debug("置顶BE的结果到openSearch:" + result);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("置顶BE操作同步到openSearch失败", e);
+			throw new SystemException(e);
 		}
 	}
 
@@ -623,9 +630,10 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		CloudsearchDoc doc = new CloudsearchDoc("harbor_be", client);
 		try {
 			String result = doc.push(JSON.toJSONString(indexs), "hy_be");
-			Log.debug(result);
+			LOG.debug("删除BE的结果到openSearch:" + result);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("删除BE操作同步到openSearch失败", e);
+			throw new SystemException(e);
 		}
 	}
 

@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mortbay.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -125,6 +126,8 @@ import com.the.harbor.vo.GoIndexOperate;
 @Component
 @Transactional
 public class GoBusiSVImpl implements IGoBusiSV {
+
+	private static final Logger LOG = LoggerFactory.getLogger(GoBusiSVImpl.class);
 
 	@Autowired
 	private transient HyGoDetailMapper hyGoDetailMapper;
@@ -1563,9 +1566,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		CloudsearchDoc doc = new CloudsearchDoc("harbor_go", client);
 		try {
 			String result = doc.push(JSON.toJSONString(indexs), "hy_go");
-			Log.debug(result);
+			LOG.debug("同步GO到openSearch:" + result);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("同步GO到openSearch失败", e);
+			throw new SystemException(e);
 		}
 	}
 
@@ -1648,9 +1652,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		CloudsearchDoc doc = new CloudsearchDoc("harbor_go", client);
 		try {
 			String result = doc.push(JSON.toJSONString(indexs), "hy_go");
-			Log.debug(result);
+			LOG.debug("同步GO到openSearch:" + result);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("同步GO到openSearch失败", e);
+			throw new SystemException(e);
 		}
 
 	}
@@ -1769,9 +1774,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		CloudsearchDoc doc = new CloudsearchDoc("harbor_go", client);
 		try {
 			String result = doc.push(JSON.toJSONString(indexs), "hy_go");
-			Log.debug(result);
+			LOG.debug("删除GO的结果到openSearch:" + result);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("删除GO操作同步到openSearch失败", e);
+			throw new SystemException(e);
 		}
 	}
 
@@ -1794,9 +1800,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		CloudsearchDoc doc = new CloudsearchDoc("harbor_go", client);
 		try {
 			String result = doc.push(JSON.toJSONString(indexs), "hy_go");
-			Log.debug(result);
+			LOG.debug("隐藏GO的结果到openSearch:" + result);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("隐藏GO操作同步到openSearch失败", e);
+			throw new SystemException(e);
 		}
 	}
 
@@ -1820,9 +1827,10 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		CloudsearchDoc doc = new CloudsearchDoc("harbor_go", client);
 		try {
 			String result = doc.push(JSON.toJSONString(indexs), "hy_go");
-			Log.debug(result);
+			LOG.debug("置顶GO的结果到openSearch:" + result);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("置顶GO操作同步到openSearch失败", e);
+			throw new SystemException(e);
 		}
 	}
 

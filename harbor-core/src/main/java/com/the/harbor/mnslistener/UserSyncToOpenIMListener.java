@@ -10,6 +10,7 @@ import com.aliyun.mns.client.CloudAccount;
 import com.aliyun.mns.client.MNSClient;
 import com.aliyun.mns.model.Message;
 import com.the.harbor.api.user.param.DoIMUserSync;
+import com.the.harbor.base.exception.SystemException;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSSettings;
 import com.the.harbor.commons.components.aliyuncs.mns.MessageReceiver;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
@@ -91,15 +92,19 @@ public class UserSyncToOpenIMListener implements InitializingBean {
 			try {
 				if (!StringUtil.isBlank(message.getMessageBody())) {
 					DoIMUserSync notify = JSONObject.parseObject(message.getMessageBody(), DoIMUserSync.class);
-					try{
+					mqId = notify.getMqId();
+					mqType = notify.getMqType();
+					try {
 						userInterfactionSV.userSync2OpenIM(notify);
-					}catch(Exception ex){
-						LOG.error("同步用户信息到OpenIM失败",ex);
+					} catch (Exception ex) {
+						LOG.error("同步用户信息到OpenIM失败", ex);
+						throw new SystemException("同步用户信息到IM失败:" + ex.getMessage());
 					}
-					try{
+					try {
 						userInterfactionSV.userSync2OpenSearch(notify);
-					}catch(Exception ex){
-						LOG.error("同步用户信息到OpenIM失败",ex);
+					} catch (Exception ex) {
+						LOG.error("同步用户信息到OpenSearch失败", ex);
+						throw new SystemException("同步用户信息到OpenSearch失败:" + ex.getMessage());
 					}
 				}
 			} catch (Exception ex) {
