@@ -26,7 +26,7 @@ public class GoOpenSearchTest {
 
 	@Test
 	public void rebuildOneGo() {
-		goSV.pushGoToOpenSearch("0991DDE9CA164162A110E8C51CC848BF");
+		goSV.pushGoToOpenSearch("ACE97DD905C9468DA06B8D331373FA95");
 
 	}
 	
