@@ -14,7 +14,7 @@ import com.the.harbor.base.enumeration.mns.MQType;
 import com.the.harbor.commons.components.aliyuncs.mns.MNSFactory;
 import com.the.harbor.commons.components.globalconfig.GlobalSettings;
 import com.the.harbor.commons.indices.mq.MNSRecord;
-import com.the.harbor.commons.indices.mq.MNSRecordThread;
+import com.the.harbor.commons.indices.mq.MNSRecordHandle;
 import com.the.harbor.commons.util.UUIDUtil;
 
 public class UserInteractionMQSend {
@@ -57,8 +57,8 @@ public class UserInteractionMQSend {
 		mns.setSendStatus(sendStatus);
 		mns.setSendError(sendError);
 		mns.setMqBody(body);
-		new Thread(new MNSRecordThread(mns)).start();
-		
+		MNSRecordHandle.sendMNSRecord(mns);
+
 		client.close();
 	}
 
@@ -73,7 +73,7 @@ public class UserInteractionMQSend {
 			Message message = new Message();
 			message.setMessageBody(JSONObject.toJSONString(body));
 			queue.putMessage(message);
-		}  catch (ClientException ce) {
+		} catch (ClientException ce) {
 			sendStatus = MNSRecord.Status.SEND_FAIL.name();
 			sendError = "ClientException:" + ce.getMessage();
 			LOG.error("Something wrong with the network connection between client and MNS service."
@@ -98,8 +98,8 @@ public class UserInteractionMQSend {
 		mns.setSendStatus(sendStatus);
 		mns.setSendError(sendError);
 		mns.setMqBody(body);
-		new Thread(new MNSRecordThread(mns)).start();
-		
+		MNSRecordHandle.sendMNSRecord(mns);
+
 		client.close();
 	}
 
