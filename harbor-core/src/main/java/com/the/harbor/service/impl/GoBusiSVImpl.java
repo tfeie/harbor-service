@@ -1688,12 +1688,18 @@ public class GoBusiSVImpl implements IGoBusiSV {
 	public Go getGoInfo(String goId) {
 		String data = HyGoUtil.getGo(goId);
 		Go go = JSON.parseObject(data, Go.class);
+		if(go==null){
+			this.resetGo2Redis(goId);
+		}
 		this.fillGoInfo(go);
 		return go;
 	}
 
 	@Override
 	public void fillGoInfo(Go go) {
+		if (go == null) {
+			return;
+		}
 		String contentSummary = null;
 		if (!CollectionUtil.isEmpty(go.getGoDetails())) {
 			for (GoDetail detail : go.getGoDetails()) {
@@ -1922,6 +1928,65 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			HyGoUtil.recordGo(goId, JSON.toJSONString(bgo));
 
 		}
+
+	}
+
+	private void resetGo2Redis(String goId) {
+		HyGo hyGo = hyGoMapper.selectByPrimaryKey(goId);
+		if (hyGo == null) {
+			return;
+		}
+		Go bgo = new Go();
+		List<GoTag> goTags = new ArrayList<GoTag>();
+		List<GoDetail> goDetails = new ArrayList<GoDetail>();
+		List<GoStory> goStories = new ArrayList<GoStory>();
+		BeanUtils.copyProperties(hyGo, bgo);
+
+		// 获取标签
+		HyGoTagsCriteria tagSql = new HyGoTagsCriteria();
+		tagSql.or().andGoIdEqualTo(goId)
+				.andStatusEqualTo(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
+		List<HyGoTags> hyGoTags = hyGoTagsMapper.selectByExample(tagSql);
+		if (!CollectionUtil.isEmpty(hyGoTags)) {
+			for (HyGoTags hyGoTag : hyGoTags) {
+				GoTag t = new GoTag();
+				BeanUtils.copyProperties(hyGoTag, t);
+				goTags.add(t);
+			}
+		}
+		// 获取GO明细
+		HyGoDetailCriteria sql1 = new HyGoDetailCriteria();
+		sql1.or().andGoIdEqualTo(goId).andStatusEqualTo(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
+		sql1.setOrderByClause(" sort asc");
+		List<HyGoDetail> godetails = hyGoDetailMapper.selectByExample(sql1);
+		if (!CollectionUtil.isEmpty(godetails)) {
+			for (HyGoDetail hyGoDetail : godetails) {
+				GoDetail t = new GoDetail();
+				BeanUtils.copyProperties(hyGoDetail, t);
+				goDetails.add(t);
+			}
+		}
+		// 获取STORY明细
+		HyGoStoryCriteria sql2 = new HyGoStoryCriteria();
+		sql2.or().andGoIdEqualTo(goId).andStatusEqualTo(com.the.harbor.base.enumeration.common.Status.VALID.getValue());
+		sql2.setOrderByClause(" sort asc");
+		List<HyGoStory> hyGoStories = hyGoStoryMapper.selectByExample(sql2);
+		if (!CollectionUtil.isEmpty(hyGoStories)) {
+			for (HyGoStory goStory : hyGoStories) {
+				GoStory t = new GoStory();
+				BeanUtils.copyProperties(goStory, t);
+				goStories.add(t);
+			}
+		}
+
+		bgo.setGoDetails(goDetails);
+		bgo.setGoTags(goTags);
+		bgo.setGoStories(goStories);
+		// 填充其它信息
+		this.fillGoInfo(bgo);
+
+		// 写入REDIS
+		HyGoUtil.recordGo(goId, JSON.toJSONString(bgo));
 
 	}
 
