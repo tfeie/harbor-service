@@ -1567,9 +1567,21 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		try {
 			String result = doc.push(JSON.toJSONString(indexs), "hy_go");
 			LOG.debug("同步GO到openSearch:" + result);
+			JSONObject d = JSON.parseObject(result);
+			String status = d.getString("status");
+			if ("FAIL".equals(status)) {
+				JSONArray errors = d.getJSONArray("errors");
+				StringBuffer sb = new StringBuffer();
+				for (int i = 0; i < errors.size(); i++) {
+					JSONObject e = errors.getJSONObject(i);
+					sb.append(e.getString("message"));
+				}
+				String errormsg = StringUtil.isBlank(sb.toString()) ? "搜索引擎返回异常" : sb.toString();
+				throw new SystemException(errormsg);
+			}
 		} catch (Exception e) {
 			LOG.error("同步GO到openSearch失败", e);
-			throw new SystemException(e);
+			throw new SystemException(e.getMessage());
 		}
 	}
 
@@ -1653,9 +1665,21 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		try {
 			String result = doc.push(JSON.toJSONString(indexs), "hy_go");
 			LOG.debug("同步GO到openSearch:" + result);
+			JSONObject d = JSON.parseObject(result);
+			String status = d.getString("status");
+			if ("FAIL".equals(status)) {
+				JSONArray errors = d.getJSONArray("errors");
+				StringBuffer sb = new StringBuffer();
+				for (int i = 0; i < errors.size(); i++) {
+					JSONObject e = errors.getJSONObject(i);
+					sb.append(e.getString("message"));
+				}
+				String errormsg = StringUtil.isBlank(sb.toString()) ? "搜索引擎返回异常" : sb.toString();
+				throw new SystemException(errormsg);
+			}
 		} catch (Exception e) {
 			LOG.error("同步GO到openSearch失败", e);
-			throw new SystemException(e);
+			throw new SystemException(e.getMessage());
 		}
 
 	}

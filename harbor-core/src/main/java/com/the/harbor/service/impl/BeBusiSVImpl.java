@@ -546,9 +546,21 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		try {
 			String result = doc.push(JSON.toJSONString(indexs), "hy_be");
 			LOG.debug("be索引同步到openSearch:" + result);
+			JSONObject d = JSON.parseObject(result);
+			String status = d.getString("status");
+			if ("FAIL".equals(status)) {
+				JSONArray errors = d.getJSONArray("errors");
+				StringBuffer sb = new StringBuffer();
+				for (int i = 0; i < errors.size(); i++) {
+					JSONObject e = errors.getJSONObject(i);
+					sb.append(e.getString("message"));
+				}
+				String errormsg = StringUtil.isBlank(sb.toString()) ? "搜索引擎返回异常" : sb.toString();
+				throw new SystemException(errormsg);
+			}
 		} catch (Exception e) {
 			LOG.error("be索引同步到openSearch失败", e);
-			throw new SystemException(e);
+			throw new SystemException(e.getMessage());
 		}
 	}
 
@@ -575,9 +587,21 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			doc.update(fields);
 			String result = doc.push(JSON.toJSONString(indexs), "hy_be");
 			LOG.debug("隐藏BE的结果到openSearch:" + result);
+			JSONObject d = JSON.parseObject(result);
+			String status = d.getString("status");
+			if ("FAIL".equals(status)) {
+				JSONArray errors = d.getJSONArray("errors");
+				StringBuffer sb = new StringBuffer();
+				for (int i = 0; i < errors.size(); i++) {
+					JSONObject e = errors.getJSONObject(i);
+					sb.append(e.getString("message"));
+				}
+				String errormsg = StringUtil.isBlank(sb.toString()) ? "搜索引擎返回异常" : sb.toString();
+				throw new SystemException(errormsg);
+			}
 		} catch (Exception e) {
 			LOG.error("隐藏BE操作同步到openSearch失败", e);
-			throw new SystemException(e);
+			throw new SystemException(e.getMessage());
 		}
 	}
 
@@ -603,9 +627,21 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		try {
 			String result = doc.push(JSON.toJSONString(indexs), "hy_be");
 			LOG.debug("置顶BE的结果到openSearch:" + result);
+			JSONObject d = JSON.parseObject(result);
+			String status = d.getString("status");
+			if ("FAIL".equals(status)) {
+				JSONArray errors = d.getJSONArray("errors");
+				StringBuffer sb = new StringBuffer();
+				for (int i = 0; i < errors.size(); i++) {
+					JSONObject e = errors.getJSONObject(i);
+					sb.append(e.getString("message"));
+				}
+				String errormsg = StringUtil.isBlank(sb.toString()) ? "搜索引擎返回异常" : sb.toString();
+				throw new SystemException(errormsg);
+			}
 		} catch (Exception e) {
 			LOG.error("置顶BE操作同步到openSearch失败", e);
-			throw new SystemException(e);
+			throw new SystemException(e.getMessage());
 		}
 	}
 
@@ -631,9 +667,21 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		try {
 			String result = doc.push(JSON.toJSONString(indexs), "hy_be");
 			LOG.debug("删除BE的结果到openSearch:" + result);
+			JSONObject d = JSON.parseObject(result);
+			String status = d.getString("status");
+			if ("FAIL".equals(status)) {
+				JSONArray errors = d.getJSONArray("errors");
+				StringBuffer sb = new StringBuffer();
+				for (int i = 0; i < errors.size(); i++) {
+					JSONObject e = errors.getJSONObject(i);
+					sb.append(e.getString("message"));
+				}
+				String errormsg = StringUtil.isBlank(sb.toString()) ? "搜索引擎返回异常" : sb.toString();
+				throw new SystemException(errormsg);
+			}
 		} catch (Exception e) {
 			LOG.error("删除BE操作同步到openSearch失败", e);
-			throw new SystemException(e);
+			throw new SystemException(e.getMessage());
 		}
 	}
 
