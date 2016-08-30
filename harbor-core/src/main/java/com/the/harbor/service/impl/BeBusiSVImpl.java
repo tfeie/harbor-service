@@ -78,7 +78,6 @@ import com.the.harbor.dao.mapper.interfaces.HyBeTagsMapper;
 import com.the.harbor.dao.mapper.interfaces.HyBeViewMapper;
 import com.the.harbor.service.interfaces.IBeBusiSV;
 import com.the.harbor.service.interfaces.IUserManagerSV;
-import com.the.harbor.util.ESIndexBuildMQSend;
 import com.the.harbor.util.HarborSeqUtil;
 import com.the.harbor.util.NotifyMQSend;
 import com.the.harbor.util.UserAssetsTradeMQSend;
@@ -176,7 +175,12 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			}
 		}
 		// 构建索引记录并发送到消息中,实现异步构建
-		ESIndexBuildMQSend.sendMQ(be);
+		// ESIndexBuildMQSend.sendMQ(be);
+		
+		// 写入REDIS缓存
+		HyBeUtil.recordBe(be.getBeId(), JSON.toJSONString(be));
+		// 写入OPENSEARCH索引
+		this.pushBeToOpenSearch(be.getBeId());
 		return beId;
 	}
 
@@ -615,7 +619,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			BeIndexModel m = new BeIndexModel();
 			m.setId(id);
 			m.setTopFlag(topFlag);
-			m.setTopDate(TopFlag.YES.getValue().equals(topFlag)?topDate:DateUtil.getTimestamp(0));
+			m.setTopDate(TopFlag.YES.getValue().equals(topFlag) ? topDate : DateUtil.getTimestamp(0));
 			BeIndexOperate op = new BeIndexOperate();
 			op.setCmd("update");
 			op.setFields(m);

@@ -7,7 +7,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.the.harbor.base.enumeration.hybe.HideFlag;
+import com.the.harbor.base.enumeration.hygo.TopFlag;
 import com.the.harbor.commons.redisdata.util.HyBeUtil;
+import com.the.harbor.commons.util.DateUtil;
 import com.the.harbor.service.interfaces.IBeBusiSV;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -36,7 +38,7 @@ public class BeOpenSearchTest2 {
 	
 	@Test
 	public void pushBeOpenSearch(){
-		beSV.pushBeToOpenSearch("50EDFC75495E4AEC94170846E133D125");
+		beSV.topBeToOpenSearch("181105E3B07A4552A30B58D6D92677CB", TopFlag.NO.getValue(), DateUtil.getSysDate());
 	}
 
 }

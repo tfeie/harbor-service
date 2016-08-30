@@ -252,7 +252,12 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			}
 		}
 		// 将GO的数据发送给MNS处理
-		ESIndexBuildMQSend.sendMQ(bgo);
+		// ESIndexBuildMQSend.sendMQ(bgo);
+
+		// 写入REDIS
+		HyGoUtil.recordGo(go.getGoId(), JSON.toJSONString(bgo));
+		// 写入OPENSEARCH索引
+		this.pushGoToOpenSearch(go.getGoId());
 		return goId;
 	}
 
@@ -1688,7 +1693,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 	public Go getGoInfo(String goId) {
 		String data = HyGoUtil.getGo(goId);
 		Go go = JSON.parseObject(data, Go.class);
-		if(go==null){
+		if (go == null) {
 			this.resetGo2Redis(goId);
 		}
 		this.fillGoInfo(go);
@@ -1846,7 +1851,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		for (String indexId : indexIds) {
 			GoIndexModel m = new GoIndexModel();
 			m.setIndexId(indexId);
-			m.setTopDate(TopFlag.YES.getValue().equals(topFlag)?topDate:DateUtil.getTimestamp(0));
+			m.setTopDate(TopFlag.YES.getValue().equals(topFlag) ? topDate : DateUtil.getTimestamp(0));
 			m.setTopFlag(topFlag);
 			GoIndexOperate op = new GoIndexOperate();
 			op.setCmd("update");
