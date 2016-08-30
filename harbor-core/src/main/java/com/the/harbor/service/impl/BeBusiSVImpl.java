@@ -615,7 +615,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 			BeIndexModel m = new BeIndexModel();
 			m.setId(id);
 			m.setTopFlag(topFlag);
-			m.setTopDate(TopFlag.YES.getValue().equals(topFlag)?topDate:null);
+			m.setTopDate(TopFlag.YES.getValue().equals(topFlag)?topDate:DateUtil.getTimestamp(0));
 			BeIndexOperate op = new BeIndexOperate();
 			op.setCmd("update");
 			op.setFields(m);

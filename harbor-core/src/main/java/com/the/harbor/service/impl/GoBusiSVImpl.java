@@ -1846,7 +1846,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 		for (String indexId : indexIds) {
 			GoIndexModel m = new GoIndexModel();
 			m.setIndexId(indexId);
-			m.setTopDate(TopFlag.YES.getValue().equals(topFlag)?topDate:null);
+			m.setTopDate(TopFlag.YES.getValue().equals(topFlag)?topDate:DateUtil.getTimestamp(0));
 			m.setTopFlag(topFlag);
 			GoIndexOperate op = new GoIndexOperate();
 			op.setCmd("update");
