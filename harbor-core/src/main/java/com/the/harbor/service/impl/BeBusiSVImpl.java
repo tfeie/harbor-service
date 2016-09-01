@@ -176,7 +176,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 		}
 		// 构建索引记录并发送到消息中,实现异步构建
 		// ESIndexBuildMQSend.sendMQ(be);
-		
+
 		// 写入REDIS缓存
 		HyBeUtil.recordBe(be.getBeId(), JSON.toJSONString(be));
 		// 写入OPENSEARCH索引
@@ -819,7 +819,7 @@ public class BeBusiSVImpl implements IBeBusiSV {
 					}
 				} else if (BeDetailType.IMAGE.getValue().equals(detail.getType())) {
 					if (!hasimg) {
-						imageURL = detail.getImageUrl() + "@!be_thumbnail";
+						imageURL = detail.getImageUrl();
 						hasimg = true;
 					}
 				}
