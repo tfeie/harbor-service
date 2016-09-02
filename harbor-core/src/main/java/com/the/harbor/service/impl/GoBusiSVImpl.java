@@ -1715,7 +1715,7 @@ public class GoBusiSVImpl implements IGoBusiSV {
 			}
 		}
 		go.setContentSummary(contentSummary);
-		go.setFixPriceYuan(AmountUtils.changeF2Y(go.getFixedPrice()));
+		go.setFixPriceYuan(String.valueOf(go.getFixedPrice()/100));
 		go.setGoTypeName(
 				HyDictUtil.getHyDictDesc(TypeCode.HY_GO.getValue(), ParamCode.GO_TYPE.getValue(), go.getGoType()));
 		go.setPayModeName(
