@@ -33,7 +33,7 @@ public interface IGoBusiSV {
 
 	String createGo(GoCreateReq goCreateReq);
 
-	HyGoOrder getHyGoOrder(String userId, String goId);
+	List<HyGoOrder> getHyGoOrders(String userId, String goId);
 
 	String orderOneOnOne(GoOrderCreateReq goOrderCreateReq);
 

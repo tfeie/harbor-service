@@ -310,28 +310,31 @@ public class GoSVImpl implements IGoSV {
 	}
 
 	@Override
-	public GoOrderQueryResp queryUserOrderGo(GoOrderQueryReq goOrderQueryReq)
+	public GoOrderQueryResp queryUserOrderGoes(GoOrderQueryReq goOrderQueryReq)
 			throws BusinessException, SystemException {
-		GoOrder goOrder = null;
-		HyGoOrder hyGoOrder = goBusiSV.getHyGoOrder(goOrderQueryReq.getUserId(), goOrderQueryReq.getGoId());
-		if (hyGoOrder != null) {
-			HyGo hyGo = goBusiSV.getHyGo(hyGoOrder.getGoId());
-			if (hyGo == null) {
-				throw new BusinessException("GO_0001", "活动信息不存在");
+		List<GoOrder>  goOrders = new ArrayList<GoOrder>();
+		List<HyGoOrder> hyGoOrders = goBusiSV.getHyGoOrders(goOrderQueryReq.getUserId(), goOrderQueryReq.getGoId());
+		if (!CollectionUtil.isEmpty(hyGoOrders)) {
+			for (HyGoOrder hyGoOrder : hyGoOrders) {
+				HyGo hyGo = goBusiSV.getHyGo(hyGoOrder.getGoId());
+				if (hyGo == null) {
+					continue;
+				}
+				GoOrder goOrder = new GoOrder();
+				BeanUtils.copyProperties(hyGoOrder, goOrder);
+				goOrder.setPublishUserId(hyGo.getUserId());
+				goOrder.setTopic(hyGo.getTopic());
+				goOrder.setFixedPrice(hyGo.getFixedPrice());
+				goOrder.setOrderStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_ORDER.getValue(),
+						ParamCode.ORDER_STATUS.getValue(), hyGoOrder.getOrderStatus()));
+				goOrders.add(goOrder);
 			}
 
-			goOrder = new GoOrder();
-			BeanUtils.copyProperties(hyGoOrder, goOrder);
-			goOrder.setPublishUserId(hyGo.getUserId());
-			goOrder.setTopic(hyGo.getTopic());
-			goOrder.setFixedPrice(hyGo.getFixedPrice());
-			goOrder.setOrderStatusName(HyDictUtil.getHyDictDesc(TypeCode.HY_GO_ORDER.getValue(),
-					ParamCode.ORDER_STATUS.getValue(), hyGoOrder.getOrderStatus()));
 		}
 
 		ResponseHeader responseHeader = ResponseBuilder.buildSuccessResponseHeader("查询成功");
 		GoOrderQueryResp resp = new GoOrderQueryResp();
-		resp.setGoOrder(goOrder);
+		resp.setGoOrders(goOrders);
 		resp.setResponseHeader(responseHeader);
 		return resp;
 	}

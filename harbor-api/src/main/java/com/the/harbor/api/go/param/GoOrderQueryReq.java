@@ -19,10 +19,10 @@ public class GoOrderQueryReq implements Serializable {
 	@NotNull(message = "活动预约流水为空", groups = { IGoSV.QueryGoOrder.class })
 	private String goOrderId;
 
-	@NotNull(message = "用户标识为空", groups = { IGoSV.QueryUserOrderGo.class })
+	@NotNull(message = "用户标识为空", groups = { IGoSV.QueryUserOrderGoes.class })
 	private String userId;
 
-	@NotNull(message = "活动标识为空", groups = { IGoSV.QueryUserOrderGo.class })
+	@NotNull(message = "活动标识为空", groups = { IGoSV.QueryUserOrderGoes.class })
 	private String goId;
 
 	public String getUserId() {

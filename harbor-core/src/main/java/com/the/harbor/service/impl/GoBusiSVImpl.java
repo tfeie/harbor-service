@@ -262,11 +262,11 @@ public class GoBusiSVImpl implements IGoBusiSV {
 	}
 
 	@Override
-	public HyGoOrder getHyGoOrder(String userId, String goId) {
+	public List<HyGoOrder> getHyGoOrders(String userId, String goId) {
 		HyGoOrderCriteria sql = new HyGoOrderCriteria();
 		sql.or().andUserIdEqualTo(userId).andGoIdEqualTo(goId);
 		List<HyGoOrder> list = hyGoOrderMapper.selectByExample(sql);
-		return CollectionUtil.isEmpty(list) ? null : list.get(0);
+		return list;
 	}
 
 	@Override

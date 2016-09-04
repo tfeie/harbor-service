@@ -81,7 +81,7 @@ public interface IGoSV {
 
 	}
 
-	@interface QueryUserOrderGo {
+	@interface QueryUserOrderGoes {
 
 	}
 
@@ -204,14 +204,14 @@ public interface IGoSV {
 			throws BusinessException, SystemException;
 
 	/**
-	 * 查询用户订购的某个活动
+	 * 查询用户参加的OnO活动记录
 	 * 
 	 * @param goOrderQueryReq
 	 * @return
 	 * @throws BusinessException
 	 * @throws SystemException
 	 */
-	GoOrderQueryResp queryUserOrderGo(@NotNull(message = "参数为空") GoOrderQueryReq goOrderQueryReq)
+	GoOrderQueryResp queryUserOrderGoes(@NotNull(message = "参数为空") GoOrderQueryReq goOrderQueryReq)
 			throws BusinessException, SystemException;
 
 	/**
